@@ -3,6 +3,7 @@
 /*
  * Express Dependencies
  */
+var compression = require('compression')
 var express = require('express');
 var app = express();
 var port = 9009;
@@ -14,7 +15,8 @@ var exphbs = require('express3-handlebars');
 var hbs;
 
 // For gzip compression
-app.use(express.compress());
+//app.use(express.compress());
+app.use(compression())
 app.use(require('connect-livereload')({
     port: 35730
 }));
@@ -52,21 +54,26 @@ if (process.env.NODE_ENV === 'production') {
 
 // Set Handlebars
 app.set('view engine', 'handlebars');
-
-
+//app.use(require('./controllers'))
 
 /*
  * Routes
  */
 // Index Page
-app.get('/', function(request, response, next) {
-    response.render('index');
-});
 
-app.get('/bom', function(request, response, next) {
-    var resp = {test: 1};
-    response.json(resp);
-});
+var routers = require('./turbo_router')
+
+
+app.use('/', routers)
+
+// app.get('/', function(request, response, next) {
+//     response.render('index');
+// });
+//
+// app.get('/bom', function(request, response, next) {
+//     var resp = {test: 1};
+//     response.json(resp);
+// });
 /*
  * Start it up
  */
