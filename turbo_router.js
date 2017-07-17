@@ -3,17 +3,6 @@ var router = express.Router()
 
 var bom = require('./controllers/bom')
 
-function getBoms (req, res) {
-    bom.findAll(function (error, customers) {
-        if (error) {
-            log.error(error, 'error finding customers')
-            res.status(500).send(error)
-            return
-        }
-        res.json(customers)
-    })
-}
-
 // middleware that is specific to this router
 router.use(function timeLog (req, res, next) {
     console.log('Time: ', Date.now())
@@ -25,7 +14,7 @@ router.get('/', function (req, res) {
 })
 // define the about route
 router.get('/boms', function (req, res) {
-    getBoms(req,res);
+    bom.getBoms(req,res);
 })
 
 module.exports = router
