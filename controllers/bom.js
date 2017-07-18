@@ -2,15 +2,20 @@
 
 var bom_model = require('../models/bom')
 
-function getBoms (req, res) {
-    bom_model.findAll(function (error, customers) {
-        if (error) {
-            log.error(error, 'error finding customers')
-            res.status(500).send(error)
-            return
+function findBom (req, res) {
+    bom_model.findBom('42045').then(
+        function (bom) {
+            console.log(bom);
+            //render userlist view with list if user
+            res.json(bom);
+        },
+        function (err) {
+            console.error('Something went wrong:', err);
+            res.send("There was a problem adding the information to the database. " + err);
         }
-        res.json(customers)
-    })
+    );
 }
 
-exports.getBoms = getBoms
+exports.findBom = findBom
+
+

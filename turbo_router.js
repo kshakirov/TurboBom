@@ -14,7 +14,7 @@ router.get('/', function (req, res) {
 })
 // define the about route
 router.get('/boms', function (req, res) {
-    bom.getBoms(req,res);
+    bom.findBom(req,res);
 })
 
 module.exports = router
