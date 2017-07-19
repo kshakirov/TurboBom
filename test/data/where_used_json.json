@@ -1,0 +1,205 @@
+{
+  "total": 168,
+  "recs": [
+    {
+      "partId": 20580,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3532222",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 26090,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3532223",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 31920,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533000",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 11625,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533001",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 22202,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533004",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 38001,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533005",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 15220,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533006",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 9217,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533007",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 22176,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533008",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 33690,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533009",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 20352,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533010",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 34522,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533011",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 17640,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533012",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 23984,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533013",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 12163,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533014",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 22747,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533015",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 21430,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533132",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 25778,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533133",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 27594,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533368",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 22230,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533369",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 15352,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533370",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 33190,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533371",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 22112,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533372",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 8918,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533373",
+      "relationType": "direct",
+      "distance": 1
+    },
+    {
+      "partId": 27026,
+      "partTypeName": "Holset",
+      "manufacturerName": "Turbo",
+      "partNumber": "3533374",
+      "relationType": "direct",
+      "distance": 1
+    }
+  ]
+}

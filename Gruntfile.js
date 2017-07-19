@@ -17,6 +17,8 @@ module.exports = function (grunt) {
             scripts: {
                 files: [
                     'assets/scripts/**/*.js',
+                    'controllers/**/*.js',
+                    'models/**/*.js'
                 ],
             },
             css: {

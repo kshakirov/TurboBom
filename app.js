@@ -13,7 +13,7 @@ var port = 9009;
  */
 var exphbs = require('express3-handlebars');
 var hbs;
-
+ 
 // For gzip compression
 //app.use(express.compress());
 app.use(compression())

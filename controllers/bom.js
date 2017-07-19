@@ -3,10 +3,8 @@
 var bom_model = require('../models/bom')
 
 function findBom (req, res) {
-    bom_model.findBom('42045').then(
+    bom_model.findBom(req.params.id).then(
         function (bom) {
-            console.log(bom);
-            //render userlist view with list if user
             res.json(bom);
         },
         function (err) {

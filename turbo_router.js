@@ -13,7 +13,7 @@ router.get('/', function (req, res) {
     res.send('Birds home page')
 })
 // define the about route
-router.get('/boms', function (req, res) {
+router.get('/bom/:id', function (req, res) {
     bom.findBom(req,res);
 })
 
