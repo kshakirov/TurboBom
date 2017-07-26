@@ -36,22 +36,24 @@ function _find_interchanges (id) {
   }`;
 
     return db.query(query).then(function (cursor) {
-        console.log("done");
         return cursor.all();
     })
 }
 
-function find_where_used(id, result) {
+function find_where_used(bids, result) {
 
-    return _find_bom(id).then(function (wus) {
-        var ids = wus.map(function (wu) {
-            return wu.partId;
+    var bom_queries = bids.map(_find_bom);
+    var bom_results = Promise.all(bom_queries);
+    return bom_results.then(function (bom) {
+        var flat_bom = flatten(bom,2);
+        var ids = flat_bom.map(function (b) {
+            return b.partId;
         })
-        var ints_queries = ids.map(_find_interchanges);
-        var results = Promise.all(ints_queries);
-        return results.then(function (promise) {
-            var result = flatten(promise,2);
-                return result.concat(wus);
+        var int_queries = ids.map(_find_interchanges);
+        var int_results = Promise.all(int_queries);
+        return int_results.then(function (ints) {
+            var result = flatten(ints,2);
+            return result.concat(flat_bom);
         })
     })
     
