@@ -40,9 +40,16 @@ function _find_interchanges (id) {
     })
 }
 
-function find_where_used(bids, result) {
 
+function _get_intrs_ids(intrs) {
+    return intrs.map(function (intr) {
+        return intr.partId;
+    })
+}
+
+function find_where_used(bids, result) {
     var bom_queries = bids.map(_find_bom);
+    var prev_result = result;
     var bom_results = Promise.all(bom_queries);
     return bom_results.then(function (bom) {
         var flat_bom = flatten(bom,2);
@@ -53,7 +60,15 @@ function find_where_used(bids, result) {
         var int_results = Promise.all(int_queries);
         return int_results.then(function (ints) {
             var result = flatten(ints,2);
-            return result.concat(flat_bom);
+            var n_bids = _get_intrs_ids(result);
+            prev_result = prev_result.concat(result).concat(flat_bom);
+            if(n_bids  && n_bids.length > 0){
+                 return   find_where_used(n_bids, prev_result)
+            }else {
+                //console.log(prev_result)
+                return prev_result;    
+            }
+            
         })
     })
     
