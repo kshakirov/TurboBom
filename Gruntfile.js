@@ -18,7 +18,8 @@ module.exports = function (grunt) {
                 files: [
                     'assets/scripts/**/*.js',
                     'controllers/**/*.js',
-                    'models/**/*.js'
+                    'models/**/*.js',
+                    'turbo_router.js'
                 ],
             },
             css: {
