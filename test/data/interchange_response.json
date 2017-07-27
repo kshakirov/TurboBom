@@ -1,0 +1,328 @@
+{
+  "id": 67546,
+  "parts": [
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 13269,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145703B",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 26074,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145703L",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 33213,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145701S",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 68157,
+      "manufacturer": {
+        "id": 11,
+        "name": "Turbo International",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "11-D-5982",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 1,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 30160,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145703H",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 31106,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145703C",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 16572,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "5303-970-0016",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 11825,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145701H",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 39471,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145701L",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 28830,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145701R",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 19191,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "5303-988-0016",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 20692,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145703D",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 21250,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145703S",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    },
+    {
+      "class": "com.turbointernational.metadata.entity.part.types.Turbo",
+      "id": 37152,
+      "manufacturer": {
+        "id": 6,
+        "name": "KKK",
+        "notExternal": false
+      },
+      "manufacturerPartNumber": "078145703R",
+      "name": null,
+      "dimLength": null,
+      "dimWidth": null,
+      "dimHeight": null,
+      "weight": null,
+      "partType": {
+        "id": 1,
+        "name": "Turbo",
+        "value": "turbo",
+        "magentoAttributeSet": "Turbo"
+      },
+      "version": 2,
+      "legendImgFilename": null
+    }
+  ],
+  "alone": false
+}

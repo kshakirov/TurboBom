@@ -3,6 +3,7 @@ var router = express.Router()
 
 var bom = require('./controllers/bom')
 var whereUsed = require('./controllers/where_used')
+var interchange = require('./controllers/interchange')
 
 // middleware that is specific to this router
 router.use(function timeLog (req, res, next) {
@@ -19,6 +20,10 @@ router.get('/bom/byParentPart/:id', function (req, res) {
 })
 router.get('/part/:id/ancestors', function (req, res) {
     whereUsed.findWhereUsed(req,res);
+})
+
+router.get('/interchange/:id', function (req, res) {
+    interchange.findInterchange(req,res);
 })
 
 module.exports = router
