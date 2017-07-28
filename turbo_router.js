@@ -18,6 +18,13 @@ router.get('/', function (req, res) {
 router.get('/bom/byParentPart/:id', function (req, res) {
     bom.findBom(req,res);
 })
+
+router.delete('/bom/:parent_id/descendant/:descendant_id', function (req, res) {
+    bom.removeBom(req,res);
+})
+router.put('/bom/:parent_id/descendant/:descendant_id', function (req, res) {
+    bom.addBom(req,res);
+})
 router.get('/part/:id/ancestors', function (req, res) {
     whereUsed.findWhereUsed(req,res);
 })
