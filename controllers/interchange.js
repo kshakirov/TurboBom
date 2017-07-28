@@ -15,5 +15,40 @@ function findInterchange (req, res) {
         }
     );
 }
+function removeInterchange (req, res) {
+    var response = {
+        success: true
+    }
+    interchange_model.removeInterchange(req.params.header_id, req.params.item_id).then(
+        function (result) {
+            res.json(response);
+        },
+        function (err) {
+            response.success = false;
+            response.msg = err.message;
+            console.error('Something went wrong:', err);
+            res.json(response);
+        }
+    );
+}
+
+function addInterchange (req, res) {
+    var response = {
+        success: true
+    }
+    interchange_model.addInterchange(req.params.header_id, req.params.item_id).then(
+        function (result) {
+            res.json(response);
+        },
+        function (err) {
+            response.success = false;
+            response.msg = err.message;
+            console.error('Something went wrong:', err);
+            res.json(response);
+        }
+    );
+}
 
 exports.findInterchange = findInterchange
+exports.removeInterchange = removeInterchange
+exports.addInterchange = addInterchange

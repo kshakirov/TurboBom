@@ -25,6 +25,14 @@ router.delete('/bom/:parent_id/descendant/:descendant_id', function (req, res) {
 router.put('/bom/:parent_id/descendant/:descendant_id', function (req, res) {
     bom.addBom(req,res);
 })
+
+router.delete('/interchange/:header_id/item/:item_id', function (req, res) {
+    interchange.removeInterchange(req,res);
+})
+router.put('/interchange/:header_id/item/:item_id', function (req, res) {
+    interchange.addInterchange(req,res);
+})
+
 router.get('/part/:id/ancestors', function (req, res) {
     whereUsed.findWhereUsed(req,res);
 })

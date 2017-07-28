@@ -2,7 +2,6 @@ Database = require('arangojs').Database;
 var db = new Database({url: 'http://127.0.0.1:8529'});
 db.useDatabase("Bom");
 db.useBasicAuth('root', 'servantes');
-var parts_collection_name = 'parts';
 var edges_collection_name = 'bom_edges';
 
 module.exports = {
