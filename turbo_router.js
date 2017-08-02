@@ -1,11 +1,13 @@
 var express = require('express')
 var router = express.Router()
 
-var bom = require('./controllers/bom')
-var whereUsed = require('./controllers/where_used')
-var interchange = require('./controllers/interchange')
+var bom = require('./controllers/bom');
+var whereUsed = require('./controllers/where_used');
+var interchange = require('./controllers/interchange');
+var part = require('./controllers/part');
 
 // middleware that is specific to this router
+
 router.use(function timeLog (req, res, next) {
     console.log('Time: ', Date.now())
     next()
@@ -29,6 +31,20 @@ router.put('/bom/:parent_id/descendant/:descendant_id', function (req, res) {
 router.delete('/interchange/:header_id/item/:item_id', function (req, res) {
     interchange.removeInterchange(req,res);
 })
+
+
+router.post('/part/', function (req, res) {
+    part.addPart(req,res);
+})
+
+router.put('/part/:id', function (req, res) {
+    part.updatePart(req,res);
+})
+
+router.delete('/interchange/:header_id/item/:item_id', function (req, res) {
+    part.removePart(req,res);
+})
+
 router.put('/interchange/:header_id/item/:item_id', function (req, res) {
     interchange.addInterchange(req,res);
 })

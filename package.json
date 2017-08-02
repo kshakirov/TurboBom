@@ -5,13 +5,15 @@
   "dependencies": {
     "arangojs": "^5.7.0",
     "array-flatten": "^2.1.1",
+    "body-parser": "^1.17.2",
     "compression": "^1.7.0",
     "express": "~4.13.4",
     "express3-handlebars": "0.4.x",
     "gifsicle": "^3.0.4",
     "jpegtran-bin": "^3.2.0",
     "optipng-bin": "^4.0.0",
-    "pngquant-bin": "^3.1.1"
+    "pngquant-bin": "^3.1.1",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "connect-livereload": "^0.6.0",

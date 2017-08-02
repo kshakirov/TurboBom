@@ -7,15 +7,9 @@ var parts_collection_name = 'parts';
 module.exports = {
     addPart: function (product) {
         var parts_collection = db.collection(parts_collection_name);
-        var data = {
-            _key: product.id.toString(),
-            part_number: product.part_number,
-            name: product.name,
-            part_type: product.part_type,
-            description: product.description
-        }
+
         return parts_collection.save(
-            data
+            product
         );
     },
 

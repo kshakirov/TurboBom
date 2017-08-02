@@ -3,6 +3,7 @@ var db = new Database({url: 'http://127.0.0.1:8529'});
 db.useDatabase("Bom");
 db.useBasicAuth('root', 'servantes');
 var edges_collection_name = 'interchange_edges';
+var interchange_headers_collection_name = 'interchange_headers';
 
 module.exports = {
     findInterchange: function (id) {
@@ -25,7 +26,6 @@ module.exports = {
         var data = {
             _key: 'header_' + header_id + '_' + item_id,
             type: 'interchange',
-            test: 1,
             _from: 'interchange_headers/header_' + header_id,
             _to: "parts/" + item_id
         }
@@ -38,5 +38,16 @@ module.exports = {
         var edges_collection = db.collection(edges_collection_name);
         var edge_key = 'header_' + header_id + '_' + item_id;
         return edges_collection.remove(edge_key);
+    },
+
+
+    addInterchangeHeader: function (header_id) {
+        var headers_collection =  db.collection(interchange_headers_collection_name);
+        var data = {
+            _key: 'header_' + header_id,
+            type: 'test',
+            header: header_id
+        }
+        return headers_collection.save(data);
     }
 }
