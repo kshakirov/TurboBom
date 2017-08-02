@@ -3,7 +3,7 @@ var interchange_model = require('../models/interchanges');
 const uuidv1 = require('uuid/v1');
 
 function _create_product(body) {
-    return  {
+    return {
         _key: body.id.toString(),
         part_number: body.part_number,
         name: body.name,
@@ -13,7 +13,7 @@ function _create_product(body) {
 }
 
 
-function removePart (req, res) {
+function removePart(req, res) {
     var response = {
         success: true
     }
@@ -30,18 +30,20 @@ function removePart (req, res) {
     );
 }
 
-function addPart (req, res) {
+function addPart(req, res) {
     var response = {
         success: true
     }
-    console.log("Body")
-    console.log(req.body);
-    var product =_create_product(req.body);
+    var product = _create_product(req.body);
     part_model.addPart(product).then(
         function (result) {
-            var id = uuidv1();
-            interchange_model.addInterchangeHeader(id).then(function (promise) {
-                res.json(response);
+            var header_id = uuidv1();
+            var item_id = req.body.id;
+            interchange_model.addInterchangeHeader(header_id).then(function (promise) {
+                interchange_model.addInterchange(header_id, item_id).then(function () {
+                    res.json(response);
+                })
+
             })
 
         },
@@ -53,7 +55,7 @@ function addPart (req, res) {
     );
 }
 
-function updatePart (req, res) {
+function updatePart(req, res) {
     var response = {
         success: true
     }
@@ -69,7 +71,6 @@ function updatePart (req, res) {
         }
     );
 }
-
 
 
 exports.removePart = removePart
