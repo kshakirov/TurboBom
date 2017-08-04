@@ -10,7 +10,6 @@ function findInterchange (req, res) {
             res.json(response);
         },
         function (err) {
-            console.error('Something went wrong:', err);
             res.send("There was a problem adding the information to the database. " + err);
         }
     );
@@ -26,7 +25,6 @@ function removeInterchange (req, res) {
         function (err) {
             response.success = false;
             response.msg = err.message;
-            console.error('Something went wrong:', err);
             res.json(response);
         }
     );
@@ -43,7 +41,6 @@ function addInterchange (req, res) {
         function (err) {
             response.success = false;
             response.msg = err.message;
-            console.error('Something went wrong:', err);
             res.json(response);
         }
     );

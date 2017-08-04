@@ -32,7 +32,7 @@ function removePart(req, res) {
 
 function addPart(req, res) {
     var response = {
-        success: true
+        success: true,
     }
     var product = _create_product(req.body);
     part_model.addPart(product).then(
@@ -41,6 +41,7 @@ function addPart(req, res) {
             var item_id = req.body.id;
             interchange_model.addInterchangeHeader(header_id).then(function (promise) {
                 interchange_model.addInterchange(header_id, item_id).then(function () {
+                    response.id = item_id;
                     res.json(response);
                 })
 
@@ -59,7 +60,8 @@ function updatePart(req, res) {
     var response = {
         success: true
     }
-    part_model.updatePart(req.params.product).then(
+    var product = _create_product(req.body);
+    part_model.updatePart(req.params.id, product).then(
         function (result) {
             res.json(response);
         },

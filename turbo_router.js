@@ -41,7 +41,7 @@ router.put('/part/:id', function (req, res) {
     part.updatePart(req,res);
 })
 
-router.delete('/interchange/:header_id/item/:item_id', function (req, res) {
+router.delete('/part/:id', function (req, res) {
     part.removePart(req,res);
 })
 

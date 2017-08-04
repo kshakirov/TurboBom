@@ -15,12 +15,13 @@ module.exports = {
 
     removePart: function (id) {
         var parts_collection = db.collection(parts_collection_name);
+        console.log(id)
         return parts_collection.remove(id.toString());
     },
 
-    updatePart: function (product) {
+    updatePart: function (id, product) {
         var parts_collection = db.collection(parts_collection_name);
-        return parts_collection.update( product.id.toString(), product );
+        return parts_collection.update( id.toString(), product );
     },
 
 
