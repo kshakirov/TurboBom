@@ -27,12 +27,12 @@ module.exports = {
         })
     },
 
-    addBom: function (parent_id, child_id) {
+    addBom: function (parent_id, child_id, quantity=0) {
         var edges_collection = db.collection(edges_collection_name);
         var data = {
             _key: parent_id + '_' + child_id,
             type: 'direct',
-            test: 1,
+            quantity: quantity,
             _from: 'parts/' + parent_id,
             _to: "parts/" + child_id
         }

@@ -7,7 +7,7 @@ var interchange_headers_collection_name = 'interchange_headers';
 
 module.exports = {
     findInterchange: function (id) {
-        var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH 'InterchangeGraph'
+        var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH 'BomGraph'
         FILTER p.edges[0].type == 'interchange'
         RETURN  {
                 "id" : p.vertices[2]._key,
@@ -17,10 +17,23 @@ module.exports = {
         }`;
 
         return db.query(query).then(function (cursor) {
-            console.log("done");
             return cursor.all();
         })
     },
+
+    checkHeaderExists: function (id) {
+        var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
+          FILTER p.edges[0].type == "interchange"
+          RETURN  {
+                key: p.vertices[1]._key
+          }`;
+
+        return db.query(query).then(function (cursor) {
+            return cursor.all();
+        })
+    },
+
+
     addInterchange: function (header_id, item_id) {
         var edges_collection = db.collection(edges_collection_name);
         var data = {
@@ -42,7 +55,7 @@ module.exports = {
 
 
     addInterchangeHeader: function (header_id) {
-        var headers_collection =  db.collection(interchange_headers_collection_name);
+        var headers_collection = db.collection(interchange_headers_collection_name);
         var data = {
             _key: 'header_' + header_id,
             type: 'test',
