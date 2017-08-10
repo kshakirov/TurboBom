@@ -7,6 +7,7 @@ var compression = require('compression')
 var express = require('express');
 var app = express();
 var port = 9009;
+var bodyParser = require('body-parser');
 
 /*
  * Use Handlebars for templating
@@ -61,6 +62,11 @@ app.set('view engine', 'handlebars');
  */
 // Index Page
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
 var routers = require('./turbo_router')
 
 
@@ -78,4 +84,5 @@ app.use('/', routers)
  * Start it up
  */
 app.listen(process.env.PORT || port);
+
 console.log('Express started on port ' + port);

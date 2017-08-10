@@ -3,7 +3,7 @@
 var where_used_model = require('../models/where_used')
 
 function findWhereUsed (req, res) {
-    where_used_model.findWhereUsed(req.params.id).then(
+    where_used_model.findWhereUsed([req.params.id], []).then(
         function (where_used) {
             res.json(where_used);
         },

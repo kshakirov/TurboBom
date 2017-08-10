@@ -8,12 +8,47 @@ function findBom (req, res) {
             res.json(bom);
         },
         function (err) {
-            console.error('Something went wrong:', err);
             res.send("There was a problem adding the information to the database. " + err);
         }
     );
 }
 
+
+function removeBom (req, res) {
+    var response = {
+        success: true
+    }
+    bom_model.removeBom(req.params.parent_id, req.params.descendant_id).then(
+        function (result) {
+            res.json(response);
+        },
+        function (err) {
+            response.success = false;
+            response.msg = err.message;
+            res.json(response);
+        }
+    );
+}
+
+function addBom (req, res) {
+    var response = {
+        success: true
+    }
+    bom_model.addBom(req.params.parent_id, req.params.descendant_id).then(
+        function (result) {
+            res.json(response);
+        },
+        function (err) {
+            response.success = false;
+            response.msg = err.message;
+            res.json(response);
+        }
+    );
+}
+
+
 exports.findBom = findBom
+exports.removeBom = removeBom
+exports.addBom = addBom
 
 

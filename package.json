@@ -4,9 +4,17 @@
   "private": true,
   "dependencies": {
     "arangojs": "^5.7.0",
+    "array-flatten": "^2.1.1",
+    "body-parser": "^1.17.2",
     "compression": "^1.7.0",
+    "config": "^1.26.1",
     "express": "~4.13.4",
-    "express3-handlebars": "0.4.x"
+    "express3-handlebars": "0.4.x",
+    "gifsicle": "^3.0.4",
+    "jpegtran-bin": "^3.2.0",
+    "optipng-bin": "^4.0.0",
+    "pngquant-bin": "^3.1.1",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "connect-livereload": "^0.6.0",
@@ -29,6 +37,7 @@
     "grunt-svgmin": "~0.2.0",
     "grunt-usemin": "~0.1.10",
     "load-grunt-tasks": "~0.1.0",
+    "mocha": "^3.5.0",
     "time-grunt": "~0.1.1"
   },
   "engines": {
