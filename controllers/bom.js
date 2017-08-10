@@ -8,7 +8,6 @@ function findBom (req, res) {
             res.json(bom);
         },
         function (err) {
-            console.error('Something went wrong:', err);
             res.send("There was a problem adding the information to the database. " + err);
         }
     );
@@ -26,7 +25,6 @@ function removeBom (req, res) {
         function (err) {
             response.success = false;
             response.msg = err.message;
-            console.error('Something went wrong:', err);
             res.json(response);
         }
     );
@@ -43,7 +41,6 @@ function addBom (req, res) {
         function (err) {
             response.success = false;
             response.msg = err.message;
-            console.error('Something went wrong:', err);
             res.json(response);
         }
     );
