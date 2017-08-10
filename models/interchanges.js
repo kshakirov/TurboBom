@@ -5,6 +5,31 @@ db.useBasicAuth('root', 'servantes');
 var edges_collection_name = 'interchange_edges';
 var interchange_headers_collection_name = 'interchange_headers';
 
+function removeInterchange (header_id, item_id) {
+    var edges_collection = db.collection(edges_collection_name);
+    var edge_key = 'header_' + header_id + '_' + item_id;
+    return edges_collection.remove(edge_key);
+}
+
+
+function addInterchange(header_id, item_id) {
+    var edges_collection = db.collection(edges_collection_name);
+    var data = {
+        _key: 'header_' + header_id + '_' + item_id,
+        type: 'interchange',
+        _from: 'interchange_headers/header_' + header_id,
+        _to: "parts/" + item_id
+    }
+    return edges_collection.save(
+        data
+    );
+}
+
+function dto_header_key(promise, order) {
+    return promise[order][0].key.replace('header_','')
+}
+
+
 module.exports = {
     findInterchange: function (id) {
         var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH 'BomGraph'
@@ -21,7 +46,7 @@ module.exports = {
         })
     },
 
-    checkHeaderExists: function (id) {
+    findInterchangeHeaderByItemId: function (id) {
         var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
           FILTER p.edges[0].type == "interchange"
           RETURN  {
@@ -34,26 +59,8 @@ module.exports = {
     },
 
 
-    addInterchange: function (header_id, item_id) {
-        var edges_collection = db.collection(edges_collection_name);
-        var data = {
-            _key: 'header_' + header_id + '_' + item_id,
-            type: 'interchange',
-            _from: 'interchange_headers/header_' + header_id,
-            _to: "parts/" + item_id
-        }
-        return edges_collection.save(
-            data
-        );
-    },
-
-    removeInterchange: function (header_id, item_id) {
-        var edges_collection = db.collection(edges_collection_name);
-        var edge_key = 'header_' + header_id + '_' + item_id;
-        return edges_collection.remove(edge_key);
-    },
-
-
+    addInterchange: addInterchange,
+    removeInterchange: removeInterchange,
     addInterchangeHeader: function (header_id) {
         var headers_collection = db.collection(interchange_headers_collection_name);
         var data = {
@@ -62,5 +69,18 @@ module.exports = {
             header: header_id
         }
         return headers_collection.save(data);
-    }
+    },
+    addInterchangeToGroup: function (in_item_id, out_item_id) {
+        var find_actions = [
+            this.findInterchangeHeaderByItemId(in_item_id),
+            this.findInterchangeHeaderByItemId(out_item_id)];
+        return Promise.all(find_actions).then(function (promise) {
+            var cd_actions = [
+                removeInterchange(dto_header_key(promise,1), out_item_id),
+                addInterchange(dto_header_key(promise,0), out_item_id)
+            ]
+            return Promise.all(cd_actions);
+        })
+    },
+
 }

@@ -7,7 +7,7 @@ function add_boms(boms, parent_id) {
     console.log(`Adding Bom To [${parent_id}]`)
     if (boms.length > 0) {
         for (key in boms) {
-            var child_id = boms[key].id,
+            var child_id = boms[key].child.id,
                 quantity = boms[key].quantity;
             bom_model.addBom(parent_id, child_id, quantity)
 
@@ -50,7 +50,7 @@ var data = fs.readFileSync('../metadata_arangodb_interchanges.json');
 parts = JSON.parse(data);
 
 parts.map(function (part) {
-    add_boms(part.boms, part.id)
+    add_boms(part.boms, part.id);
     add_interchanges(part.interchanges, part.id);
 })
 
