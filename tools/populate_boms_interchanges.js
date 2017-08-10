@@ -4,15 +4,12 @@ var interchanges_model = require('../models/interchanges');
 const uuidv1 = require('uuid/v1');
 
 function add_boms(boms, parent_id) {
-    console.log(`Adding Bom To [${parent_id}]`)
-    if (boms.length > 0) {
-        for (key in boms) {
-            var child_id = boms[key].child.id,
-                quantity = boms[key].quantity;
-            bom_model.addBom(parent_id, child_id, quantity)
-
-        }
-    }
+    console.log(`Adding Bom To [${parent_id}]`);
+    boms.map(function (bom) {
+        var child_id = bom.child.id,
+            quantity = bom.quantity;
+        bom_model.addBom(parent_id, child_id, quantity)
+    })
 }
 
 
