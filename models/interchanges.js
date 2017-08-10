@@ -95,12 +95,16 @@ module.exports = {
     },
     leaveInterchangeGroup: function (id) {
         return findInterchangeHeaderByItemId(id).then(function (promise) {
-            return removeInterchange(dto_header_key(promise), id).then(function () {
+            var old_header_id = dto_header_key(promise);
+            return removeInterchange(old_header_id, id).then(function () {
                 var header_id = uuidv1();
                 return addInterchangeHeader(header_id).then(function (promise) {
                     return addInterchange(header_id, id);
                 })
             })
+        }, function (error) {
+          console.log(error);
+          return false;
         })
     }
 
