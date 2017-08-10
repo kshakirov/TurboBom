@@ -1,4 +1,4 @@
-var PartsModel = require('../models/part');
+var PartsModel = require('../../models/part');
 var product = {
     id: 1000000,
     part_number: 'A-1000-D',

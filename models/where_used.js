@@ -1,12 +1,12 @@
+var config = require('config');
+var dbConfig = config.get('TurboGraph.dbConfig');
 Database = require('arangojs').Database;
-var flatten = require('array-flatten')
-var db = new Database({url: 'http://127.0.0.1:8529'});
-db.useDatabase("Bom");
-db.useBasicAuth('root', 'servantes');
-
+var db = new Database({url: dbConfig.url});
+db.useDatabase(dbConfig.dbName);
+db.useBasicAuth(dbConfig.login, dbConfig.password);
 
 function _find_bom  (id) {
-    var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
+    var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
   FILTER p.edges[0].type == "direct"
   RETURN  {
         'partId' : p.vertices[1]._key,
@@ -24,7 +24,7 @@ function _find_bom  (id) {
 
 
 function _find_interchanges (id) {
-    var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH 'InterchangeGraph'
+    var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH '${dbConfig.graph}'
   FILTER p.edges[0].type == 'interchange'
   RETURN  {
         'partId' : p.vertices[2]._key,
@@ -66,12 +66,12 @@ function find_where_used(bids, result) {
                  return   find_where_used(n_bids, prev_result)
             }else {
                 //console.log(prev_result)
-                return prev_result;    
+                return prev_result;
             }
-            
+
         })
     })
-    
+
 }
 module.exports = {
     findWhereUsed: find_where_used

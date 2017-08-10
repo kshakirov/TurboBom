@@ -1,12 +1,15 @@
+var config = require('config');
+var dbConfig = config.get('TurboGraph.dbConfig');
 Database = require('arangojs').Database;
-var db = new Database({url: 'http://127.0.0.1:8529'});
-db.useDatabase("Bom");
-db.useBasicAuth('root', 'servantes');
-var edges_collection_name = 'bom_edges';
+var db = new Database({url: dbConfig.url});
+db.useDatabase(dbConfig.dbName);
+db.useBasicAuth(dbConfig.login, dbConfig.password);
+
+var edges_collection_name = dbConfig.bomEdgesCollection;
 
 module.exports = {
     findBom: function (id) {
-        var query = `FOR v, e, p IN 1..1 OUTBOUND 'parts/${id}' GRAPH 'BomGraph'
+        var query = `FOR v, e, p IN 1..1 OUTBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
   FILTER p.edges[0].type == "direct"
   RETURN {
     'parent' : {

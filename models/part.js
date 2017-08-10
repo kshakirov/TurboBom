@@ -1,8 +1,10 @@
+var config = require('config');
+var dbConfig = config.get('TurboGraph.dbConfig');
 Database = require('arangojs').Database;
-var db = new Database({url: 'http://127.0.0.1:8529'});
-db.useDatabase("Bom");
-db.useBasicAuth('root', 'servantes');
-var parts_collection_name = 'parts';
+var db = new Database({url: dbConfig.url});
+db.useDatabase(dbConfig.dbName);
+db.useBasicAuth(dbConfig.login, dbConfig.password);
+var parts_collection_name = dbConfig.partCollection;
 
 module.exports = {
     addPart: function (product) {

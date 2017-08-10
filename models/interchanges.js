@@ -1,11 +1,16 @@
+var config = require('config');
+var dbConfig = config.get('TurboGraph.dbConfig');
 Database = require('arangojs').Database;
-var db = new Database({url: 'http://127.0.0.1:8529'});
-db.useDatabase("Bom");
-db.useBasicAuth('root', 'servantes');
-var edges_collection_name = 'interchange_edges';
-var interchange_headers_collection_name = 'interchange_headers';
+var db = new Database({url: dbConfig.url});
+db.useDatabase(dbConfig.dbName);
+db.useBasicAuth(dbConfig.login, dbConfig.password);
+const uuidv1 = require('uuid/v1');
 
-function removeInterchange (header_id, item_id) {
+var edges_collection_name = dbConfig.interchangeEdgesCollection;
+var interchange_headers_collection_name = dbConfig.interchangeHeaderCollection;
+
+
+function removeInterchange(header_id, item_id) {
     var edges_collection = db.collection(edges_collection_name);
     var edge_key = 'header_' + header_id + '_' + item_id;
     return edges_collection.remove(edge_key);
@@ -25,8 +30,32 @@ function addInterchange(header_id, item_id) {
     );
 }
 
-function dto_header_key(promise, order) {
-    return promise[order][0].key.replace('header_','')
+
+function addInterchangeHeader(header_id) {
+    var headers_collection = db.collection(interchange_headers_collection_name);
+    var data = {
+        _key: 'header_' + header_id,
+        type: 'test',
+        header: header_id
+    }
+    return headers_collection.save(data);
+}
+
+function dto_header_key(promise) {
+    return promise[0].key.replace('header_', '')
+}
+
+
+function findInterchangeHeaderByItemId(id) {
+    var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
+          FILTER p.edges[0].type == "interchange"
+          RETURN  {
+                key: p.vertices[1]._key
+          }`;
+
+    return db.query(query).then(function (cursor) {
+        return cursor.all();
+    })
 }
 
 
@@ -46,41 +75,33 @@ module.exports = {
         })
     },
 
-    findInterchangeHeaderByItemId: function (id) {
-        var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
-          FILTER p.edges[0].type == "interchange"
-          RETURN  {
-                key: p.vertices[1]._key
-          }`;
-
-        return db.query(query).then(function (cursor) {
-            return cursor.all();
-        })
-    },
-
-
+    findInterchangeHeaderByItemId: findInterchangeHeaderByItemId,
     addInterchange: addInterchange,
     removeInterchange: removeInterchange,
-    addInterchangeHeader: function (header_id) {
-        var headers_collection = db.collection(interchange_headers_collection_name);
-        var data = {
-            _key: 'header_' + header_id,
-            type: 'test',
-            header: header_id
-        }
-        return headers_collection.save(data);
-    },
+    addInterchangeHeader: addInterchangeHeader,
+
+
     addInterchangeToGroup: function (in_item_id, out_item_id) {
         var find_actions = [
-            this.findInterchangeHeaderByItemId(in_item_id),
-            this.findInterchangeHeaderByItemId(out_item_id)];
+            findInterchangeHeaderByItemId(in_item_id),
+            findInterchangeHeaderByItemId(out_item_id)];
         return Promise.all(find_actions).then(function (promise) {
             var cd_actions = [
-                removeInterchange(dto_header_key(promise,1), out_item_id),
-                addInterchange(dto_header_key(promise,0), out_item_id)
+                removeInterchange(dto_header_key(promise[1]), out_item_id),
+                addInterchange(dto_header_key(promise[0]), out_item_id)
             ]
             return Promise.all(cd_actions);
         })
     },
+    leaveInterchangeGroup: function (id) {
+        return findInterchangeHeaderByItemId(id).then(function (promise) {
+            return removeInterchange(dto_header_key(promise), id).then(function () {
+                var header_id = uuidv1();
+                return addInterchangeHeader(header_id).then(function (promise) {
+                    return addInterchange(header_id, id);
+                })
+            })
+        })
+    }
 
 }
