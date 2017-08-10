@@ -5,7 +5,7 @@ describe('Interchange', function() {
     describe('#findInterchange()', function() {
         it('should return  8 when the value is not present', function(done) {
             InterchangesModel.findInterchange(8).then(function (promise) {
-                assert.equal(11, promise.length);
+                assert.equal(10, promise.length);
                 done()
             })
 
@@ -38,9 +38,22 @@ describe('Interchange', function() {
                 InterchangesModel.findInterchangeHeaderByItemId(3).then(function (header) {
                     console.log(header[0].key)
                     assert.notEqual('header_11', header[0].key);
-                   done()
+                   done();
                 })
             })
         });
     });
+
+    describe('#mergeItemGroupToAnotherItemGroup()', function() {
+        it('should return  true', function(done) {
+            InterchangesModel.mergeItemGroupToAnotherItemGroup(19,4).then(function (promise) {
+                InterchangesModel.findInterchange(19).then(function (interchanges) {
+                    console.log(interchanges.length)
+                    assert.equal(3, interchanges.length);
+                    done();
+                })
+            })
+        });
+    });
+
 });

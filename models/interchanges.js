@@ -59,6 +59,20 @@ function findInterchangeHeaderByItemId(id) {
 }
 
 
+function addInterchangeToGroup(in_item_id, out_item_id) {
+    var find_actions = [
+        findInterchangeHeaderByItemId(in_item_id),
+        findInterchangeHeaderByItemId(out_item_id)];
+    return Promise.all(find_actions).then(function (promise) {
+        var cd_actions = [
+            removeInterchange(dto_header_key(promise[1]), out_item_id),
+            addInterchange(dto_header_key(promise[0]), out_item_id)
+        ]
+        return Promise.all(cd_actions);
+    })
+}
+
+
 module.exports = {
     findInterchange: function (id) {
         var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH 'BomGraph'
@@ -103,8 +117,19 @@ module.exports = {
                 })
             })
         }, function (error) {
-          console.log(error);
-          return false;
+            console.log(error);
+            return false;
+        })
+    },
+
+    mergeItemGroupToAnotherItemGroup: function (id, picked_id) {
+        return this.findInterchange(picked_id).then(function (interchanges) {
+            var tuples = interchanges.map(function (interchange) {
+                console.log(interchange.id);
+                addInterchangeToGroup(id, interchange.id)
+            })
+            tuples.push(addInterchangeToGroup(id, picked_id));
+            return Promise.all(tuples)
         })
     }
 
