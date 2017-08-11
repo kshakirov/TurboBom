@@ -1,9 +1,19 @@
 var InterchangesModel = require('../../models/interchanges');
+var DbTools = require('../../api/db_tools');
 
 var assert = require('assert');
-describe('Interchange', function() {
-    describe('#findInterchange()', function() {
-        it('should return  8 when the value is not present', function(done) {
+
+
+describe('Interchange', function () {
+    before(function (done) {
+        DbTools.truncateTestCollections().then(function () {
+            DbTools.populateTestCollections().then(function () {
+                done();
+            })        // runs before all tests in this block
+        })
+    });
+    describe('#findInterchange()', function () {
+        it('should return  8 when the value is not present', function (done) {
             InterchangesModel.findInterchange(8).then(function (promise) {
                 assert.equal(10, promise.length);
                 done()
@@ -11,8 +21,8 @@ describe('Interchange', function() {
 
         });
     });
-    describe('#findInterchangeHeader()', function() {
-        it('should return   [header_12]  the key of  header', function(done) {
+    describe('#findInterchangeHeader()', function () {
+        it('should return   [header_12]  the key of  header', function (done) {
             InterchangesModel.findInterchangeHeaderByItemId(8).then(function (promise) {
                 assert.equal('header_12', promise[0].key);
                 done()
@@ -54,6 +64,10 @@ describe('Interchange', function() {
                 })
             })
         });
+    });
+
+    after(function () {
+        console.log("Test Finished")
     });
 
 });

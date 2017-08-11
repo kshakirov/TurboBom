@@ -8,8 +8,8 @@ db.useBasicAuth(dbConfig.login, dbConfig.password);
 var edges_collection_name = dbConfig.bomEdgesCollection;
 
 module.exports = {
-    findBom: function (id) {
-        var query = `FOR v, e, p IN 1..1 OUTBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
+    findBom: function (id, depth=1) {
+        var query = `FOR v, e, p IN 1..${depth} OUTBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
   FILTER p.edges[0].type == "direct"
   RETURN {
     'parent' : {
