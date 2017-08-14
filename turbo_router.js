@@ -28,7 +28,7 @@ router.put('/bom/:parent_id/descendant/:descendant_id', function (req, res) {
     bom.addBom(req, res);
 })
 
-router.delete('/interchange/:header_id/item/:item_id', function (req, res) {
+router.delete('/interchanges/:header_id/item/:item_id', function (req, res) {
     interchange.removeInterchange(req, res);
 })
 
@@ -61,16 +61,17 @@ router.delete('/part/:id', function (req, res) {
     part.removePart(req, res);
 })
 
-router.put('/interchange/:header_id/item/:item_id', function (req, res) {
-    interchange.addInterchange(req, res);
-})
 
 router.get('/part/:id/ancestors', function (req, res) {
     whereUsed.findWhereUsed(req, res);
 })
 
-router.get('/interchanges/:id', function (req, res) {
+router.get('/part/:id/interchanges', function (req, res) {
     interchange.findInterchange(req, res);
+})
+
+router.get('/interchanges/:header_id', function (req, res) {
+    interchange.findInterchangesByHeaderId(req, res);
 })
 
 module.exports = router

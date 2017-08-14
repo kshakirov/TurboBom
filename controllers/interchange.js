@@ -23,6 +23,24 @@ function findInterchange(req, res) {
     );
 }
 
+
+function findInterchangesByHeaderId(req, res) {
+    interchange_model.findInterchangesByHeaderId(req.params.header_id).then(
+        function (interchanges) {
+            var response = {
+                Header_Id: req.params.header_id,
+                parts: interchanges.map(function (interchange) {
+                    return interchange.key;
+                })
+            }
+            res.json(response);
+        },
+        function (err) {
+            res.send("There was a problem adding the information to the database. " + err);
+        }
+    );
+}
+
 function removeInterchange(req, res) {
     var response = {
         success: true
@@ -78,7 +96,6 @@ function addInterchange(req, res) {
 }
 
 
-
 function leaveIntechangeGroup(req, res) {
     var response = {
         success: true
@@ -121,7 +138,7 @@ function mergeIterchangeToAnotherItemGroup(req, res) {
         req.params.picked_id).then(function (promise) {
         return interchange_model.findInterchangeHeaderByItemId(req.params.item_id).then(
             function (promise) {
-                response.header_id =dto_header_key(promise[0]);
+                response.header_id = dto_header_key(promise[0]);
                 res.json(response);
             },
             function (err) {
@@ -144,4 +161,5 @@ exports.addInterchange = addInterchange;
 exports.addInterchangeToGroup = addInterchangeToGroup;
 exports.createInterchange = createInterchange;
 exports.leaveIntechangeGroup = leaveIntechangeGroup;
+exports.findInterchangesByHeaderId = findInterchangesByHeaderId;
 exports.mergeIterchangeToAnotherItemGroup = mergeIterchangeToAnotherItemGroup;

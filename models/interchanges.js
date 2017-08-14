@@ -134,6 +134,18 @@ module.exports = {
             tuples.push(addInterchangeToGroup(id, picked_id));
             return Promise.all(tuples)
         })
+    },
+
+    findInterchangesByHeaderId: function (header_id) {
+        var query = `FOR v, e, p IN 1..1 OUTBOUND 'interchange_headers/header_${header_id}' GRAPH 'BomGraph'
+          //FILTER p.edges[0].type == "interchange"
+          RETURN  {
+                key: p.vertices[1]._key
+          }`;
+
+        return db.query(query).then(function (cursor) {
+            return cursor.all();
+        })
     }
 
 }

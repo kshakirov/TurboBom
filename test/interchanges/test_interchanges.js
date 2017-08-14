@@ -31,6 +31,18 @@ describe('Interchange', function () {
         });
     });
 
+
+    describe('#findInterchangesByHeaderId()', function () {
+        it('should return   5 results', function (done) {
+            InterchangesModel.findInterchangesByHeaderId(11).then(function (promise) {
+                assert.equal( 5, promise.length);
+                done()
+            })
+
+        });
+    });
+
+
     describe('#addInterchangeToGroup()', function() {
         it('should return  true', function(done) {
             InterchangesModel.addInterchangeToGroup(7,2).then(function (promise) {
