@@ -35,6 +35,7 @@ function addPart(req, res) {
     var product = _create_product(req.body);
     return part_model.addPart(product).then(
         function (result) {
+            res.json(response);
         },
         function (err) {
             response.success = false;
