@@ -3,7 +3,7 @@ const uuidv1 = require('uuid/v1');
 
 
 function dto_header_key(promise) {
-    return promise.key.replace('header_', '')
+    return parseInt(promise.key)
 }
 
 function findInterchange(req, res) {
@@ -13,7 +13,7 @@ function findInterchange(req, res) {
     Promise.all(actions).then(
         function (promises) {
             var response = {
-                Header_Id: promises[0][0].key,
+                Header_Id: dto_header_key(promises[0][0]),
                 parts: promises[1].map(function (interchange) {
                     return interchange.id;
                 })
@@ -31,7 +31,7 @@ function findInterchangesByHeaderId(req, res) {
     interchange_model.findInterchangesByHeaderId(req.params.header_id).then(
         function (interchanges) {
             var response = {
-                Header_Id: req.params.header_id,
+                Header_Id: parseInt(req.params.header_id),
                 parts: interchanges.map(function (interchange) {
                     return interchange.key;
                 })
@@ -69,7 +69,7 @@ function createInterchange(req, res) {
         var new_header_id = promise;
         return interchange_model.addInterchange(new_header_id, req.params.item_id).then(
             function (result) {
-                response.Header_Id = new_header_id;
+                response.Header_Id = parseInt(new_header_id);
                 res.json(response);
             },
             function (err) {
@@ -104,7 +104,7 @@ function leaveIntechangeGroup(req, res) {
         success: true
     }
     return interchange_model.leaveInterchangeGroup(req.params.item_id).then(function (promise) {
-            response.Header_Id = promise;
+            response.Header_Id = parseInt(promise);
             res.json(response);
         },
         function (err) {
@@ -127,7 +127,7 @@ function addInterchangeToGroup(req, res) {
         req.params.out_item_id));
     Promise.all(actions).then(
         function (promises) {
-            response.Header_Id = promises[0][0].key;
+            response.Header_Id = parseInt(promises[0][0].key);
             res.json(response);
         },
         function (err) {
