@@ -115,22 +115,24 @@ function leaveIntechangeGroup(req, res) {
 function addInterchangeToGroup(req, res) {
     var response = {success: true};
     var actions = [];
-    actions.push(interchange_model.findInterchangeHeaderByItemId(req.params.in_item_id));
-    actions.push(interchange_model.addInterchangeToGroup(req.params.in_item_id,
-        req.params.out_item_id));
-    actions.push(interchange_model.findInterchangeHeaderByItemId(req.params.out_item_id));
-    Promise.all(actions).then(
-        function (promises) {
-            response.newHeaderId = parseInt(promises[0][0].key);
-            response.oldHeaderId = parseInt(promises[2][0].key);
-            res.json(response);
-        },
-        function (err) {
-            response.success = false;
-            response.msg = err.message;
-            res.json(response);
-        }
-    );
+    return interchange_model.findInterchangeHeaderByItemId(req.params.out_item_id).then(function (header_promise) {
+        var old_header_id = header_promise[0].key;
+        actions.push(interchange_model.findInterchangeHeaderByItemId(req.params.in_item_id));
+        actions.push(interchange_model.addInterchangeToGroup(req.params.in_item_id,
+            req.params.out_item_id));
+        Promise.all(actions).then(
+            function (promises) {
+                response.newHeaderId = parseInt(promises[0][0].key);
+                response.oldHeaderId = parseInt(old_header_id);
+                res.json(response);
+            },
+            function (err) {
+                response.success = false;
+                response.msg = err.message;
+                res.json(response);
+            }
+        );
+    })
 }
 
 
