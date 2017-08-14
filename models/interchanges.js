@@ -92,10 +92,7 @@ module.exports = {
         var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH 'BomGraph'
         FILTER p.edges[0].type == 'interchange'
         RETURN  {
-                "id" : p.vertices[2]._key,
-                "manufacturerPartNumber" : p.vertices[2].part_number,
-                "partType" : { "name" : p.vertices[2].part_type},
-                "manufacturer" : {"name" : "not yet name"}
+                "id" : p.vertices[2]._key
         }`;
 
         return db.query(query).then(function (cursor) {

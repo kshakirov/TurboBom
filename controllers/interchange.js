@@ -7,11 +7,14 @@ function dto_header_key(promise) {
 }
 
 function findInterchange(req, res) {
-    interchange_model.findInterchange(req.params.id).then(
-        function (interchanges) {
+    var actions = [];
+    actions.push(interchange_model.findInterchangeHeaderByItemId(req.params.id));
+    actions.push(interchange_model.findInterchange(req.params.id));
+    Promise.all(actions).then(
+        function (promises) {
             var response = {
-                Header_Id: req.params.id,
-                parts: interchanges.map(function (interchange) {
+                Header_Id: promises[0][0].key,
+                parts: promises[1].map(function (interchange) {
                     return interchange.id;
                 })
             }
@@ -66,7 +69,7 @@ function createInterchange(req, res) {
         var new_header_id = promise;
         return interchange_model.addInterchange(new_header_id, req.params.item_id).then(
             function (result) {
-                response.header_id = new_header_id;
+                response.Header_Id = new_header_id;
                 res.json(response);
             },
             function (err) {
@@ -101,7 +104,7 @@ function leaveIntechangeGroup(req, res) {
         success: true
     }
     return interchange_model.leaveInterchangeGroup(req.params.item_id).then(function (promise) {
-            response.header_id = promise;
+            response.Header_Id = promise;
             res.json(response);
         },
         function (err) {
@@ -117,8 +120,14 @@ function addInterchangeToGroup(req, res) {
     var response = {
         success: true
     }
-    interchange_model.addInterchangeToGroup(req.params.in_item_id, req.params.out_item_id).then(
-        function (result) {
+
+    var actions = [];
+    actions.push(interchange_model.findInterchangeHeaderByItemId(req.params.in_item_id));
+    actions.push(interchange_model.addInterchangeToGroup(req.params.in_item_id,
+        req.params.out_item_id));
+    Promise.all(actions).then(
+        function (promises) {
+            response.Header_Id = promises[0][0].key;
             res.json(response);
         },
         function (err) {
@@ -138,18 +147,9 @@ function mergeIterchangeToAnotherItemGroup(req, res) {
         req.params.picked_id).then(function (promise) {
         return interchange_model.findInterchangeHeaderByItemId(req.params.item_id).then(
             function (promise) {
-                response.header_id = dto_header_key(promise[0]);
-                res.json(response);
-            },
-            function (err) {
-                response.success = false;
-                response.msg = err.message;
+                response.Header_Id = dto_header_key(promise[0]);
                 res.json(response);
             })
-        res.json(response);
-    }, function (err) {
-        response.success = false;
-        response.msg = err.message;
         res.json(response);
     })
 }
