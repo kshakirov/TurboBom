@@ -77,6 +77,8 @@ function addInterchange(req, res) {
     );
 }
 
+
+
 function leaveIntechangeGroup(req, res) {
     var response = {
         success: true
@@ -93,6 +95,22 @@ function leaveIntechangeGroup(req, res) {
     )
 }
 
+
+function addInterchangeToGroup(req, res) {
+    var response = {
+        success: true
+    }
+    interchange_model.addInterchangeToGroup(req.params.in_item_id, req.params.out_item_id).then(
+        function (result) {
+            res.json(response);
+        },
+        function (err) {
+            response.success = false;
+            response.msg = err.message;
+            res.json(response);
+        }
+    );
+}
 
 
 function mergeIterchangeToAnotherItemGroup(req, res) {
@@ -123,6 +141,7 @@ function mergeIterchangeToAnotherItemGroup(req, res) {
 exports.findInterchange = findInterchange;
 exports.removeInterchange = removeInterchange;
 exports.addInterchange = addInterchange;
+exports.addInterchangeToGroup = addInterchangeToGroup;
 exports.createInterchange = createInterchange;
 exports.leaveIntechangeGroup = leaveIntechangeGroup;
 exports.mergeIterchangeToAnotherItemGroup = mergeIterchangeToAnotherItemGroup;

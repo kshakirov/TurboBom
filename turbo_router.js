@@ -39,8 +39,13 @@ router.put('/interchanges/:item_id/leave_group', function (req, res) {
     interchange.leaveIntechangeGroup(req, res);
 })
 
-router.put('/interchanges/:item_id/merge_group/:picked_id', function (req, res) {
+router.put('/interchanges/:item_id/merge_group/:picked_id/all', function (req, res) {
     interchange.mergeIterchangeToAnotherItemGroup(req, res);
+})
+
+
+router.put('/interchanges/:in_item_id/merge_group/:out_item_id', function (req, res) {
+    interchange.addInterchangeToGroup(req, res);
 })
 
 
