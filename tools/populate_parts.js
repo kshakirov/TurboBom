@@ -6,7 +6,7 @@ function add_part(part) {
     part_model.addPart(part)
 }
 
-var data = fs.readFileSync('../metadata_arangodb_interchanges.json');
+var data = fs.readFileSync('metadata_arangodb_interchanges.json');
 parts = JSON.parse(data);
 parts.map(function (p) {
     var part = {

@@ -2,7 +2,7 @@
     "TurboGraph":{
         "dbConfig":{
             "url": "http://127.0.0.1:8529",
-            "dbName": "BomStaging",
+            "dbName": "Bom",
             "login": "root",
             "password": "servantes",
             "partCollection": "parts",

@@ -43,7 +43,7 @@ function add_interchanges(interchanges, part_id) {
     }
 }
 
-var data = fs.readFileSync('../metadata_arangodb_interchanges.json');
+var data = fs.readFileSync('metadata_arangodb_interchanges.json');
 parts = JSON.parse(data);
 
 parts.map(function (part) {

@@ -32,6 +32,17 @@ router.delete('/interchange/:header_id/item/:item_id', function (req, res) {
     interchange.removeInterchange(req, res);
 })
 
+router.post('/interchanges/:item_id', function (req, res) {
+    interchange.createInterchange(req, res);
+})
+router.put('/interchanges/:item_id/leave_group', function (req, res) {
+    interchange.leaveIntechangeGroup(req, res);
+})
+
+router.put('/interchanges/:item_id/merge_group/:picked_id', function (req, res) {
+    interchange.mergeIterchangeToAnotherItemGroup(req, res);
+})
+
 
 router.post('/part/', function (req, res) {
     part.addPart(req, res);
@@ -53,7 +64,7 @@ router.get('/part/:id/ancestors', function (req, res) {
     whereUsed.findWhereUsed(req, res);
 })
 
-router.get('/interchange/:id', function (req, res) {
+router.get('/interchanges/:id', function (req, res) {
     interchange.findInterchange(req, res);
 })
 

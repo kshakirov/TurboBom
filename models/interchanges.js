@@ -95,6 +95,7 @@ module.exports = {
     addInterchangeHeader: addInterchangeHeader,
 
 
+
     addInterchangeToGroup: function (in_item_id, out_item_id) {
         var find_actions = [
             findInterchangeHeaderByItemId(in_item_id),
@@ -113,7 +114,9 @@ module.exports = {
             return removeInterchange(old_header_id, id).then(function () {
                 var header_id = uuidv1();
                 return addInterchangeHeader(header_id).then(function (promise) {
-                    return addInterchange(header_id, id);
+                    return addInterchange(header_id, id).then(function (promise) {
+                        return header_id;
+                    });
                 })
             })
         }, function (error) {

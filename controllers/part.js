@@ -1,6 +1,4 @@
 var part_model = require('../models/part')
-var interchange_model = require('../models/interchanges');
-const uuidv1 = require('uuid/v1');
 
 function _create_product(body) {
     return {
@@ -35,18 +33,8 @@ function addPart(req, res) {
         success: true,
     }
     var product = _create_product(req.body);
-    part_model.addPart(product).then(
+    return part_model.addPart(product).then(
         function (result) {
-            var header_id = uuidv1();
-            var item_id = req.body.id;
-            interchange_model.addInterchangeHeader(header_id).then(function (promise) {
-                interchange_model.addInterchange(header_id, item_id).then(function () {
-                    response.id = item_id;
-                    res.json(response);
-                })
-
-            })
-
         },
         function (err) {
             response.success = false;
