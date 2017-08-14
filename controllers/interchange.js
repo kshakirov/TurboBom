@@ -10,7 +10,7 @@ function findInterchange(req, res) {
     interchange_model.findInterchange(req.params.id).then(
         function (interchanges) {
             var response = {
-                id: req.params.id,
+                Header_Id: req.params.id,
                 parts: interchanges.map(function (interchange) {
                     return interchange.id;
                 })
@@ -62,11 +62,11 @@ function createInterchange(req, res) {
     var response = {
         success: true
     }
-    var new_header = uuidv1();
-    return interchange_model.addInterchangeHeader(new_header).then(function () {
-        return interchange_model.addInterchange(new_header, req.item_id).then(
+    return interchange_model.createInterchangeHeader().then(function (promise) {
+        var new_header_id = promise;
+        return interchange_model.addInterchange(new_header_id, req.params.item_id).then(
             function (result) {
-                response.header_id = new_header;
+                response.header_id = new_header_id;
                 res.json(response);
             },
             function (err) {

@@ -12,7 +12,7 @@ var interchange_headers_collection_name = dbConfig.interchangeHeaderCollection;
 
 function removeInterchange(header_id, item_id) {
     var edges_collection = db.collection(edges_collection_name);
-    var edge_key = 'header_' + header_id + '_' + item_id;
+    var edge_key = header_id.toString() + '_' + item_id.toString();
     return edges_collection.remove(edge_key);
 }
 
@@ -20,9 +20,9 @@ function removeInterchange(header_id, item_id) {
 function addInterchange(header_id, item_id) {
     var edges_collection = db.collection(edges_collection_name);
     var data = {
-        _key: 'header_' + header_id + '_' + item_id,
+        _key: header_id.toString() + '_' + item_id.toString(),
         type: 'interchange',
-        _from: 'interchange_headers/header_' + header_id,
+        _from: 'interchange_headers/' + header_id,
         _to: "parts/" + item_id
     }
     return edges_collection.save(
@@ -34,15 +34,29 @@ function addInterchange(header_id, item_id) {
 function addInterchangeHeader(header_id) {
     var headers_collection = db.collection(interchange_headers_collection_name);
     var data = {
-        _key: 'header_' + header_id,
-        type: 'test',
+        _key: header_id.toString(),
+        type: 'Populated',
         header: header_id
     }
     return headers_collection.save(data);
 }
 
+
+
+function createInterchangeHeader() {
+    var headers_collection = db.collection(interchange_headers_collection_name);
+    var data = {
+        type: 'Created'
+    }
+    return headers_collection.save(data).then(function (promise) {
+        return promise._key;
+    }, function (error) {
+
+    });
+}
+
 function dto_header_key(promise) {
-    return promise[0].key.replace('header_', '')
+    return promise[0].key;
 }
 
 
@@ -93,6 +107,7 @@ module.exports = {
     addInterchange: addInterchange,
     removeInterchange: removeInterchange,
     addInterchangeHeader: addInterchangeHeader,
+    createInterchangeHeader: createInterchangeHeader,
 
 
 
@@ -112,8 +127,8 @@ module.exports = {
         return findInterchangeHeaderByItemId(id).then(function (promise) {
             var old_header_id = dto_header_key(promise);
             return removeInterchange(old_header_id, id).then(function () {
-                var header_id = uuidv1();
-                return addInterchangeHeader(header_id).then(function (promise) {
+                return createInterchangeHeader().then(function (header_id) {
+                    var hh = header_id;
                     return addInterchange(header_id, id).then(function (promise) {
                         return header_id;
                     });
@@ -137,7 +152,7 @@ module.exports = {
     },
 
     findInterchangesByHeaderId: function (header_id) {
-        var query = `FOR v, e, p IN 1..1 OUTBOUND 'interchange_headers/header_${header_id}' GRAPH 'BomGraph'
+        var query = `FOR v, e, p IN 1..1 OUTBOUND 'interchange_headers/${header_id}' GRAPH 'BomGraph'
           //FILTER p.edges[0].type == "interchange"
           RETURN  {
                 key: p.vertices[1]._key
