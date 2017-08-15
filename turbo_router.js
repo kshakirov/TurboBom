@@ -14,17 +14,17 @@ router.use(function timeLog(req, res, next) {
 })
 // define the home page route
 router.get('/', function (req, res) {
-    res.send('urls - /bom/byParentPart/:id,  /part/:id/ancestors')
+    res.send('Bill of materials, interchanges and where used service')
 })
 // define the about route
-router.get('/bom/byParentPart/:id', function (req, res) {
+router.get('/parts/:id/boms', function (req, res) {
     bom.findBom(req, res);
 })
 
-router.delete('/bom/:parent_id/descendant/:descendant_id', function (req, res) {
+router.delete('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
     bom.removeBom(req, res);
 })
-router.put('/bom/:parent_id/descendant/:descendant_id', function (req, res) {
+router.put('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
     bom.addBom(req, res);
 })
 
@@ -67,7 +67,7 @@ router.delete('/parts/:id', function (req, res) {
 })
 
 
-router.get('/part/:id/ancestors', function (req, res) {
+router.get('/parts/:id/ancestors', function (req, res) {
     whereUsed.findWhereUsed(req, res);
 })
 

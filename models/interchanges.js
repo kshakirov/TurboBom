@@ -35,7 +35,7 @@ function addInterchangeHeader(header_id) {
     var headers_collection = db.collection(interchange_headers_collection_name);
     var data = {
         _key: header_id.toString(),
-        type: 'Populated',
+        type: 'header',
         header: header_id
     }
     return headers_collection.save(data);
