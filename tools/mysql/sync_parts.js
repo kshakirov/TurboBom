@@ -10,15 +10,23 @@ var parts;
 
 
 function cmp_manufcaturer(m_part, g_part, manufacturers) {
-    var m_manfr = manufacturers[m_part.manfr_id - 1].name;
-    var g_manfr = g_part.manufacturer;
-    return m_manfr == g_manfr
+    if(manufacturers[m_part.manfr_id - 1]) {
+        var m_manfr = manufacturers[m_part.manfr_id - 1].name;
+        var g_manfr = g_part.manufacturer;
+        return m_manfr == g_manfr
+    }else {
+        return true;
+    }
 }
 
 function cmp_part_type(m_part, g_part, part_types) {
-    var m_part_type = part_types[m_part.part_type_id - 1].name;
-    var g_part_type = g_part.partType;
-    return m_part_type == g_part_type
+    if(part_types[m_part.part_type_id - 1]) {
+        var m_part_type = part_types[m_part.part_type_id - 1].name;
+        var g_part_type = g_part.partType;
+        return m_part_type == g_part_type
+    }else{
+        return true
+    }
 }
 
 function cmp_part_number(m_part, g_part) {
@@ -63,7 +71,7 @@ mysql.createConnection({
         part_model.getPart(part.id.toString()).then(function (g_part) {
             var m_part = part;
             var match = true;
-            console.log(`graph part  [${g_part._key}] => mysql part [${m_part.id}]`);
+            //console.log(`Compared Mysql part [${m_part.id}]`);
             if (!cmp_manufcaturer(m_part, g_part, manufacturers)){
                 console.log("Manufacturer Does Not Match");
                 match=false;
@@ -80,6 +88,8 @@ mysql.createConnection({
             if(!match){
                 part_model.updatePart(m_part.id.toString(), _create_graph_part_body(m_part, manufacturers, part_types) )
             }
+        }, function (error) {
+            console.log(`Cannot Find in GrapDb  Part [${part.id}]`)
         })
     })
 })
