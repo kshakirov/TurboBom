@@ -26,5 +26,10 @@ module.exports = {
         return parts_collection.update( id.toString(), product );
     },
 
+    getPart: function (id) {
+        var parts_collection = db.collection(parts_collection_name);
+        return parts_collection.document(id);
+    }
+
 
 }

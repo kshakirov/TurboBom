@@ -12,7 +12,8 @@ parts.map(function (p) {
     var part = {
         manufacturer: p.manufacturer.name,
         description: p.description,
-        part_type: p.part_type.name,
+        partType: p.part_type.name,
+        partNumber: p.manfr_part_num,
         name: p.name,
         _key: p.id.toString()
     };

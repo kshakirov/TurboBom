@@ -11,5 +11,11 @@
             "interchangeHeaderCollection" : "interchange_headers",
             "graph": "BomGraph"
         }
+    },
+    "Mysql":{
+        "host": "192.168.42.11",
+        "user": "vagrant",
+        "password": "vagrant",
+        "database": "metadata"
     }
 }
