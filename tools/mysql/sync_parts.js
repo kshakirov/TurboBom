@@ -43,6 +43,7 @@ function _create_graph_part_body(m_part, manufacturers, part_types) {
         partType: part_types[m_part.part_type_id - 1].name,
         partNumber: m_part.manfr_part_num,
         name: m_part.name,
+        partId: m_part.id
     };
     return part_body
 }

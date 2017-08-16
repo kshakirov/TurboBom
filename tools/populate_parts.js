@@ -15,6 +15,7 @@ parts.map(function (p) {
         partType: p.part_type.name,
         partNumber: p.manfr_part_num,
         name: p.name,
+        partId: p.id,
         _key: p.id.toString()
     };
     add_part(part);
