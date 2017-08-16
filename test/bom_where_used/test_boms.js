@@ -33,7 +33,7 @@ describe('Bom', function () {
     describe('#findWhereUsed', function () {
         it('should create Boms', function (done) {
             WhereUsedModel.findWhereUsed(22, 40).then(function (promise) {
-                assert.equal(21, promise.length)
+                assert.equal(20, promise.length)
                 done()
             })
         });

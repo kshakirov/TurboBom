@@ -12,15 +12,11 @@ module.exports = {
         var query = `FOR v, e, p IN 1..${depth} OUTBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
   FILTER p.edges[0].type == "direct"
   RETURN {
-    'parent' : {
-        'id' : ${id}
-    },
-    'child' : {
-        'id' : p.vertices[1]._key,
-        "manufacturerPartNumber" : p.vertices[1].part_number,
-        "type" : p.vertices[1].part_type,
+        "partId" : p.vertices[1].partId,
+        "partNumber" : p.vertices[1].partNumber,
+        "partType" : p.vertices[1].partType,
         "name" : p.vertices[1].name
-    }
+    
   }
   `;
 
