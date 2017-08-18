@@ -21,9 +21,15 @@ router.get('/parts/:id/boms', function (req, res) {
     bom.findBom(req, res);
 })
 
+router.get('/parts/:id/boms/parents', function (req, res) {
+    bom.findBomAsChild(req, res);
+})
+
 router.delete('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
     bom.removeBom(req, res);
 })
+
+
 router.put('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
     bom.addBom(req, res);
 })

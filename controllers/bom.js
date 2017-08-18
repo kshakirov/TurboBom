@@ -47,6 +47,17 @@ function findBom (req, res) {
     );
 }
 
+function findBomAsChild (req, res) {
+    bom_model.findBomAsChild(req.params.id).then(
+        function (bom) {
+            res.json(bom);
+        },
+        function (err) {
+            res.send("There was a problem adding the information to the database. " + err);
+        }
+    );
+}
+
 
 function removeBom (req, res) {
     var response = {
@@ -82,6 +93,7 @@ function addBom (req, res) {
 
 
 exports.findBom = findBom
+exports.findBomAsChild = findBomAsChild
 exports.removeBom = removeBom
 exports.addBom = addBom
 

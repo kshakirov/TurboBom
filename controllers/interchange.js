@@ -29,9 +29,7 @@ function findInterchangesByHeaderId(req, res) {
         function (interchanges) {
             var response = {
                 headerId: parseInt(req.params.header_id),
-                parts: interchanges.map(function (interchange) {
-                    return interchange.key;
-                })
+                parts: interchanges
             }
             res.json(response);
         },

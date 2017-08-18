@@ -10,7 +10,7 @@ var edges_collection_name = dbConfig.bomEdgesCollection;
 module.exports = {
     findBom: function (id, depth=40) {
         var query = `for  p,e,v 
-        in 1..${depth} outbound 'parts/${id}' bom_edges, any interchange_edges
+        in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter !(e.type=='direct' && v.edges[-2].type =='interchange')
         
        return distinct {
@@ -50,5 +50,16 @@ module.exports = {
         var edges_collection = db.collection(edges_collection_name);
         var edge_key = parent_id + '_' + child_id;
         return edges_collection.remove(edge_key);
+    },
+
+    findBomAsChild: function (id) {
+        var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
+            FILTER p.edges[0].type == "direct"
+            RETURN v`;
+
+        return db.query(query).then(function (cursor) {
+            return cursor.all();
+        })
     }
+
 }
