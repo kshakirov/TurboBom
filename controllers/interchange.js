@@ -13,9 +13,7 @@ function findInterchange(req, res) {
         function (promises) {
             var response = {
                 headerId: dto_header_key(promises[0][0]),
-                parts: promises[1].map(function (interchange) {
-                    return interchange.id;
-                })
+                parts: promises[1]
             }
             res.json(response);
         },

@@ -64,7 +64,11 @@ function findInterchangeHeaderByItemId(id) {
     var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
           FILTER p.edges[0].type == "interchange"
           RETURN  {
-                key: p.vertices[1]._key
+                key: p.vertices[1]._key,
+                  partId: p._key,
+                  partType: p.partType,
+                  manufacturer: p.manufacturer,
+                  partNumber: p.partNumber
           }`;
 
     return db.query(query).then(function (cursor) {
@@ -91,9 +95,7 @@ module.exports = {
     findInterchange: function (id) {
         var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH 'BomGraph'
         FILTER p.edges[0].type == 'interchange'
-        RETURN  {
-                "id" : p.vertices[2]._key
-        }`;
+        RETURN v`;
 
         return db.query(query).then(function (cursor) {
             return cursor.all();

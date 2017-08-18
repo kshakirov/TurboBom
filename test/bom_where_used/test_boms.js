@@ -21,7 +21,7 @@ describe('Bom', function () {
             actions.push(BomModel.addBom(7, 22));
             Promise.all(actions).then(function (promises) {
                 BomModel.findBom(19, 4).then(function (boms) {
-                    assert.equal(4, boms.length)
+                    assert.equal(24, boms.length)
                     done()
                 })
             })
@@ -44,7 +44,7 @@ describe('Bom', function () {
         it('should create Boms', function (done) {
             BomModel.removeBom(19, 1).then(function (promises) {
                 BomModel.findBom(19, 4).then(function (boms) {
-                    assert.equal(1, boms.length)
+                    assert.equal(4, boms.length)
                     done()
                 })
             })
