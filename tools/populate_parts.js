@@ -10,9 +10,9 @@ var data = fs.readFileSync('metadata_arangodb_interchanges.json');
 parts = JSON.parse(data);
 parts.map(function (p) {
     var part = {
-        manufacturer: p.manufacturer.name,
+        manufacturer: p.manufacturer,
         description: p.description,
-        partType: p.part_type.name,
+        partType: p.part_type,
         partNumber: p.manfr_part_num,
         name: p.name,
         partId: p.id,

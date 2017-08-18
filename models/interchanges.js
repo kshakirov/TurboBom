@@ -153,9 +153,7 @@ module.exports = {
     findInterchangesByHeaderId: function (header_id) {
         var query = `FOR v, e, p IN 1..1 OUTBOUND 'interchange_headers/${header_id}' GRAPH 'BomGraph'
           //FILTER p.edges[0].type == "interchange"
-          RETURN  {
-                key: p.vertices[1]._key
-          }`;
+          RETURN  v`;
 
         return db.query(query).then(function (cursor) {
             return cursor.all();
