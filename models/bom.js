@@ -7,8 +7,20 @@ db.useBasicAuth(dbConfig.login, dbConfig.password);
 
 var edges_collection_name = dbConfig.bomEdgesCollection;
 
+
+function check_cyclic(parent_id, child_id) {
+    var query = `FOR v, e IN OUTBOUND SHORTEST_PATH '${dbConfig.partCollection}/${child_id}' TO '${dbConfig.partCollection}/${parent_id}' 
+    GRAPH 'BomGraph' 
+    RETURN [v.type]`;
+    return db.query(query).then(function (cursor) {
+        return cursor.all().then(function (promise) {
+            return promise.length > 0
+        })
+    })
+}
+
 module.exports = {
-    findBom: function (id, depth=40) {
+    findBom: function (id, depth = 40) {
         var query = `for  p,e,v 
         in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter !(e.type=='direct' && v.edges[-2].type =='interchange')
@@ -27,12 +39,13 @@ module.exports = {
 }`;
 
         return db.query(query).then(function (cursor) {
-            console.log("done");
             return cursor.all();
         })
     },
 
-    addBom: function (parent_id, child_id, quantity=0) {
+    checkCyclic: check_cyclic,
+
+    addBom: function (parent_id, child_id, quantity = 0) {
         var edges_collection = db.collection(edges_collection_name);
         var data = {
             _key: parent_id + '_' + child_id,
@@ -40,10 +53,16 @@ module.exports = {
             quantity: quantity,
             _from: 'parts/' + parent_id,
             _to: "parts/" + child_id
-        }
-        return edges_collection.save(
-            data
-        );
+        };
+        return check_cyclic(parent_id, child_id).then(function (cyclic) {
+            if (cyclic) {
+                return Promise.reject({message: "Cyclic path"})
+            } else {
+                return edges_collection.save(
+                    data
+                );
+            }
+        })
     },
 
     removeBom: function (parent_id, child_id) {

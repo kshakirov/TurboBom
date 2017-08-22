@@ -52,6 +52,20 @@ describe('Bom', function () {
         });
     });
 
+    describe('#checkCyclic', function () {
+        it('should check whether adding a part makes sub graph cyclic', function (done) {
+            BomModel.addBom(7,1).then(function (promise) {
+                assert(false);
+                done()
+            }, function (error) {
+                assert.equal("Cyclic path", error.message);
+                done()
+            })
+
+        });
+    });
+
+
 
     after(function () {
         console.log("Test Finished")
