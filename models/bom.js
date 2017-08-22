@@ -52,6 +52,13 @@ module.exports = {
         return edges_collection.remove(edge_key);
     },
 
+
+    updateBom: function (parent_id, child_id, qty) {
+        var edges_collection = db.collection(edges_collection_name);
+        var edge_key = parent_id + '_' + child_id;
+        return edges_collection.update(edge_key, {quantity: qty})
+    },
+
     findBomAsChild: function (id) {
         var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
             FILTER p.edges[0].type == "direct"

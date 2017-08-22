@@ -4,9 +4,10 @@ var bom_model = require('../models/bom')
 
 
 
+
 function get_direct_desc(boms) {
     var dd = boms.filter(function (b) {
-        if(b.nodeType=='direct')
+        if (b.nodeType == 'direct')
             return b
     })
     return dd
@@ -15,7 +16,7 @@ function get_direct_desc(boms) {
 function get_interchanges(d_boms, boms) {
     var ib = d_boms.map(function (db) {
         db.interchanges = boms.filter(function (b) {
-            if(b.bomPartId==db.partId)
+            if (b.bomPartId == db.partId)
                 return b
         })
         return db
@@ -25,7 +26,7 @@ function get_interchanges(d_boms, boms) {
 
 function filter_boms(boms) {
     var filtered_boms = boms.filter(function (bom) {
-        if(bom.type!='header')
+        if (bom.type != 'header')
             return bom;
     })
     var direct_desc = get_direct_desc(filtered_boms);
@@ -33,9 +34,12 @@ function filter_boms(boms) {
     return filtered_boms;
 }
 
+function get_qty(body) {
+    return body.qty;
+}
 
 
-function findBom (req, res) {
+function findBom(req, res) {
     bom_model.findBom(req.params.id).then(
         function (bom) {
             var fb = filter_boms(bom)
@@ -47,7 +51,7 @@ function findBom (req, res) {
     );
 }
 
-function findBomAsChild (req, res) {
+function findBomAsChild(req, res) {
     bom_model.findBomAsChild(req.params.id).then(
         function (bom) {
             res.json(bom);
@@ -59,7 +63,7 @@ function findBomAsChild (req, res) {
 }
 
 
-function removeBom (req, res) {
+function removeBom(req, res) {
     var response = {
         success: true
     }
@@ -75,11 +79,12 @@ function removeBom (req, res) {
     );
 }
 
-function addBom (req, res) {
+function addBom(req, res) {
     var response = {
         success: true
-    }
-    bom_model.addBom(req.params.parent_id, req.params.descendant_id).then(
+    };
+    var qty = get_qty(req.body);
+    bom_model.addBom(req.params.parent_id, req.params.descendant_id, qty).then(
         function (result) {
             res.json(response);
         },
@@ -92,9 +97,28 @@ function addBom (req, res) {
 }
 
 
-exports.findBom = findBom
-exports.findBomAsChild = findBomAsChild
-exports.removeBom = removeBom
-exports.addBom = addBom
+function updateBom(req, res) {
+    var response = {
+        success: true
+    };
+    var qty = get_qty(req.body);
+    bom_model.updateBom(req.params.parent_id, req.params.descendant_id, qty).then(
+        function (result) {
+            res.json(response);
+        },
+        function (err) {
+            response.success = false;
+            response.msg = err.message;
+            res.json(response);
+        }
+    );
+}
+
+
+exports.findBom = findBom;
+exports.findBomAsChild = findBomAsChild;
+exports.removeBom = removeBom;
+exports.addBom = addBom;
+exports.updateBom = updateBom;
 
 

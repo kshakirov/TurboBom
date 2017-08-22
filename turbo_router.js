@@ -31,6 +31,11 @@ router.delete('/boms/:parent_id/descendant/:descendant_id', function (req, res) 
 
 
 router.put('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
+    bom.updateBom(req, res);
+})
+
+
+router.post('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
     bom.addBom(req, res);
 })
 
