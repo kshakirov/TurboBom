@@ -81,7 +81,10 @@ module.exports = {
     findBomAsChild: function (id) {
         var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
             FILTER p.edges[0].type == "direct"
-            RETURN v`;
+            RETURN {
+                vertice: v,
+                edge: e
+            }`;
 
         return db.query(query).then(function (cursor) {
             return cursor.all();

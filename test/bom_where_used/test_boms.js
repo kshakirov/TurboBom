@@ -30,6 +30,18 @@ describe('Bom', function () {
     });
 
 
+    describe('#findBomAsChild', function () {
+        it('should find Bom parent for the given part', function (done) {
+            BomModel.findBomAsChild(7).then(function (boms) {
+                assert.equal(1, boms.length);
+                assert.equal(1, boms[0].vertice._key);
+                assert.equal(0, boms[0].edge.quantity);
+                done()
+            })
+        });
+    });
+
+
     describe('#findWhereUsed', function () {
         it('should create Boms', function (done) {
             WhereUsedModel.findWhereUsed(22, 40).then(function (promise) {

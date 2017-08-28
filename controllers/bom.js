@@ -38,6 +38,14 @@ function get_qty(body) {
     return body.qty;
 }
 
+function merge_edges_vertices(response){
+    return response.map((r)=>{
+        let bom = r.vertice;
+        bom.qty = r.edge.quantity;
+        return bom
+    })
+}
+
 
 function findBom(req, res) {
     bom_model.findBom(req.params.id).then(
@@ -53,8 +61,8 @@ function findBom(req, res) {
 
 function findBomAsChild(req, res) {
     bom_model.findBomAsChild(req.params.id).then(
-        function (bom) {
-            res.json(bom);
+        function (response) {
+            res.json(merge_edges_vertices(response));
         },
         function (err) {
             res.send("There was a problem adding the information to the database. " + err);
