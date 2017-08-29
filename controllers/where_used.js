@@ -14,7 +14,6 @@ function findWhereUsed (req, res) {
             res.json(_filter_headers(where_used));
         },
         function (err) {
-            console.error('Something went wrong:', err);
             res.send("There was a problem adding the information to the database. " + err);
         }
     );

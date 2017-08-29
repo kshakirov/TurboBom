@@ -1,62 +1,65 @@
-var config = require('config');
-var dbConfig = config.get('TurboGraph.dbConfig');
-var range = require('range');
-var partModel = require('../models/part');
-var interchangeModel = require('../models/interchanges');
+let config = require('config');
+let dbConfig = config.get('TurboGraph.dbConfig');
+let range = require('range');
+let partModel = require('../models/part');
+let interchangeModel = require('../models/interchanges');
+let bomModel = require('../models/bom');
 Database = require('arangojs').Database;
-var db = new Database({url: dbConfig.url});
+let db = new Database({url: dbConfig.url});
 
 db.useDatabase(dbConfig.dbName);
 db.useBasicAuth(dbConfig.login, dbConfig.password);
 
 module.exports = {
     truncateTestCollections: function () {
-        var collectionNames = [dbConfig.partCollection,
-            dbConfig.interchangeHeaderCollection];
+        let collectionNames = [dbConfig.partCollection,
+            dbConfig.interchangeHeaderCollection,
+        dbConfig.altInterchangeHeaderCollection];
 
-        var edgesCollection = [dbConfig.bomEdgesCollection,
-            dbConfig.interchangeEdgesCollection];
+        let edgesCollection = [dbConfig.bomEdgesCollection,
+            dbConfig.interchangeEdgesCollection,
+            dbConfig.altInterchangeEdgesCollection];
 
-        var vertice_collections = collectionNames.map(function (name) {
+        let vertice_collections = collectionNames.map(function (name) {
             return db.collection(name);
-        })
+        });
 
-        var edge_collections = edgesCollection.map(function (name) {
+        let edge_collections = edgesCollection.map(function (name) {
             return db.edgeCollection(name);
-        })
+        });
 
-        var collections = vertice_collections.concat(edge_collections);
-        var actions = collections.map(function (collection) {
+        let collections = vertice_collections.concat(edge_collections);
+        let actions = collections.map(function (collection) {
             return collection.truncate();
-        })
+        });
         return Promise.all(actions);
     },
 
     populateTestCollections: function () {
-        var parts = range.range(1, 24);
-        var headers = [11,12,13,14,15,16,17];
+        let parts = range.range(1, 24);
+        let headers = [11,12,13,14,15,16,17];
         parts = parts.map(function (part) {
             return {
                 id: part,
                 _key: part.toString(),
                 type: 'test'
             }
-        })
-        var part_actions = parts.map(function (part) {
+        });
+        let part_actions = parts.map(function (part) {
             partModel.addPart(part);
-        })
+        });
         return Promise.all(part_actions).then(function (promise) {
 
-            var actions = headers.map(function (header) {
+            let actions = headers.map(function (header) {
                 return interchangeModel.addInterchangeHeader(header)
-            })
+            });
             actions = actions.concat(parts.slice(0, 5).map(function (p) {
                 return interchangeModel.addInterchange(11, p.id);
-            }))
+            }));
 
             actions = actions.concat(parts.slice(6, 17).map(function (p) {
                 interchangeModel.addInterchange(12, p.id);
-            }))
+            }));
 
             actions.push(interchangeModel.addInterchange(13, 19));
             actions.push(interchangeModel.addInterchange(14, 18));
@@ -67,5 +70,29 @@ module.exports = {
             return Promise.all(actions);
         })
 
-    }
-}
+    },
+
+   populateAltTestCollections: function () {
+       let parts = range.range(1, 11);
+       parts = parts.map(function (part) {
+           return {
+               id: part,
+               _key: part.toString(),
+               type: 'testAlternative'
+           }
+       });
+       let part_actions = parts.map(function (part) {
+           partModel.addPart(part);
+       });
+       return Promise.all(part_actions).then(function () {
+           let actions = [];
+           actions.push(bomModel.addBom(1,2,4));
+           actions.push(bomModel.addBom(1,3,2));
+           actions.push(bomModel.addBom(5,6,1));
+           actions.push(bomModel.addBom(5,7,2));
+           return Promise.all(actions);
+       })
+
+
+   }
+};

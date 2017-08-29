@@ -9,6 +9,8 @@
             "bomEdgesCollection": "bom_edges",
             "interchangeEdgesCollection" : "interchange_edges",
             "interchangeHeaderCollection" : "interchange_headers",
+            "altInterchangeEdgesCollection" : "alt_interchange_edges",
+            "altInterchangeHeaderCollection" : "alt_interchange_headers",
             "graph": "BomGraph"
         }
     },
