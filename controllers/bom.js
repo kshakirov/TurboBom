@@ -48,7 +48,10 @@ function merge_edges_vertices(response){
 
 
 function findBom(req, res) {
-    bom_model.findBom(req.params.id).then(
+
+    let depth = req.query.depth || 40,
+        distance = req.query.distance || 1;
+    bom_model.findBom(req.params.id, distance, depth).then(
         function (bom) {
             var fb = filter_boms(bom)
             res.json(fb);

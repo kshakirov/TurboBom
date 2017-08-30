@@ -38,10 +38,10 @@ function addAltBom(req, res) {
 function removeAltBom(req, res) {
     altBomModel.removeAlternativeBom(req.params.part_id, req.params.alt_header_id).then(() => {
         altBomModel.findGroupByHeader(req.params.alt_header_id).then((alt_boms)=>{
-            res.json({
+            res.json([{
                 altHeaderId: req.params.alt_header_id,
                 parts: alt_boms
-            });
+            }]);
         })
     }, (err) => {
         res.json({
@@ -53,10 +53,11 @@ function removeAltBom(req, res) {
 
 function findAltBom(req, res) {
     altBomModel.findAlternativeBom(req.params.parent_part_id, req.params.child_part_id).then((alt_boms) => {
-        let response = {
+        //TODO we'll have several groups in the future
+        let response = [{
             altHeaderId: _get_header_id(alt_boms),
             parts: _get_only_parts(alt_boms)
-        };
+        }];
         res.json(response)
     }, (err) => {
         res.send("There was a problem finding  the information in  the database. " + err);
