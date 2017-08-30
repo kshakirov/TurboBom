@@ -25,7 +25,7 @@ function addAltBom(req, res) {
     };
     altBomModel.addAlternativeBom(req.params.parent_part_id,
         req.params.child_part_id, req.params.part_id,
-        req.body.alt_header_id).then((promise) => {
+        req.body.altHeaderId).then((promise) => {
         response.altHeaderId = promise;
         res.json(response);
     }, (err) => {
