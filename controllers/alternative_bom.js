@@ -36,28 +36,35 @@ function addAltBom(req, res) {
 }
 
 function removeAltBom(req, res) {
+    let response = {
+        success: true
+    };
     altBomModel.removeAlternativeBom(req.params.part_id, req.params.alt_header_id).then(() => {
-        altBomModel.findGroupByHeader(req.params.alt_header_id).then((alt_boms)=>{
-            res.json([{
-                altHeaderId: req.params.alt_header_id,
-                parts: alt_boms
-            }]);
+        altBomModel.findGroupByHeader(req.params.alt_header_id).then((alt_boms) => {
+            response.groups = [
+                {
+                    altHeaderId: req.params.alt_header_id,
+                    parts: alt_boms
+                }
+            ];
+            res.json(response);
         })
     }, (err) => {
-        res.json({
-            success: false,
-            message: err.message
-        })
+        response.success = false;
+        response.message = err.message;
+        res.json(response)
     })
 }
 
 function findAltBom(req, res) {
     altBomModel.findAlternativeBom(req.params.parent_part_id, req.params.child_part_id).then((alt_boms) => {
         //TODO we'll have several groups in the future
-        let response = [{
-            altHeaderId: _get_header_id(alt_boms),
-            parts: _get_only_parts(alt_boms)
-        }];
+        let response = [
+            {
+                altHeaderId: _get_header_id(alt_boms),
+                parts: _get_only_parts(alt_boms)
+            }
+        ];
         res.json(response)
     }, (err) => {
         res.send("There was a problem finding  the information in  the database. " + err);
