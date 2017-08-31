@@ -13,7 +13,7 @@ function _get_header_id(alt_boms) {
 
 function _get_only_parts(alt_boms) {
     return alt_boms.filter((bom) => {
-        if (bom.type != 'alt_header')
+        if (bom.type !== 'alt_header')
             return bom
     })
 }
@@ -71,6 +71,36 @@ function findAltBom(req, res) {
     })
 }
 
+function addAltGroup(req, res) {
+    let response = {};
+    var alt_header_id = req.params.altHeaderId || null;
+    altBomModel.addAltInterchangeHeader(alt_header_id, req.params.parent_part_id,
+        req.params.child_part_id).then((alt_header) => {
+        response.altHeaderId = alt_header._key;
+        res.json(response)
+    }, (error) => {
+        response.success = false;
+        response.message = err.message;
+        res.json(response);
+    })
+}
+
+function removeAltGroup(req, res) {
+    let response = {
+        success: true
+    };
+    altBomModel.removeAltHeader(req.params.alt_header_id).then((data)=>{
+        response.groups = [];
+        res.json(response);
+    }, (error)=>{
+        response.success = false;
+        response.message = err.message;
+        res.json(response);
+    })
+}
+
 exports.addAltBom = addAltBom;
 exports.removeAltBom = removeAltBom;
 exports.findAltBom = findAltBom;
+exports.addAltGroup = addAltGroup;
+exports.removeAltGroup = removeAltGroup;

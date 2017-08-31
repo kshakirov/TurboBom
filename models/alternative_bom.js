@@ -9,12 +9,13 @@ let  alt_interchange_headers_collection_name = dbConfig.altInterchangeHeaderColl
 let  parts_collection_name = dbConfig.partCollection;
 
 
-function addAltInterchangeHeader(header_id, parent_id) {
+function addAltInterchangeHeader(header_id, parent_id, child_id=null) {
     let headers_collection = db.collection(alt_interchange_headers_collection_name);
     let data = {
         type: 'alt_header',
         header: header_id,
         parentId: parent_id,
+        childId: child_id,
         description: ""
     };
     if(header_id){
@@ -97,6 +98,10 @@ module.exports = {
         return db.query(query).then(function (cursor) {
             return cursor.all();
         })
+    },
+    removeAltHeader: function (alt_header_id) {
+        let headers_collection = db.collection(alt_interchange_headers_collection_name);
+        return headers_collection.remove(alt_header_id);
     }
 
-}
+};
