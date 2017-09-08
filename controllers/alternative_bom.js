@@ -61,12 +61,12 @@ function removeAltBom(req, res) {
 function findAltBom(req, res) {
     altBomModel.findAlternativeBom(req.params.parent_part_id, req.params.child_part_id).then((alt_boms) => {
         //TODO we'll have several groups in the future
-        let response = [
-            {
-                altHeaderId: _get_header_id(alt_boms),
-                parts: _get_only_parts(alt_boms)
-            }
-        ];
+        let response = [];
+        let group = {
+            altHeaderId: _get_header_id(alt_boms),
+            parts: _get_only_parts(alt_boms)
+        }
+        group.altHeaderId !=null ? response.push(group) : false;
         res.json(response)
     }, (err) => {
         res.send("There was a problem finding  the information in  the database. " + err);
