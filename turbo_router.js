@@ -99,6 +99,14 @@ router.post('/boms/:parent_part_id/children/:child_part_id/alternatives/parts/:p
     altBom.addAltBom(req, res);
 });
 
+router.post('/boms/:parent_part_id/children/:child_part_id/alternatives', function (req, res) {
+    altBom.addAltGroup(req, res);
+});
+
+router.delete('/boms/:parent_part_id/children/:child_part_id/alternatives/:alt_header_id', function (req, res) {
+    altBom.removeAltGroup(req, res);
+});
+
 
 
 module.exports = router;
