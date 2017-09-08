@@ -1,7 +1,7 @@
 let fs = require('fs');
 let altBomModel = require('../models/alternative_bom')
 
-let data = fs.readFileSync('metadata_arangodb_alt2.json');
+let data = fs.readFileSync('metadata_arangodb.json');
 let parts = JSON.parse(data);
 
 
