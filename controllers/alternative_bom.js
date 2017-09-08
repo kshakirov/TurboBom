@@ -5,8 +5,10 @@ function _get_header_id(alt_boms) {
         if (bom.type === 'alt_header')
             return bom
     });
-    if (header.length > 0)
-        return header[0].header;
+    if (header.length > 0) {
+        let header_id = header[0].header | header[0].altHeader;
+        return header_id
+    }
     else
         return null;
 }
@@ -72,27 +74,34 @@ function findAltBom(req, res) {
 }
 
 function addAltGroup(req, res) {
-    let response = {};
-    var alt_header_id = req.params.altHeaderId || null;
-    altBomModel.addAltInterchangeHeader(alt_header_id, req.params.parent_part_id,
-        req.params.child_part_id).then((alt_header) => {
-        response.altHeaderId = alt_header._key;
-        res.json(response)
-    }, (error) => {
-        response.success = false;
-        response.message = err.message;
-        res.json(response);
-    })
+    let response = {
+        success: true
+    };
+    let parent_id = req.params.parent_part_id,
+        child_id = req.params.child_part_id,
+        alt_header_id = req.params.altHeaderId || null;
+    altBomModel.addAltInterchangeHeader(alt_header_id, parent_id, child_id)
+        .then((alt_header) => {
+            alt_header_id = alt_header._key;
+            altBomModel.addPartrToAltGroup(parent_id, child_id, child_id, alt_header_id).then(() => {
+                response.altHeaderId = alt_header_id;
+                res.json(response)
+            })
+        }, (error) => {
+            response.success = false;
+            response.message = err.message;
+            res.json(response);
+        })
 }
 
 function removeAltGroup(req, res) {
     let response = {
         success: true
     };
-    altBomModel.removeAltHeader(req.params.alt_header_id).then((data)=>{
+    altBomModel.removeAltHeader(req.params.alt_header_id).then((data) => {
         response.groups = [];
         res.json(response);
-    }, (error)=>{
+    }, (error) => {
         response.success = false;
         response.message = err.message;
         res.json(response);

@@ -13,9 +13,9 @@ function addAltInterchangeHeader(header_id, parent_id, child_id=null) {
     let headers_collection = db.collection(alt_interchange_headers_collection_name);
     let data = {
         type: 'alt_header',
-        header: header_id,
-        parentId: parent_id,
-        childId: child_id,
+        header: parseInt(header_id),
+        parentId: parseInt(parent_id),
+        childId: parseInt(child_id),
         description: ""
     };
     if(header_id){
@@ -29,8 +29,8 @@ function addPartrToAltGroup(parent_id, child_id, part_id, header_id) {
     let edge = {
         _key: `${[header_id]}_${part_id}`,
         type: 'alt_bom',
-        parentId: parent_id,
-        childId: child_id,
+        parentId: parseInt(parent_id),
+        childId: parseInt(child_id),
         _from: `${alt_interchange_headers_collection_name}/${header_id}`,
         _to: `${parts_collection_name}/${part_id}`
 
@@ -43,7 +43,7 @@ function addPartrToAltGroup(parent_id, child_id, part_id, header_id) {
 module.exports = {
 
     addAltInterchangeHeader: addAltInterchangeHeader,
-    addPartToAltGrpou: addPartrToAltGroup,
+    addPartrToAltGroup: addPartrToAltGroup,
 
     findGroupByHeader: function (header_id) {
         let query = `FOR v, e, p IN 1..1 ANY '${alt_interchange_headers_collection_name}/${header_id}' GRAPH 'BomGraph'
@@ -93,14 +93,16 @@ module.exports = {
             partId: v.partId,
             name: v.name,
             type: v.type,
-            header: v.header
+            header: v.header,
+            altHeader: v._key
           }`;
         return db.query(query).then(function (cursor) {
             return cursor.all();
         })
     },
     removeAltHeader: function (alt_header_id) {
-        let headers_collection = db.collection(alt_interchange_headers_collection_name);
+        const graph = db.graph(dbConfig.graph);
+        const headers_collection = graph.vertexCollection(alt_interchange_headers_collection_name);
         return headers_collection.remove(alt_header_id);
     }
 
