@@ -1,25 +1,22 @@
-var fs = require('fs');
-var part_model = require('../models/part');
+let fs = require('fs');
+let part_model = require('../models/part');
 
 function add_part(part) {
-    console.log(`Adding Part [${part._key}]`)
+    console.log(`Adding Part [${part._key}]`);
     part_model.addPart(part)
 }
 
 var data = fs.readFileSync('metadata_arangodb.json');
 parts = JSON.parse(data);
 parts.map(function (p) {
-    var part = {
-        manufacturer: p.manufacturer,
-        description: p.description,
-        partType: p.part_type,
-        partNumber: p.manfr_part_num,
-        name: p.name,
+    let part = {
+        manufacturerId: p.manufacturer.id,
+        partTypeId: p.part_type.id,
         partId: p.id,
         _key: p.id.toString()
     };
     add_part(part);
-})
+});
 
 
 

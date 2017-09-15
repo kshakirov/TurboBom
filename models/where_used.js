@@ -11,10 +11,7 @@ function find_where_used(id, depth=40) {
         filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
        return distinct {
         partId: p._key,
-        partType: p.partType,
         type: p.type,
-        manufacturer: p.manufacturer,
-        partNumber: p.partNumber,
         relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
 }`;

@@ -31,9 +31,6 @@ module.exports = {
         nodeType: e.type,
         qty: e.quantity,
         type: p.type,
-        partType: p.partType,
-        partNumber: p.partNumber,
-        manufacturer: p.manufacturer,
         relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
 }`;
