@@ -1,36 +1,38 @@
 // Maybe this is just some "joi" schema or uses an ORM like bookshelf etc
 
-var bom_model = require('../models/bom')
+let bom_model = require('../models/bom');
 
 
 
 
 function get_direct_desc(boms) {
-    var dd = boms.filter(function (b) {
-        if (b.nodeType == 'direct')
+    return boms.filter(function (b) {
+        if (b.nodeType === 'direct')
             return b
-    })
-    return dd
+    });
 }
 
 function get_interchanges(d_boms, boms) {
-    var ib = d_boms.map(function (db) {
+    return d_boms.map(function (db) {
         db.interchanges = boms.filter(function (b) {
             if (b.bomPartId == db.partId)
                 return b
-        })
+        });
+        db.interchanges = db.interchanges.map((i) => {
+            return i.partId
+        });
         return db
-    })
-    return ib
+    });
+    //return ib
 }
 
 function filter_boms(boms) {
-    var filtered_boms = boms.filter(function (bom) {
+    let filtered_boms = boms.filter(function (bom) {
         if (bom.type != 'header')
             return bom;
     })
-    var direct_desc = get_direct_desc(filtered_boms);
-    filtered_boms = get_interchanges(direct_desc, filtered_boms)
+    let direct_desc = get_direct_desc(filtered_boms);
+    filtered_boms = get_interchanges(direct_desc, filtered_boms);
     return filtered_boms;
 }
 
@@ -53,7 +55,7 @@ function findBom(req, res) {
         distance = req.query.distance || 1;
     bom_model.findBom(req.params.id, distance, depth).then(
         function (bom) {
-            var fb = filter_boms(bom)
+            let fb = filter_boms(bom);
             res.json(fb);
         },
         function (err) {
@@ -75,11 +77,11 @@ function findBomAsChild(req, res) {
 
 
 function removeBom(req, res) {
-    var response = {
+    let response = {
         success: true
-    }
+    };
     bom_model.removeBom(req.params.parent_id, req.params.descendant_id).then(
-        function (result) {
+        function () {
             res.json(response);
         },
         function (err) {
@@ -91,12 +93,12 @@ function removeBom(req, res) {
 }
 
 function addBom(req, res) {
-    var response = {
+    let response = {
         success: true
     };
-    var qty = get_qty(req.body);
+    let qty = get_qty(req.body);
     bom_model.addBom(req.params.parent_id, req.params.descendant_id, qty).then(
-        function (result) {
+        function () {
             res.json(response);
         },
         function (err) {
@@ -109,12 +111,12 @@ function addBom(req, res) {
 
 
 function updateBom(req, res) {
-    var response = {
+    let response = {
         success: true
     };
-    var qty = get_qty(req.body);
+    let qty = get_qty(req.body);
     bom_model.updateBom(req.params.parent_id, req.params.descendant_id, qty).then(
-        function (result) {
+        function () {
             res.json(response);
         },
         function (err) {

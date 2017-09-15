@@ -1,22 +1,20 @@
-var part_model = require('../models/part')
+let part_model = require('../models/part')
 
 function _create_product(body) {
     return {
         _key: body.id.toString(),
-        part_number: body.part_number,
-        name: body.name,
-        part_type: body.part_type,
-        description: body.description
+        manufacturerId: body.manufacturerId,
+        partTypeId: body.partTypeId,
     };
 }
 
 
 function removePart(req, res) {
-    var response = {
+    let response = {
         success: true
-    }
+    };
     part_model.removePart(req.params.id).then(
-        function (result) {
+        function () {
             res.json(response);
         },
         function (err) {
@@ -29,12 +27,12 @@ function removePart(req, res) {
 }
 
 function addPart(req, res) {
-    var response = {
+    let response = {
         success: true,
-    }
-    var product = _create_product(req.body);
+    };
+    let product = _create_product(req.body);
     return part_model.addPart(product).then(
-        function (result) {
+        function () {
             res.json(response);
         },
         function (err) {
@@ -46,12 +44,12 @@ function addPart(req, res) {
 }
 
 function updatePart(req, res) {
-    var response = {
+    let response = {
         success: true
-    }
-    var product = _create_product(req.body);
+    };
+    let product = _create_product(req.body);
     part_model.updatePart(req.params.id, product).then(
-        function (result) {
+        function () {
             res.json(response);
         },
         function (err) {
@@ -64,6 +62,6 @@ function updatePart(req, res) {
 }
 
 
-exports.removePart = removePart
-exports.addPart = addPart
-exports.updatePart = updatePart
+exports.removePart = removePart;
+exports.addPart = addPart;
+exports.updatePart = updatePart;

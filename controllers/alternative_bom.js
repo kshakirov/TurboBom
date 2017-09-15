@@ -14,9 +14,12 @@ function _get_header_id(alt_boms) {
 }
 
 function _get_only_parts(alt_boms) {
-    return alt_boms.filter((bom) => {
+    let parts = alt_boms.filter((bom) => {
         if (bom.type !== 'alt_header')
             return bom
+    });
+    return parts.map((p)=>{
+        return parseInt(p.partId)
     })
 }
 

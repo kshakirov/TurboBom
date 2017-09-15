@@ -49,13 +49,8 @@ module.exports = {
         let query = `FOR v, e, p IN 1..1 ANY '${alt_interchange_headers_collection_name}/${header_id}' GRAPH 'BomGraph'
           FILTER p.edges[0].type == "alt_bom" 
           RETURN {
-            manufacturer: v.manufacturer,
-            description: v.description,
-            partType: v.partType,
-            partNumber: v.partNumber,
             partId: v.partId,
-            name: v.name
-          }`
+          }`;
         return db.query(query).then(function (cursor) {
             return cursor.all();
         })
@@ -86,12 +81,7 @@ module.exports = {
         let query = `FOR v, e, p IN 1..2 ANY '${parts_collection_name}/${child_id}' GRAPH 'BomGraph'
           FILTER p.edges[0].type == "alt_bom" AND  p.edges[0].parentId==${parent_id} AND  p.edges[0].childId==${child_id}
           RETURN {
-            manufacturer: v.manufacturer,
-            description: v.description,
-            partType: v.partType,
-            partNumber: v.partNumber,
             partId: v.partId,
-            name: v.name,
             type: v.type,
             header: v.header,
             altHeader: v._key
