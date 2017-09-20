@@ -1,8 +1,8 @@
 let part_model = require('../models/part')
 
-function _create_product(body) {
+function _create_product(body, id) {
     return {
-        _key: body.id.toString(),
+        _key: id.toString(),
         manufacturerId: body.manufacturerId,
         partTypeId: body.partTypeId,
     };
@@ -30,7 +30,7 @@ function addPart(req, res) {
     let response = {
         success: true,
     };
-    let product = _create_product(req.body);
+    let product = _create_product(req.body,  req.params.id);
     return part_model.addPart(product).then(
         function () {
             res.json(response);

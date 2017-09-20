@@ -2,7 +2,10 @@ let interchange_model = require('../models/interchanges')
 
 
 function dto_header_key(promise) {
-    return parseInt(promise.key)
+    if(promise && promise.key)
+        return parseInt(promise.key);
+    else
+        return null;
 }
 
 
