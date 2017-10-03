@@ -12,7 +12,8 @@ function  dto_parts(where_useds) {
     return filtered.map((p) => {
         return {
             partId: parseInt(p.partId),
-            relationDistance: p.relationDistance
+            relationDistance: p.relationDistance,
+            relationType: p.relationType
         }
     })
 }
