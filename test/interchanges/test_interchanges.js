@@ -23,8 +23,8 @@ describe('Interchange', function () {
     });
 
 
-    describe('#addInterchangeHeader()', function() {
-        it('should return  true', function(done) {
+    describe('#addInterchangeHeader()', function () {
+        it('should return  true', function (done) {
             InterchangesModel.createInterchangeHeader().then(function (promise) {
                 console.log(promise);
                 done();
@@ -47,7 +47,7 @@ describe('Interchange', function () {
     describe('#findInterchangesByHeaderId()', function () {
         it('should return   5 results', function (done) {
             InterchangesModel.findInterchangesByHeaderId(11).then(function (promise) {
-                assert.equal( 5, promise.length);
+                assert.equal(5, promise.length);
                 done()
             })
 
@@ -55,11 +55,9 @@ describe('Interchange', function () {
     });
 
 
-
-
-    describe('#addInterchangeToGroup()', function() {
-        it('should return  true', function(done) {
-            InterchangesModel.addInterchangeToGroup(7,2).then(function (promise) {
+    describe('#addInterchangeToGroup()', function () {
+        it('should return  true', function (done) {
+            InterchangesModel.addInterchangeToGroup(7, 2).then(function (promise) {
                 console.log(promise);
                 InterchangesModel.findInterchangeHeaderByItemId(2).then(function (header) {
                     assert.equal('12', header[0].key);
@@ -70,23 +68,21 @@ describe('Interchange', function () {
     });
 
 
-
-
-    describe('#leaveInterchangeToGroup()', function() {
-        it('should return  true', function(done) {
+    describe('#leaveInterchangeToGroup()', function () {
+        it('should return  true', function (done) {
             InterchangesModel.leaveInterchangeGroup(3).then(function (promise) {
                 InterchangesModel.findInterchangeHeaderByItemId(3).then(function (header) {
                     console.log(header[0].key)
                     assert.notEqual('11', header[0].key);
-                   done();
+                    done();
                 })
             })
         });
     });
 
-    describe('#mergeItemGroupToAnotherItemGroup()', function() {
-        it('should return  true', function(done) {
-            InterchangesModel.mergeItemGroupToAnotherItemGroup(19,4).then(function (promise) {
+    describe('#mergeItemGroupToAnotherItemGroup()', function () {
+        it('should return  true', function (done) {
+            InterchangesModel.mergeItemGroupToAnotherItemGroup(19, 4).then(function (promise) {
                 InterchangesModel.findInterchange(19).then(function (interchanges) {
                     console.log(interchanges.length)
                     assert.equal(3, interchanges.length);

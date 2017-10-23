@@ -21,14 +21,19 @@ describe('Bom', function () {
             actions.push(BomModel.addBom(7, 22));
             Promise.all(actions).then(function () {
                 BomModel.findBom(19, 4).then(function (boms) {
-                    assert.equal(24, boms.length);
-                    done()
-                })
+                        assert.equal(24, boms.length);
+                        done()
+                    }, function (error) {
+                        console.log(error);
+                        done();
+                    }
+                )
+            }, function (error) {
+                console.log(error);
             })
 
         });
     });
-
 
     describe('#findBomAsChild', function () {
         it('should find Bom parent for the given part', function (done) {
@@ -66,7 +71,7 @@ describe('Bom', function () {
 
     describe('#checkCyclic', function () {
         it('should check whether adding a part makes sub graph cyclic', function (done) {
-            BomModel.addBom(7,1).then(function () {
+            BomModel.addBom(7, 1).then(function () {
                 assert(false);
                 done()
             }, function (error) {
@@ -76,7 +81,6 @@ describe('Bom', function () {
 
         });
     });
-
 
 
     after(function () {
