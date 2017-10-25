@@ -1,12 +1,15 @@
-let fs = require('fs');
-let part_model = require('../models/part');
+let fs = require('fs'),
+    part_model = require('../models/part'),
+    config = require('config'),
+    dbConfig = config.get('TurboGraph.dbConfig');
+
 
 function add_part(part) {
     console.log(`Adding Part [${part._key}]`);
     part_model.addPart(part)
 }
 
-let data = fs.readFileSync('metadata_arangodb_interchanges.json');
+let data = fs.readFileSync(dbConfig.dumpFile);
 parts = JSON.parse(data);
 parts.map(function (p) {
     let part = {

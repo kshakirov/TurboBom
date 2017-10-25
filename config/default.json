@@ -11,7 +11,8 @@
             "interchangeHeaderCollection" : "interchange_headers",
             "altInterchangeEdgesCollection" : "alt_interchange_edges",
             "altInterchangeHeaderCollection" : "alt_interchange_headers",
-            "graph": "BomGraph"
+            "graph": "BomGraph",
+            "dumpFile": "metadata_arangodb_201710171238.json"
         }
     },
     "Mysql":{

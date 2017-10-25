@@ -1,9 +1,10 @@
-let fs = require('fs');
-let altBomModel = require('../models/alternative_bom')
+let fs = require('fs'),
+    altBomModel = require('../models/alternative_bom'),
+    config = require('config'),
+    dbConfig = config.get('TurboGraph.dbConfig');
 
-let data = fs.readFileSync('metadata_arangodb_alt2.json');
+let data = fs.readFileSync(dbConfig.dumpFile);
 let parts = JSON.parse(data);
-
 
 
 let alternatives = parts.filter(function (part) {
@@ -14,7 +15,7 @@ let alternatives = parts.filter(function (part) {
                 header_id = parent_id;
             if (bom.alternatives.length > 0) {
                 altBomModel.addAltInterchangeHeader(header_id, parent_id).then(() => {
-                    altBomModel.addPartToAltGrpou(parent_id, child_id, child_id, header_id).then(()=>{
+                    altBomModel.addPartrToAltGroup(parent_id, child_id, child_id, header_id).then(() => {
                         bom.alternatives.map((alt) => {
                             let part_id = alt.part_id;
                             let info = {
@@ -24,20 +25,20 @@ let alternatives = parts.filter(function (part) {
                                 header_id: header_id
                             };
                             altBomModel.addAlternativeBom(parent_id, child_id, part_id,
-                                header_id).then(()=>{
+                                header_id).then(() => {
                                 console.log("Added Alternative");
                                 console.log(info)
-                            }, ()=>{
+                            }, () => {
                                 console.log("Error");
                                 console.log(info)
                             })
                         })
-                    },()=>{
-                        console.log(`Error Part To Group ${parent_id} =>   ${child_id} ` )
+                    }, () => {
+                        console.log(`Error Part To Group ${parent_id} =>   ${child_id} `)
                     })
 
-                },()=>{
-                    console.log(`Error Creating Header  [ ${child_id}] for parent [${parent_id}] ` );
+                }, () => {
+                    console.log(`Error Creating Header  [ ${child_id}] for parent [${parent_id}] `);
                 })
             }
         })
