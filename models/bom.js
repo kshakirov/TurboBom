@@ -20,7 +20,7 @@ function check_cyclic(parent_id, child_id) {
 }
 
 module.exports = {
-    findBom: function (id, distance, depth) {
+    findBom: function (id, distance, depth=40) {
         var query = `for  p,e,v 
         in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter !(e.type=='direct' && v.edges[-2].type =='interchange') &&  count(remove_value(v.edges[*].type,'interchange')) < ${distance + 1}

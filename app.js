@@ -14,7 +14,7 @@ var bodyParser = require('body-parser');
  */
 var exphbs = require('express3-handlebars');
 var hbs;
- 
+
 // For gzip compression
 //app.use(express.compress());
 app.use(compression())
@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'production') {
 
     // Locate the views
     app.set('views', __dirname + '/dist/views');
-    
+
     // Locate the assets
     app.use(express.static(__dirname + '/dist/assets'));
 
@@ -48,7 +48,7 @@ if (process.env.NODE_ENV === 'production') {
 
     // Locate the views
     app.set('views', __dirname + '/views');
-    
+
     // Locate the assets
     app.use(express.static(__dirname + '/assets'));
 }
@@ -83,6 +83,8 @@ app.use('/', routers)
 /*
  * Start it up
  */
-app.listen(process.env.PORT || port);
 
-console.log('Express started on port ' + port);
+let custom_port = process.argv[2] || 9009;
+app.listen(process.env.PORT || custom_port);
+
+console.log('Express started on port ' + custom_port);
