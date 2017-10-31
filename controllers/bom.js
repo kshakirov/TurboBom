@@ -56,6 +56,7 @@ function findBom(req, res) {
     bom_model.findBom(req.params.id, distance, depth).then(
         function (bom) {
             let fb = filter_boms(bom);
+	    res.set('Connection', 'close');			
             res.json(fb);
         },
         function (err) {
@@ -67,6 +68,7 @@ function findBom(req, res) {
 function findBomAsChild(req, res) {
     bom_model.findBomAsChild(req.params.id).then(
         function (response) {
+	    res.set('Connection', 'close');	
             res.json(merge_edges_vertices(response));
         },
         function (err) {

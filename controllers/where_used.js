@@ -21,6 +21,7 @@ function  dto_parts(where_useds) {
 function findWhereUsed (req, res) {
     where_used_model.findWhereUsed([req.params.id], []).then(
         function (where_used) {
+	    res.set('Connection', 'close');
             res.json(dto_parts(where_used));
         },
         function (err) {
