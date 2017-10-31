@@ -1,8 +1,8 @@
-let interchange_model = require('../models/interchanges')
+let interchange_model = require('../models/interchanges');
 
 
 function dto_header_key(promise) {
-    if(promise && promise.key)
+    if (promise && promise.key)
         return parseInt(promise.key);
     else
         return null;
@@ -10,7 +10,7 @@ function dto_header_key(promise) {
 
 
 function dto_parts(parts) {
-    return parts.map((p)=>{
+    return parts.map((p) => {
         return parseInt(p.partId)
     })
 }
