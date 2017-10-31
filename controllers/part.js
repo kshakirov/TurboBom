@@ -1,10 +1,12 @@
-let part_model = require('../models/part')
+let part_model = require('../models/part'),
+    interchange_model = require('../models/interchanges');
 
 function _create_product(body, id) {
     return {
         _key: id.toString(),
         manufacturerId: body.manufacturerId,
         partTypeId: body.partTypeId,
+        partId: id
     };
 }
 
@@ -30,10 +32,16 @@ function addPart(req, res) {
     let response = {
         success: true,
     };
-    let product = _create_product(req.body,  req.params.id);
+    let product = _create_product(req.body, req.params.id);
     return part_model.addPart(product).then(
-        function () {
-            res.json(response);
+        () => {
+            interchange_model.createInterchangeHeader().then((header_id) => {
+                interchange_model.addInterchange(header_id, req.params.id).then((r) => {
+                    response.headerId = header_id;
+                    res.json(response);
+                })
+            });
+
         },
         function (err) {
             response.success = false;

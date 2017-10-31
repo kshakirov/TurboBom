@@ -1,21 +1,41 @@
-let PartsModel = require('../../models/part');
-let product = {
-    id: 1000000,
-    part_number: 'A-1000-D',
-    name: 'Test Name',
-    part_type: 'Turbo',
-    description: 'Test Description'
-};
-PartsModel.addPart(product).then(function (product) {
-    console.log(product)
-});
+let PartController = require('../../controllers/part'),
+    InterchangesModel = require('../../models/interchanges'),
+    DbTools = require('../../api/db_tools'),
+    assert = require('assert');
 
-PartsModel.removePart(1000000).then(function (product) {
-    console.log(product)
-});
 
-product.name = 'Updated Name';
+describe('Part', function () {
+    before(function (done) {
+        DbTools.truncateTestCollections().then(function () {
+            DbTools.populateTestCollections().then(function () {
+                done();
+            })        // runs before all tests in this block
+        })
+    });
+    describe('#addPart()', function () {
+        it('should add part, create interchange group and add itself to it', function (done) {
+            let req = {
+                    body: {
+                        manufacturerId: 1,
+                        partTypeId: 1
+                    },
+                    params: {
+                        id: 1000000
+                    }
+                },
+                res = {
+                    mocke: null,
+                    json: function (arg) {
+                        this.mock = arg;
+                    }
+                }
+            PartController.addPart(req, res).then((promise) => {
+                InterchangesModel.findInterchangeHeaderByItemId(req.params.id).then((r) => {
+                    assert.equal(1, r);
+                    done()
+                });
+            })
 
-PartsModel.updatePart(product).then(function (product) {
-    console.log(product)
-});
+        });
+    });
+})
