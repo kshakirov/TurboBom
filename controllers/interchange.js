@@ -25,6 +25,7 @@ function findInterchange(req, res) {
                 headerId: dto_header_key(promises[0][0]),
                 parts: dto_parts(promises[1])
             };
+            res.set('Connection', 'close'); 
             res.json(response);
         },
         function (err) {
@@ -41,6 +42,7 @@ function findInterchangesByHeaderId(req, res) {
                 headerId: parseInt(req.params.header_id),
                 parts: dto_parts(interchanges)
             };
+	    res.set('Connection', 'close');	
             res.json(response);
         },
         function (err) {

@@ -8,7 +8,8 @@ var express = require('express');
 var app = express();
 var port = 9009;
 var bodyParser = require('body-parser');
-
+var posix = require('posix');
+posix.setrlimit('nofile', { soft: 50000});
 /*
  * Use Handlebars for templating
  */

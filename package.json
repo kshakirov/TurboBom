@@ -15,6 +15,7 @@
     "mysql": "github:mysqljs/mysql",
     "optipng-bin": "^4.0.0",
     "pngquant-bin": "^3.1.1",
+    "posix": "^4.1.1",
     "promise-mysql": "^3.0.2",
     "range": "0.0.3",
     "uuid": "^3.1.0"
