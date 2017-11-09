@@ -78,6 +78,10 @@ router.delete('/parts/:id', function (req, res) {
     part.removePart(req, res);
 });
 
+router.get('/parts/:id', function (req, res) {
+    part.getPart(req, res);
+});
+
 
 router.get('/parts/:id/ancestors', function (req, res) {
     whereUsed.findWhereUsed(req, res);

@@ -53,7 +53,7 @@ let data = fs.readFileSync(dbConfig.dumpFile);
 parts = JSON.parse(data);
 
 parts.map(function (part) {
-    //add_boms(part.boms, part.id);
+    add_boms(part.boms, part.id);
     add_interchanges(part.interchanges, part.id);
 });
 

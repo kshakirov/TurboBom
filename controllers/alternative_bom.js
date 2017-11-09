@@ -53,6 +53,10 @@ function removeAltBom(req, res) {
                 }
             ];
             res.json(response);
+        },(err) =>{
+            response.success = false;
+            response.message = err.message;
+            res.json(response)
         })
     }, (err) => {
         response.success = false;

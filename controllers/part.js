@@ -51,6 +51,16 @@ function addPart(req, res) {
     );
 }
 
+
+function getPart(req,res) {
+    let id = req.params.id;
+    part_model.getPart(id).then((part)=>{
+        res.json(part);
+    }, (error) =>{
+        res.send(`Not Found Part With Id [${id}]`);
+    })
+}
+
 function updatePart(req, res) {
     let response = {
         success: true
@@ -72,4 +82,5 @@ function updatePart(req, res) {
 
 exports.removePart = removePart;
 exports.addPart = addPart;
+exports.getPart = getPart;
 exports.updatePart = updatePart;

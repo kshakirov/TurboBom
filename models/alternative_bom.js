@@ -48,9 +48,7 @@ module.exports = {
     findGroupByHeader: function (header_id) {
         let query = `FOR v, e, p IN 1..1 ANY '${alt_interchange_headers_collection_name}/${header_id}' GRAPH 'BomGraph'
           FILTER p.edges[0].type == "alt_bom" 
-          RETURN {
-            partId: v.partId,
-          }`;
+          RETURN  v.partId`;
         return db.query(query).then(function (cursor) {
             return cursor.all();
         })
