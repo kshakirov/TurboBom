@@ -1,0 +1,24 @@
+{
+    "TurboGraph":{
+        "dbConfig":{
+            "url": "http://127.0.0.1:8529",
+            "dbName": "BomDev",
+            "login": "root",
+            "password": "root",
+            "partCollection": "parts",
+            "bomEdgesCollection": "bom_edges",
+            "interchangeEdgesCollection" : "interchange_edges",
+            "interchangeHeaderCollection" : "interchange_headers",
+            "altInterchangeEdgesCollection" : "alt_interchange_edges",
+            "altInterchangeHeaderCollection" : "alt_interchange_headers",
+            "graph": "BomGraphDev",
+            "dumpFile": "metadata_arangodb_dev.json"
+        }
+    },
+    "Mysql":{
+        "host": "1.1.1.1",
+        "user": "1",
+        "password": "1",
+        "database": "2"
+    }
+}
