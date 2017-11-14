@@ -22,6 +22,10 @@ router.get('/parts/:id/boms', function (req, res) {
     bom.findBom(req, res);
 });
 
+router.get('/parts/:id/boms/only', function (req, res) {
+    bom.findOnlyBom(req, res);
+});
+
 router.get('/parts/:id/boms/parents', function (req, res) {
     bom.findBomAsChild(req, res);
 });

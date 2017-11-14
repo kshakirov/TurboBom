@@ -3,8 +3,6 @@
 let bom_model = require('../models/bom');
 
 
-
-
 function get_direct_desc(boms) {
     return boms.filter(function (b) {
         if (b.nodeType === 'direct')
@@ -30,7 +28,7 @@ function filter_boms(boms) {
     let filtered_boms = boms.filter(function (bom) {
         if (bom.type != 'header')
             return bom;
-    })
+    });
     let direct_desc = get_direct_desc(filtered_boms);
     filtered_boms = get_interchanges(direct_desc, filtered_boms);
     return filtered_boms;
@@ -40,8 +38,8 @@ function get_qty(body) {
     return body.qty;
 }
 
-function merge_edges_vertices(response){
-    return response.map((r)=>{
+function merge_edges_vertices(response) {
+    return response.map((r) => {
         let bom = r.vertice;
         bom.qty = r.edge.quantity;
         return bom
@@ -56,7 +54,7 @@ function findBom(req, res) {
     bom_model.findBom(req.params.id, distance, depth).then(
         function (bom) {
             let fb = filter_boms(bom);
-	    res.set('Connection', 'close');
+            res.set('Connection', 'close');
             res.json(fb);
         },
         function (err) {
@@ -65,10 +63,23 @@ function findBom(req, res) {
     );
 }
 
+function findOnlyBom(req, res) {
+    bom_model.findOnlyBom(req.params.id).then(
+        function (bom) {
+            res.set('Connection', 'close');
+            res.json(bom);
+        },
+        function (err) {
+            res.send("There was a problem adding the information to the database. " + err);
+        }
+    );
+}
+
+
 function findBomAsChild(req, res) {
     bom_model.findBomAsChild(req.params.id).then(
         function (response) {
-	    res.set('Connection', 'close');
+            res.set('Connection', 'close');
             res.json(merge_edges_vertices(response));
         },
         function (err) {
@@ -131,6 +142,7 @@ function updateBom(req, res) {
 
 
 exports.findBom = findBom;
+exports.findOnlyBom = findOnlyBom;
 exports.findBomAsChild = findBomAsChild;
 exports.removeBom = removeBom;
 exports.addBom = addBom;

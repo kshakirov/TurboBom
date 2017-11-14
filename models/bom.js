@@ -20,8 +20,8 @@ function check_cyclic(parent_id, child_id) {
 }
 
 module.exports = {
-    findBom: function (id, distance, depth=40) {
-       var query = `for  p,e,v 
+    findBom: function (id, distance, depth = 40) {
+        var query = `for  p,e,v 
         in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter !(e.type=='direct' && v.edges[-2].type =='interchange') &&  count(remove_value(v.edges[*].type,'interchange')) < ${distance + 1}  && !(v.vertices[0].partId== ${id} && v.edges[0].type =='interchange' )
         
@@ -38,6 +38,24 @@ module.exports = {
         return db.query(query).then(function (cursor) {
             return cursor.all();
         })
+    },
+    findOnlyBom: function (id) {
+        let distance = 10,
+            depth = 40,
+            query = `for  p,e,v 
+        in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}
+        filter   count(v.edges[*]) < ${distance}  
+       return distinct {
+        partId: p._key,
+        bomPartId: v.vertices[-2].partId,
+        qty: e.quantity,
+        relationDistance:  count(remove_value(v.edges[*].type,'interchange'))
+        }`;
+
+        return db.query(query).then(function (cursor) {
+            return cursor.all();
+        })
+
     },
 
     checkCyclic: check_cyclic,
