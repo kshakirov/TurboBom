@@ -61,7 +61,7 @@ function dto_header_key(promise) {
 
 
 function findInterchangeHeaderByItemId(id) {
-    var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
+    var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
           FILTER p.edges[0].type == "interchange"
           RETURN  {
                 key: p.vertices[1]._key,
@@ -93,7 +93,7 @@ function addInterchangeToGroup(in_item_id, out_item_id) {
 
 module.exports = {
     findInterchange: function (id) {
-        var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH 'BomGraph'
+        var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH '${dbConfig.graph}'
         FILTER p.edges[0].type == 'interchange'
         RETURN v`;
 
@@ -151,7 +151,7 @@ module.exports = {
     },
 
     findInterchangesByHeaderId: function (header_id) {
-        var query = `FOR v, e, p IN 1..1 OUTBOUND 'interchange_headers/${header_id}' GRAPH 'BomGraph'
+        var query = `FOR v, e, p IN 1..1 OUTBOUND 'interchange_headers/${header_id}' GRAPH '${dbConfig.graph}'
           //FILTER p.edges[0].type == "interchange"
           RETURN  v`;
 

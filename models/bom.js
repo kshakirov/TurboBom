@@ -10,7 +10,7 @@ var edges_collection_name = dbConfig.bomEdgesCollection;
 
 function check_cyclic(parent_id, child_id) {
     var query = `FOR v, e IN OUTBOUND SHORTEST_PATH '${dbConfig.partCollection}/${child_id}' TO '${dbConfig.partCollection}/${parent_id}' 
-    GRAPH 'BomGraph' 
+    GRAPH '${dbConfig.graph}' 
     RETURN [v.type]`;
     return db.query(query).then(function (cursor) {
         return cursor.all().then(function (promise) {
@@ -94,7 +94,7 @@ module.exports = {
     },
 
     findBomAsChild: function (id) {
-        var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH 'BomGraph'
+        var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
             FILTER p.edges[0].type == "direct"
             RETURN {
                 vertice: v,
