@@ -142,9 +142,9 @@ module.exports = {
     mergeItemGroupToAnotherItemGroup: function (id, picked_id) {
         return this.findInterchange(picked_id).then(function (interchanges) {
             var tuples = interchanges.map(function (interchange) {
-                console.log(interchange.id);
-                addInterchangeToGroup(id, interchange.id)
-            })
+                console.log(interchange.partId);
+                return addInterchangeToGroup(id, interchange.partId)
+            });
             tuples.push(addInterchangeToGroup(id, picked_id));
             return Promise.all(tuples)
         })

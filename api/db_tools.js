@@ -41,6 +41,7 @@ module.exports = {
         parts = parts.map(function (part) {
             return {
                 id: part,
+                partId: part,
                 _key: part.toString(),
                 type: 'test'
             }
