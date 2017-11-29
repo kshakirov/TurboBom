@@ -1,15 +1,16 @@
-var config = require('config');
-var dbConfig = config.get('TurboGraph.dbConfig');
+let config = require('config');
+let dbConfig = config.get('TurboGraph.dbConfig');
 Database = require('arangojs').Database;
-var db = new Database({url: dbConfig.url});
+let db = new Database({url: dbConfig.url});
 db.useDatabase(dbConfig.dbName);
 db.useBasicAuth(dbConfig.login, dbConfig.password);
 
-var edges_collection_name = dbConfig.bomEdgesCollection;
+let edges_collection_name = dbConfig.bomEdgesCollection,
+    parts_collection = dbConfig.partCollection;
 
 
 function check_cyclic(parent_id, child_id) {
-    var query = `FOR v, e IN OUTBOUND SHORTEST_PATH '${dbConfig.partCollection}/${child_id}' TO '${dbConfig.partCollection}/${parent_id}' 
+    let query = `FOR v, e IN OUTBOUND SHORTEST_PATH '${dbConfig.partCollection}/${child_id}' TO '${dbConfig.partCollection}/${parent_id}' 
     GRAPH '${dbConfig.graph}' 
     RETURN [v.type]`;
     return db.query(query).then(function (cursor) {
@@ -19,9 +20,17 @@ function check_cyclic(parent_id, child_id) {
     })
 }
 
+function docs_exist(parent_id, child_id) {
+    let parts = db.collection(parts_collection);
+    let promises = [];
+    promises.push(parts.document(parent_id));
+    promises.push(parts.document(child_id));
+    return Promise.all(promises);
+}
+
 module.exports = {
     findBom: function (id, distance, depth = 40) {
-        var query = `for  p,e,v 
+        let query = `for  p,e,v 
         in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter !(e.type=='direct' && v.edges[-2].type =='interchange') &&  count(remove_value(v.edges[*].type,'interchange')) < ${distance + 1}  && !(v.vertices[0].partId== ${id} && v.edges[0].type =='interchange' )
         
@@ -61,8 +70,8 @@ module.exports = {
     checkCyclic: check_cyclic,
 
     addBom: function (parent_id, child_id, quantity = 0) {
-        var edges_collection = db.collection(edges_collection_name);
-        var data = {
+        let edges_collection = db.collection(edges_collection_name);
+        let data = {
             _key: parent_id + '_' + child_id,
             type: 'direct',
             quantity: quantity,
@@ -73,28 +82,33 @@ module.exports = {
             if (cyclic) {
                 return Promise.reject({message: "Cyclic path"})
             } else {
-                return edges_collection.save(
-                    data
-                );
+                return docs_exist(parent_id, child_id).then(s =>{
+                    return edges_collection.save(
+                        data
+                    );
+                }, e => {
+                    return Promise.reject({message: "Nodes don't exist"})
+                });
+
             }
         })
     },
 
     removeBom: function (parent_id, child_id) {
-        var edges_collection = db.collection(edges_collection_name);
-        var edge_key = parent_id + '_' + child_id;
+        let edges_collection = db.collection(edges_collection_name);
+        let edge_key = parent_id + '_' + child_id;
         return edges_collection.remove(edge_key);
     },
 
 
     updateBom: function (parent_id, child_id, qty) {
-        var edges_collection = db.collection(edges_collection_name);
-        var edge_key = parent_id + '_' + child_id;
+        let edges_collection = db.collection(edges_collection_name);
+        let edge_key = parent_id + '_' + child_id;
         return edges_collection.update(edge_key, {quantity: qty})
     },
 
     findBomAsChild: function (id) {
-        var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
+        let query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
             FILTER p.edges[0].type == "direct"
             RETURN {
                 vertice: v,
@@ -106,4 +120,4 @@ module.exports = {
         })
     }
 
-}
+};
