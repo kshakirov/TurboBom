@@ -57,7 +57,7 @@ function getPart(req,res) {
     part_model.getPart(id).then((part)=>{
         res.json(part);
     }, (error) =>{
-        res.send(`Not Found Part With Id [${id}]`);
+        res.sendStatus(404);
     })
 }
 

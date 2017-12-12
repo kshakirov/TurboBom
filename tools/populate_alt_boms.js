@@ -26,8 +26,7 @@ let alternatives = parts.filter(function (part) {
                             };
                             altBomModel.addAlternativeBom(parent_id, child_id, part_id,
                                 header_id).then(() => {
-                                console.log("Added Alternative");
-                                console.log(info)
+                                console.log(`Added [${part_id}] Alternative To Header [${header_id}]`);
                             }, () => {
                                 console.log("Error");
                                 console.log(info)
@@ -43,6 +42,6 @@ let alternatives = parts.filter(function (part) {
             }
         })
     }
-})
+});
 
 

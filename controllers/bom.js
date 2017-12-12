@@ -17,7 +17,7 @@ function get_interchanges(d_boms, boms) {
                 return b
         });
         db.interchanges = db.interchanges.map((i) => {
-            return i.partId
+            return parseInt(i.partId)
         });
         return db
     });
@@ -28,6 +28,10 @@ function filter_boms(boms) {
     let filtered_boms = boms.filter(function (bom) {
         if (bom.type != 'header')
             return bom;
+    });
+    filtered_boms = filtered_boms.map(b =>{
+        b.partId = parseInt(b.partId);
+        return b
     });
     let direct_desc = get_direct_desc(filtered_boms);
     filtered_boms = get_interchanges(direct_desc, filtered_boms);
