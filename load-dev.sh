@@ -1,7 +1,9 @@
 #!/bin/sh
 
 BASEDIR=.
-NODEOPTS="--max-old-space-size=4096"
+NODEOPTS='--max-old-space-size=4096'
+
+export NODE_ENV='development'
 
 node ${NODEOPTS} ${BASEDIR}/tools/delete_database.js
 
