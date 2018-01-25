@@ -4,7 +4,7 @@ let where_used_model = require('../models/where_used');
 
 
 function _filter_headers(where_useds) {
-    return where_useds.filter(used => used.type !== 'header')
+    return where_useds.filter(used => (used.type !== 'header' && used.type !== 'Created'))
 }
 
 function  dto_parts(where_useds) {

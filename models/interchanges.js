@@ -1,25 +1,25 @@
-var config = require('config');
-var dbConfig = config.get('TurboGraph.dbConfig');
+let config = require('config');
+let dbConfig = config.get('TurboGraph.dbConfig');
 Database = require('arangojs').Database;
-var db = new Database({url: dbConfig.url});
+let db = new Database({url: dbConfig.url});
 db.useDatabase(dbConfig.dbName);
 db.useBasicAuth(dbConfig.login, dbConfig.password);
 const uuidv1 = require('uuid/v1');
 
-var edges_collection_name = dbConfig.interchangeEdgesCollection;
-var interchange_headers_collection_name = dbConfig.interchangeHeaderCollection;
+let edges_collection_name = dbConfig.interchangeEdgesCollection;
+let interchange_headers_collection_name = dbConfig.interchangeHeaderCollection;
 
 
 function removeInterchange(header_id, item_id) {
-    var edges_collection = db.collection(edges_collection_name);
-    var edge_key = header_id.toString() + '_' + item_id.toString();
+    let edges_collection = db.collection(edges_collection_name);
+    let edge_key = header_id.toString() + '_' + item_id.toString();
     return edges_collection.remove(edge_key);
 }
 
 
 function addInterchange(header_id, item_id) {
-    var edges_collection = db.collection(edges_collection_name);
-    var data = {
+    let edges_collection = db.collection(edges_collection_name);
+    let data = {
         _key: header_id.toString() + '_' + item_id.toString(),
         type: 'interchange',
         _from: 'interchange_headers/' + header_id,
@@ -32,8 +32,8 @@ function addInterchange(header_id, item_id) {
 
 
 function addInterchangeHeader(header_id) {
-    var headers_collection = db.collection(interchange_headers_collection_name);
-    var data = {
+    let headers_collection = db.collection(interchange_headers_collection_name);
+    let data = {
         _key: header_id.toString(),
         type: 'header',
         header: header_id
@@ -44,10 +44,10 @@ function addInterchangeHeader(header_id) {
 
 
 function createInterchangeHeader() {
-    var headers_collection = db.collection(interchange_headers_collection_name);
-    var data = {
-        type: 'Created'
-    }
+    let headers_collection = db.collection(interchange_headers_collection_name);
+    let data = {
+        type: 'header'
+    };
     return headers_collection.save(data).then(function (promise) {
         return promise._key;
     }, function (error) {
@@ -61,7 +61,7 @@ function dto_header_key(promise) {
 
 
 function findInterchangeHeaderByItemId(id) {
-    var query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
+    let query = `FOR v, e, p IN 1..1 INBOUND 'parts/${id}' GRAPH '${dbConfig.graph}'
           FILTER p.edges[0].type == "interchange"
           RETURN  {
                 key: p.vertices[1]._key,
@@ -78,11 +78,11 @@ function findInterchangeHeaderByItemId(id) {
 
 
 function addInterchangeToGroup(in_item_id, out_item_id) {
-    var find_actions = [
+    let find_actions = [
         findInterchangeHeaderByItemId(in_item_id),
         findInterchangeHeaderByItemId(out_item_id)];
     return Promise.all(find_actions).then(function (promise) {
-        var cd_actions = [
+        let cd_actions = [
             removeInterchange(dto_header_key(promise[1]), out_item_id),
             addInterchange(dto_header_key(promise[0]), out_item_id)
         ]
@@ -93,7 +93,7 @@ function addInterchangeToGroup(in_item_id, out_item_id) {
 
 module.exports = {
     findInterchange: function (id) {
-        var query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH '${dbConfig.graph}'
+        let query = `FOR v, e, p IN 2..2 ANY 'parts/${id}' GRAPH '${dbConfig.graph}'
         FILTER p.edges[0].type == 'interchange'
         RETURN v`;
 
@@ -111,11 +111,11 @@ module.exports = {
 
 
     addInterchangeToGroup: function (in_item_id, out_item_id) {
-        var find_actions = [
+        let find_actions = [
             findInterchangeHeaderByItemId(in_item_id),
             findInterchangeHeaderByItemId(out_item_id)];
         return Promise.all(find_actions).then(function (promise) {
-            var cd_actions = [
+            let cd_actions = [
                 removeInterchange(dto_header_key(promise[1]), out_item_id),
                 addInterchange(dto_header_key(promise[0]), out_item_id)
             ]
@@ -124,10 +124,10 @@ module.exports = {
     },
     leaveInterchangeGroup: function (id) {
         return findInterchangeHeaderByItemId(id).then(function (promise) {
-            var old_header_id = dto_header_key(promise);
+            let old_header_id = dto_header_key(promise);
             return removeInterchange(old_header_id, id).then(function () {
                 return createInterchangeHeader().then(function (header_id) {
-                    var hh = header_id;
+                    let hh = header_id;
                     return addInterchange(header_id, id).then(function (promise) {
                         return header_id;
                     });
@@ -141,7 +141,7 @@ module.exports = {
 
     mergeItemGroupToAnotherItemGroup: function (id, picked_id) {
         return this.findInterchange(picked_id).then(function (interchanges) {
-            var tuples = interchanges.map(function (interchange) {
+            let tuples = interchanges.map(function (interchange) {
                 console.log(interchange.partId);
                 return addInterchangeToGroup(id, interchange.partId)
             });
@@ -151,7 +151,7 @@ module.exports = {
     },
 
     findInterchangesByHeaderId: function (header_id) {
-        var query = `FOR v, e, p IN 1..1 OUTBOUND 'interchange_headers/${header_id}' GRAPH '${dbConfig.graph}'
+        let query = `FOR v, e, p IN 1..1 OUTBOUND 'interchange_headers/${header_id}' GRAPH '${dbConfig.graph}'
           //FILTER p.edges[0].type == "interchange"
           RETURN  v`;
 
