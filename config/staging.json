@@ -5,7 +5,7 @@
             "dbName": "BomStaging",
             "login": "root",
             "password": "servantes",
-            "graph": "BomGraphStaging"
+            "graph": "BomGraph"
         }
     }
 }
