@@ -12,7 +12,7 @@
             "altInterchangeEdgesCollection" : "alt_interchange_edges",
             "altInterchangeHeaderCollection" : "alt_interchange_headers",
             "graph": "BomGraph",
-            "dumpFile": "metadata_arangodb-201711081216.json"
+            "dumpFile": "metadata_arangodb-201711221314.json"
         }
     },
     "Mysql":{

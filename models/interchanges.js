@@ -24,7 +24,7 @@ function addInterchange(header_id, item_id) {
         type: 'interchange',
         _from: 'interchange_headers/' + header_id,
         _to: "parts/" + item_id
-    }
+    };
     return edges_collection.save(
         data
     );
@@ -37,7 +37,7 @@ function addInterchangeHeader(header_id) {
         _key: header_id.toString(),
         type: 'header',
         header: header_id
-    }
+    };
     return headers_collection.save(data);
 }
 
@@ -68,7 +68,8 @@ function findInterchangeHeaderByItemId(id) {
                   partId: p._key,
                   partType: p.partType,
                   manufacturer: p.manufacturer,
-                  partNumber: p.partNumber
+                  partNumber: p.partNumber,
+                  attributes: p.attributes
           }`;
 
     return db.query(query).then(function (cursor) {
@@ -85,7 +86,7 @@ function addInterchangeToGroup(in_item_id, out_item_id) {
         let cd_actions = [
             removeInterchange(dto_header_key(promise[1]), out_item_id),
             addInterchange(dto_header_key(promise[0]), out_item_id)
-        ]
+        ];
         return Promise.all(cd_actions);
     })
 }
@@ -118,7 +119,7 @@ module.exports = {
             let cd_actions = [
                 removeInterchange(dto_header_key(promise[1]), out_item_id),
                 addInterchange(dto_header_key(promise[0]), out_item_id)
-            ]
+            ];
             return Promise.all(cd_actions);
         })
     },
@@ -160,4 +161,4 @@ module.exports = {
         })
     }
 
-}
+};

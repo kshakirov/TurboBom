@@ -40,6 +40,7 @@ module.exports = {
         nodeType: e.type,
         qty: e.quantity,
         type: p.type,
+        attributes: p.attributes,
         relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
 }`;
@@ -58,6 +59,7 @@ module.exports = {
         partId: p._key,
         bomPartId: v.vertices[-2].partId,
         qty: e.quantity,
+        attributes: p.attributes
         relationDistance:  count(remove_value(v.edges[*].type,'interchange'))
         }`;
 

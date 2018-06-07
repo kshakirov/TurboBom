@@ -80,6 +80,7 @@ module.exports = {
           FILTER p.edges[0].type == "alt_bom" AND  p.edges[0].parentId==${parent_id} AND  p.edges[0].childId==${child_id}
           RETURN {
             partId: v.partId,
+            attributes: p.attributes,
             type: v.type,
             header: v.header,
             altHeader: v._key

@@ -3,18 +3,18 @@
 /*
  * Express Dependencies
  */
-var compression = require('compression')
-var express = require('express');
-var app = express();
-var port = 9009;
-var bodyParser = require('body-parser');
-var posix = require('posix');
+let compression = require('compression');
+let express = require('express');
+let app = express();
+let port = 9009;
+let bodyParser = require('body-parser');
+let posix = require('posix');
 posix.setrlimit('nofile', { soft: 50000});
 
 
 // For gzip compression
 //app.use(express.compress());
-app.use(compression())
+app.use(compression());
 app.use(require('connect-livereload')({
     port: 35730
 }));
@@ -34,10 +34,10 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-var routers = require('./turbo_router')
+let routers = require('./turbo_router');
 
 
-app.use('/', routers)
+app.use('/', routers);
 
 
 

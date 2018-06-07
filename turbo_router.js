@@ -75,8 +75,13 @@ router.post('/parts/:id', function (req, res) {
 });
 
 router.put('/parts/:id', function (req, res) {
-    part.updatePart(req, res);
+    part.upsertPart(req, res);
 });
+
+router.post('/parts/', function (req, res) {
+    part.upsertPart(req, res);
+});
+
 
 router.delete('/parts/:id', function (req, res) {
     part.removePart(req, res);

@@ -6,9 +6,21 @@ function _create_product(body, id) {
         _key: id.toString(),
         manufacturerId: body.manufacturerId,
         partTypeId: body.partTypeId,
-        partId: id
+        partId: id,
     };
 }
+
+function _create_part(part) {
+    return {
+        _key: part.id,
+        manufacturerId: part.manufacturerId, //TODO remove later
+        partTypeId: part.partTypeId, //TODO remove later
+        partId: part.sku,
+        sku: part.sku,
+        attributes: part.attributes
+    };
+}
+
 
 
 function removePart(req, res) {
@@ -22,7 +34,6 @@ function removePart(req, res) {
         function (err) {
             response.success = false;
             response.msg = err.message;
-            console.error('Something went wrong:', err);
             res.json(response);
         }
     );
@@ -52,35 +63,56 @@ function addPart(req, res) {
 }
 
 
-function getPart(req,res) {
+function getPart(req, res) {
     let id = req.params.id;
-    part_model.getPart(id).then((part)=>{
+    part_model.getPart(id).then((part) => {
         res.json(part);
-    }, (error) =>{
+    }, (error) => {
         res.sendStatus(404);
     })
 }
 
-function updatePart(req, res) {
-    let response = {
-        success: true
-    };
-    let product = _create_product(req.body);
-    part_model.updatePart(req.params.id, product).then(
-        function () {
-            res.json(response);
-        },
-        function (err) {
-            response.success = false;
-            response.msg = err.message;
-            console.error('Something went wrong:', err);
-            res.json(response);
-        }
-    );
+function upsertPart(req, res) {
+    let   response = {
+            success: true
+        };
+    let parts = req.body.map(p => _create_part(p));
+    parts.forEach(part => {
+        let id = part.partId.toString();
+        part_model.getPart(id).then(() => {
+            part_model.updatePart(id, part).then(
+                p => {
+                    res.json(response);
+                },
+                err => {
+                    response.success = false;
+                    response.msg = err.message;
+                    res.json(response);
+                }
+            );
+        }, (error) => {
+            return part_model.addPart(part).then(
+                () => {
+                    interchange_model.createInterchangeHeader().then((header_id) => {
+                        interchange_model.addInterchange(header_id, id).then((r) => {
+                            response.headerId = header_id;
+                            res.json(response);
+                        })
+                    });
+                },
+                err => {
+                    response.success = false;
+                    response.msg = err.message;
+                    res.json(response);
+                }
+            );
+        });
+    });
+
 }
 
 
 exports.removePart = removePart;
 exports.addPart = addPart;
 exports.getPart = getPart;
-exports.updatePart = updatePart;
+exports.upsertPart = upsertPart;
