@@ -17,7 +17,10 @@ function get_interchanges(d_boms, boms) {
                 return b
         });
         db.interchanges = db.interchanges.map((i) => {
-            return parseInt(i.partId)
+            return {
+                id: parseInt(i.partId),
+                attributes: i.attributes
+            }
         });
         return db
     });
@@ -29,7 +32,7 @@ function filter_boms(boms) {
         if (bom.type != 'header')
             return bom;
     });
-    filtered_boms = filtered_boms.map(b =>{
+    filtered_boms = filtered_boms.map(b => {
         b.partId = parseInt(b.partId);
         return b
     });

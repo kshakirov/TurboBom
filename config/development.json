@@ -2,9 +2,9 @@
     "TurboGraph":{
         "dbConfig":{
             "url": "http://127.0.0.1:8529",
-            "dbName": "GraphDbDev",
+            "dbName": "Bom",
             "login": "root",
-            "password": "root",
+            "password": "servantes",
             "partCollection": "parts",
             "bomEdgesCollection": "bom_edges",
             "interchangeEdgesCollection" : "interchange_edges",

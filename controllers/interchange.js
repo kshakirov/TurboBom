@@ -11,7 +11,11 @@ function dto_header_key(promise) {
 
 function dto_parts(parts) {
     return parts.map((p) => {
-        return parseInt(p.partId)
+        return {
+            sku: parseInt(p.partId),
+            attributes: p.attributes
+
+        };
     })
 }
 
@@ -25,7 +29,7 @@ function findInterchange(req, res) {
                 headerId: dto_header_key(promises[0][0]),
                 parts: dto_parts(promises[1])
             };
-            res.set('Connection', 'close'); 
+            res.set('Connection', 'close');
             res.json(response);
         },
         function (err) {
@@ -42,7 +46,7 @@ function findInterchangesByHeaderId(req, res) {
                 headerId: parseInt(req.params.header_id),
                 parts: dto_parts(interchanges)
             };
-	    res.set('Connection', 'close');	
+            res.set('Connection', 'close');
             res.json(response);
         },
         function (err) {

@@ -13,7 +13,8 @@ function  dto_parts(where_useds) {
         return {
             partId: parseInt(p.partId),
             relationDistance: p.relationDistance,
-            relationType: p.relationType
+            relationType: p.relationType,
+            attributes: p.attributes
         }
     })
 }
