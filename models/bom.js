@@ -49,6 +49,30 @@ module.exports = {
             return cursor.all();
         })
     },
+
+    findBomCassandra: function (id, distance, depth = 40) {
+        let query = `for  p,e,v 
+        in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter !(e.type=='direct' && v.edges[-2].type =='interchange') &&  count(remove_value(v.edges[*].type,'interchange')) < ${distance + 1}  && !(v.vertices[0].partId== ${id} && v.edges[0].type =='interchange' )
+        
+       return distinct {
+        sku: p._key,
+         partId: p._key,
+        description: "must be added",
+        bomPartId: v.vertices[-3].partId,
+        nodeType: e.type,
+        quantity: e.quantity,
+        part_type: p.attributes.part_type,
+        part_number: p.attributes.part_number,
+        type: p.type,
+        relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
+        relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
+}`;
+
+        return db.query(query).then(function (cursor) {
+            return cursor.all();
+        })
+    },
     findOnlyBom: function (id) {
         let distance = 10,
             depth = 40,

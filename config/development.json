@@ -1,7 +1,7 @@
 {
     "TurboGraph":{
         "dbConfig":{
-            "url": "http://127.0.0.1:8529",
+            "url": "http://192.99.147.128:9901",
             "dbName": "Bom",
             "login": "root",
             "password": "servantes",

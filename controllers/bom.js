@@ -27,6 +27,30 @@ function get_interchanges(d_boms, boms) {
     //return ib
 }
 
+function get_interchange_part_number(i) {
+    if(i.hasOwnProperty('part_number') && i.part_number !=null){
+        return  i.part_number
+    }
+    return null;
+}
+
+function get_interchanges_cassandra(d_boms, boms) {
+    return d_boms.map(function (db) {
+        db.interchanges = boms.filter(function (b) {
+            if (b.bomPartId == db.sku)
+                return b
+        });
+        db.interchanges = db.interchanges.map((i) => {
+            return {
+                sku: parseInt(i.sku),
+                part_number: get_interchange_part_number(i)
+            }
+        });
+        return db
+    });
+    //return ib
+}
+
 function filter_boms(boms) {
     let filtered_boms = boms.filter(function (bom) {
         if (bom.type != 'header')
@@ -38,6 +62,21 @@ function filter_boms(boms) {
     });
     let direct_desc = get_direct_desc(filtered_boms);
     filtered_boms = get_interchanges(direct_desc, filtered_boms);
+    return filtered_boms;
+}
+
+
+function filter_boms_cassandra(boms) {
+    let filtered_boms = boms.filter(function (bom) {
+        if (bom.type != 'header')
+            return bom;
+    });
+    filtered_boms = filtered_boms.map(b => {
+        b.sku = parseInt(b.sku);
+        return b
+    });
+    let direct_desc = get_direct_desc(filtered_boms);
+    filtered_boms = get_interchanges_cassandra(direct_desc, filtered_boms);
     return filtered_boms;
 }
 
@@ -68,6 +107,33 @@ function findBom(req, res) {
             res.send("There was a problem adding the information to the database. " + err);
         }
     );
+}
+
+
+function _findBomCassandra(id, distance,depth) {
+    return bom_model.findBomCassandra(id, distance, depth).then(
+        bom =>  {
+            return  filter_boms_cassandra(bom);
+
+        },
+        function (err) {
+            console.log(err)
+        }
+    );
+}
+
+
+function findBomCassandra(req, res) {
+
+    let depth = req.query.depth || 40,
+        distance = parseInt(req.query.distance) || 1,
+        id = req.params.id;
+    _findBomCassandra(id, distance,depth).then(r =>{
+             res.set('Connection', 'close');
+             res.json(r);
+         }, err => {
+             res.send("There was a problem adding the information to the database. " + err);
+         })
 }
 
 function findOnlyBom(req, res) {
@@ -149,6 +215,8 @@ function updateBom(req, res) {
 
 
 exports.findBom = findBom;
+exports.findBomCassandra = findBomCassandra;
+exports.findBomCassandraTest = _findBomCassandra;
 exports.findOnlyBom = findOnlyBom;
 exports.findBomAsChild = findBomAsChild;
 exports.removeBom = removeBom;

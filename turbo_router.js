@@ -1,11 +1,11 @@
-let  express = require('express');
-let  router = express.Router();
-
-let  bom = require('./controllers/bom');
-let  whereUsed = require('./controllers/where_used');
-let  interchange = require('./controllers/interchange');
-let  part = require('./controllers/part');
-let altBom = require('./controllers/alternative_bom');
+let express = require('express'),
+    router = express.Router(),
+    bom = require('./controllers/bom'),
+    whereUsed = require('./controllers/where_used'),
+    whereUsedCassandra = require('./controllers/where_used_cassandra'),
+    interchange = require('./controllers/interchange'),
+    part = require('./controllers/part'),
+    altBom = require('./controllers/alternative_bom');
 
 // middleware that is specific to this router
 
@@ -120,6 +120,13 @@ router.delete('/boms/:parent_part_id/children/:child_part_id/alternatives/:alt_h
     altBom.removeAltGroup(req, res);
 });
 
+router.get('/attrsreader/product/:id/bom/', function (req, res) {
+    bom.findBomCassandra(req, res);
+});
+
+router.get('/attrsreader/product/:id/where_used/', function (req, res) {
+    whereUsedCassandra.findWhereUsedCassandra(req,res);
+});
 
 
 module.exports = router;
