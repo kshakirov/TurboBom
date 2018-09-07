@@ -128,7 +128,6 @@ function add_turbos(response, turbo_interchanges) {
             let sti = new Set(ti);
             if (!numbers.intersect(sti).empty()) {
                 numbers = numbers.union(sti);
-                console.log(numbers)
             }
         });
         r.turboPartNumbers = numbers.get(0);

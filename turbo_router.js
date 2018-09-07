@@ -128,5 +128,9 @@ router.get('/attrsreader/product/:id/where_used/', function (req, res) {
     whereUsedCassandra.findWhereUsedCassandra(req,res);
 });
 
+router.get('/attrsreader/product/:id/interchanges/', function (req, res) {
+    interchange.findInterchangeCassandra(req,res);
+});
+
 
 module.exports = router;

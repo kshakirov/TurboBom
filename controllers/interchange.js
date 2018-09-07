@@ -39,6 +39,43 @@ function findInterchange(req, res) {
 }
 
 
+function dto_cassandra(response){
+    return response.map(r =>{
+        return {
+            id: r._key,
+            manufacturer: r.attributes.manufacturer,
+            partType: r.attributes.part_type,
+            part_number:r.attributes.part_number,
+            inactive: false
+        }
+    })
+}
+
+function _findInterchangeCassandra(id) {
+    return interchange_model.findInterchange(id).then(
+        response => {
+            return dto_cassandra(response);
+        },
+        err => {
+            return false;
+        }
+    );
+}
+
+
+function findInterchangeCassandra(req, res) {
+    return _findInterchangeCassandra(req.params.id).then(
+        result => {
+            if(result){
+                res.set('Connection', 'close');
+                res.json(result);
+            }else{
+                res.send("There was a problem finding interchange ");
+            }
+        });
+}
+
+
 function findInterchangesByHeaderId(req, res) {
     interchange_model.findInterchangesByHeaderId(req.params.header_id).then(
         function (interchanges) {
@@ -161,13 +198,15 @@ function mergeIterchangeToAnotherItemGroup(req, res) {
                         response.oldHeaderId = parseInt(old_header_id);
                         res.json(response);
                     });
-                res.json(response);
+                res.son(response);
             })
         })
 }
 
 
 exports.findInterchange = findInterchange;
+exports.testFindInterchange = _findInterchangeCassandra;
+exports.findInterchangeCassandra = findInterchangeCassandra;
 exports.removeInterchange = removeInterchange;
 exports.addInterchange = addInterchange;
 exports.addInterchangeToGroup = addInterchangeToGroup;
