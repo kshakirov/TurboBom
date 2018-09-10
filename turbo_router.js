@@ -5,6 +5,7 @@ let express = require('express'),
     whereUsedCassandra = require('./controllers/where_used_cassandra'),
     interchange = require('./controllers/interchange'),
     part = require('./controllers/part'),
+    service_kits=require('./controllers/service_kits'),
     altBom = require('./controllers/alternative_bom');
 
 // middleware that is specific to this router
@@ -125,11 +126,15 @@ router.get('/attrsreader/product/:id/bom/', function (req, res) {
 });
 
 router.get('/attrsreader/product/:id/where_used/', function (req, res) {
-    whereUsedCassandra.findWhereUsedCassandra(req,res);
+    whereUsedCassandra.findWhereUsedCassandra(req, res);
 });
 
 router.get('/attrsreader/product/:id/interchanges/', function (req, res) {
-    interchange.findInterchangeCassandra(req,res);
+    interchange.findInterchangeCassandra(req, res);
+});
+
+router.get('/attrsreader/product/:id/service_kits/', function (req, res) {
+    service_kits.findServiceKits(req, res);
 });
 
 
