@@ -83,7 +83,7 @@ module.exports = {
         partId: p._key,
         bomPartId: v.vertices[-2].partId,
         qty: e.quantity,
-        attributes: p.attributes
+        attributes: p.attributes,
         relationDistance:  count(remove_value(v.edges[*].type,'interchange'))
         }`;
 

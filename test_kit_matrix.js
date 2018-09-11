@@ -1,5 +1,4 @@
-let serviceController = require('./controllers/service_kits'),
-    kits = [{
+let kits = [{
         "part_number": "200115-0000",
         "sku": 40272,
         "description": null,
@@ -17,9 +16,21 @@ let serviceController = require('./controllers/service_kits'),
             "sku": 40409,
             "description": null,
             "manufacturer": "Garrett",
-        }];
+        }],
+    kitMatrix = require('./controllers/kit_matrix');
 
-serviceController.findServiceKitsTest(kits).then(sc => {
-    console.log(sc);
+function write_to_file(filename, data) {
+    let fs = require('fs');
+    fs.writeFile(filename, JSON.stringify(data), function (err) {
+        if (err) {
+            return console.log(err);
+        }
+
+        console.log("The file was saved!");
+    });
+}
+
+kitMatrix.kitMatrixBase(kits).then(km =>{
+    console.log(km);
+    write_to_file("kit_matrix.json", km)
 });
-

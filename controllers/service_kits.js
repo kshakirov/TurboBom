@@ -64,7 +64,7 @@ function prep_response(promises) {
     })
 }
 
-function _findServiceKitsInterchanges(kits) {
+function find_service_kits_base(kits) {
     return Promise.all(kits.map(k => interchange_model.findInterchange(k.sku))).then(promises => {
         let rs = promises.map((x, xi) => (
             {
@@ -81,7 +81,7 @@ function _findServiceKitsInterchanges(kits) {
 
 function findServiceKitsInterchanges(req, res) {
     let kits = test_kits;
-    _findServiceKitsInterchanges(kits).then(
+    find_service_kits_base(kits).then(
         service_kits => {
             res.set('Connection', 'close');
             res.json(service_kits);
@@ -92,5 +92,5 @@ function findServiceKitsInterchanges(req, res) {
     );
 }
 
-exports.findServiceKitsTest = _findServiceKitsInterchanges;
+exports.findServiceKitsTest = find_service_kits_base;
 exports.findServiceKits = findServiceKitsInterchanges;
