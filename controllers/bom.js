@@ -34,6 +34,13 @@ function get_interchange_part_number(i) {
     return null;
 }
 
+function get_interchange_manufacturer(i) {
+    if(i.hasOwnProperty('manufacturer') && i.manufacturer !=null){
+        return  i.manufacturer
+    }
+    return null;
+}
+
 function get_interchanges_cassandra(d_boms, boms) {
     return d_boms.map(function (db) {
         db.interchanges = boms.filter(function (b) {
@@ -43,7 +50,8 @@ function get_interchanges_cassandra(d_boms, boms) {
         db.interchanges = db.interchanges.map((i) => {
             return {
                 sku: parseInt(i.sku),
-                part_number: get_interchange_part_number(i)
+                part_number: get_interchange_part_number(i),
+                manufacturer: get_interchange_manufacturer(i)
             }
         });
         return db

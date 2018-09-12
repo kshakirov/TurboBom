@@ -58,12 +58,13 @@ module.exports = {
        return distinct {
         sku: p._key,
          partId: p._key,
-        description: "must be added",
+        description: p.attributes.description,
         bomPartId: v.vertices[-3].partId,
         nodeType: e.type,
         quantity: e.quantity,
         part_type: p.attributes.part_type,
         part_number: p.attributes.part_number,
+        manufacturer: p.attributes.manufacturer,
         type: p.type,
         relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 

@@ -3,6 +3,7 @@ let express = require('express'),
     bom = require('./controllers/bom'),
     whereUsed = require('./controllers/where_used'),
     whereUsedCassandra = require('./controllers/where_used_cassandra'),
+    majorComponent = require('./controllers/major_component'),
     interchange = require('./controllers/interchange'),
     part = require('./controllers/part'),
     serviceKits=require('./controllers/service_kits'),
@@ -142,5 +143,8 @@ router.get('/attrsreader/product/:id/kit_matrix/', function (req, res) {
     kit_matrix.kitMatrix(req, res);
 });
 
+router.get('/attrsreader/product/:id/major_components/', function (req, res) {
+    majorComponent.findMajorComponent(req, res);
+});
 
 module.exports = router;
