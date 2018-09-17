@@ -1,23 +1,7 @@
 let interchange_model = require('../models/interchanges'),
-    test_kits = kits = [{
-        "part_number": "200115-0000",
-        "sku": 40272,
-        "description": null,
-        "manufacturer": "Garrett",
-    },
-        {
-            "part_number": "468139-0000",
-
-            "sku": 40333,
-            "description": null,
-            "manufacturer": "Garrett",
-        },
-        {
-            "part_number": "707897-0001",
-            "sku": 40409,
-            "description": null,
-            "manufacturer": "Garrett",
-        }];
+    client = require('node-rest-client-promise').Client(),
+    config = require('config'),
+    metadata = config.get('TurboGraph.metadata');
 
 
 function is_ti_manufacturer(p) {
@@ -80,16 +64,28 @@ function find_service_kits_base(kits) {
 
 
 function findServiceKitsInterchanges(req, res) {
-    let kits = test_kits;
-    find_service_kits_base(kits).then(
-        service_kits => {
+
+    let url = `http://${metadata.host}:${metadata.port}/product/${req.params.id}/kit/`;
+    client.getPromise(url).then(response => {
+        let kits = response.data;
+        if (kits != null && kits.length > 0) {
+            find_service_kits_base(kits).then(
+                service_kits => {
+                    res.set('Connection', 'close');
+                    res.json(service_kits);
+                },
+                err => {
+                    res.send("There was a problem adding the information to the database. " + err);
+                }
+            );
+        } else {
             res.set('Connection', 'close');
-            res.json(service_kits);
-        },
-        err => {
-            res.send("There was a problem adding the information to the database. " + err);
+            res.json([]);
         }
-    );
+    }, error => {
+        res.send("There was a problem adding the information to the database. " + error);
+    })
+
 }
 
 exports.findServiceKitsTest = find_service_kits_base;

@@ -1,4 +1,6 @@
 let express = require('express'),
+    config = require('config'),
+    metadata = config.get('TurboGraph.metadata'),
     router = express.Router(),
     bom = require('./controllers/bom'),
     whereUsed = require('./controllers/where_used'),
@@ -6,8 +8,9 @@ let express = require('express'),
     majorComponent = require('./controllers/major_component'),
     interchange = require('./controllers/interchange'),
     part = require('./controllers/part'),
-    serviceKits=require('./controllers/service_kits'),
-    kit_matrix =require('./controllers/kit_matrix'),
+    serviceKits = require('./controllers/service_kits'),
+    kit_matrix = require('./controllers/kit_matrix'),
+    salesNotes= require('./controllers/sales_notes'),
     altBom = require('./controllers/alternative_bom');
 
 // middleware that is specific to this router
@@ -123,28 +126,35 @@ router.delete('/boms/:parent_part_id/children/:child_part_id/alternatives/:alt_h
     altBom.removeAltGroup(req, res);
 });
 
-router.get('/attrsreader/product/:id/bom/', function (req, res) {
+router.get('/product/:id/bom/', function (req, res) {
     bom.findBomCassandra(req, res);
 });
 
-router.get('/attrsreader/product/:id/where_used/', function (req, res) {
+router.post('/product/:id/where_used/', function (req, res) {
     whereUsedCassandra.findWhereUsedCassandra(req, res);
 });
 
-router.get('/attrsreader/product/:id/interchanges/', function (req, res) {
+router.get('/product/:id/interchanges/', function (req, res) {
     interchange.findInterchangeCassandra(req, res);
 });
 
-router.get('/attrsreader/product/:id/service_kits/', function (req, res) {
+router.get('/product/:id/service_kits/', function (req, res) {
     serviceKits.findServiceKits(req, res);
 });
 
-router.get('/attrsreader/product/:id/kit_matrix/', function (req, res) {
+router.get('/product/:id/kit_matrix/', function (req, res) {
     kit_matrix.kitMatrix(req, res);
 });
 
-router.get('/attrsreader/product/:id/major_components/', function (req, res) {
+router.get('/product/:id/major_components/', function (req, res) {
     majorComponent.findMajorComponent(req, res);
 });
+
+router.get('/product/:id/sales_notes/', function (req, res) {
+   salesNotes.findSalesNotes(req,res);
+
+});
+
+
 
 module.exports = router;

@@ -1,11 +1,15 @@
 {
-    "TurboGraph":{
-        "dbConfig":{
+    "TurboGraph": {
+        "dbConfig": {
             "url": "http://192.99.147.128:8529",
             "dbName": "BomStaging",
             "login": "root",
             "password": "servantes",
             "graph": "BomGraph"
+        },
+        "metadata": {
+            "host": "10.1.1.103",
+            "port": 8081
         }
     }
 }
