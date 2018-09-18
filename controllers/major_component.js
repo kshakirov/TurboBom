@@ -1,6 +1,7 @@
 let BomController = require('./bom'),
     distance = 4,
     recursion_level = 40,
+    token_tools = require('./token_tools'),
     major_components = [
         "Compressor Wheel",
         "Turbine Wheel",
@@ -38,6 +39,7 @@ function add_ti_part(b) {
             b.oe_part_number = b.part_number;
             b.sku = ti_part.sku;
             b.part_number = ti_part.part_number;
+            b.prices = ti_part.prices;
             b.interchanges = b.interchanges.filter(i => i.sku !== ti_part.sku)
         }
     }
@@ -62,9 +64,39 @@ function prep_response(boms) {
 }
 
 
-function major_component_base(sku) {
-    return BomController.findBomCassandraTest(sku, distance, recursion_level).then(r => {
-        return prep_response(r);
+function flatten_price(mc, user_data) {
+    return mc.map(b => {
+        if (b.prices != null) {
+            b.prices = b.prices[user_data.customer.group]
+        }
+        return b
+    })
+}
+
+function hide_prices(mc) {
+    return mc.map(b => {
+        b.prices = "login";
+        return b
+    })
+}
+
+function add_price(mc, authorization) {
+    let token = token_tools.getToken(authorization);
+    if (token) {
+        let user_data = token_tools.verifyToken(token);
+        return flatten_price(mc, user_data)
+    } else {
+        return hide_prices(mc)
+    }
+
+
+}
+
+
+function major_component_base(sku, authorization) {
+    return BomController.findBomCassandraTest(sku, distance, recursion_level, authorization).then(r => {
+        let mc = prep_response(r);
+        return add_price(mc, authorization)
     }, error => {
         return false;
     });
@@ -72,7 +104,8 @@ function major_component_base(sku) {
 }
 
 function major_component(req, res) {
-    return major_component_base(req.params.id).then(promise => {
+    let authorization = req.headers.authorization || false;
+    return major_component_base(req.params.id, authorization).then(promise => {
         if (promise) {
             res.set('Connection', 'close');
             res.json(promise);

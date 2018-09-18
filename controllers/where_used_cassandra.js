@@ -1,4 +1,5 @@
 let WhereUsedModel = require('../models/where_used'),
+    token_tools = require('./token_tools'),
     Set = require('set');
 
 function filter_pairs(recs) {
@@ -66,6 +67,13 @@ function get_part_number(p) {
     return p.attributes.part_number
 }
 
+function get_ti_part_price(p) {
+    if (p.attributes.manufacturer == "Turbo International") {
+        return p.attributes.prices;
+    }
+    return false
+}
+
 function filter_turbo_interchanges(recs) {
     let tis = recs.filter(rec => {
         if (rec.type === 'part' && rec.edge_type === 'interchange') {
@@ -116,6 +124,7 @@ function prep_response(pairs, turbo_groups) {
             partNumber: get_part_number(p),
             tiPartNumber: get_ti_part_number(p),
             turboPartNumbers: group.map(g => g.attributes.part_number),
+            prices: get_ti_part_price(p),
             header: p.interchange_header
         }
     })
@@ -149,6 +158,35 @@ function pack_full_response(resp_full) {
     return result;
 }
 
+
+function flatten_price(mc, user_data) {
+    Object.keys(mc).forEach(key => {
+        if (mc[key].prices != null) {
+            mc[key].prices = mc[key].prices[user_data.customer.group]
+        }
+    });
+    return mc;
+}
+
+function hide_prices(mc) {
+    Object.keys(mc).map(b => {
+        mc[key].prices = "login";
+    });
+    return mc;
+}
+
+function add_price(mc, authorization) {
+    let token = token_tools.getToken(authorization);
+    if (token) {
+        let user_data = token_tools.verifyToken(token);
+        return flatten_price(mc, user_data)
+    } else {
+        return hide_prices(mc)
+    }
+
+
+}
+
 function where_used_cassandra(sku) {
     return WhereUsedModel.findWhereUsedCassandra(sku).then(r => {
 
@@ -160,13 +198,14 @@ function where_used_cassandra(sku) {
 }
 
 function findWhereUsedCassandra(req, res) {
+    let authorization = req.headers.authorization || false;
     WhereUsedModel.findWhereUsedCassandra([req.params.id], []).then(
         function (where_used) {
             let group = group_by_header(filter_turbo_interchanges(where_used));
             let resp = add_turbos(prep_response(filter_pairs(where_used),
                 filter_turbo_groups(where_used)), group);
             res.set('Connection', 'close');
-            res.json(pack_full_response(resp));
+            res.json(add_price(pack_full_response(resp), authorization));
         },
         function (err) {
             res.send("There was a problem adding the information to the database. " + err);

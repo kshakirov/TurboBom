@@ -42,6 +42,13 @@ function get_interchange_manufacturer(i) {
     return null;
 }
 
+function get_interchange_price(i) {
+    if (i.hasOwnProperty('prices') && i.prices != null) {
+        return i.prices
+    }
+    return null;
+}
+
 function get_interchanges_cassandra(d_boms, boms) {
     return d_boms.map(function (db) {
         db.interchanges = boms.filter(function (b) {
@@ -52,7 +59,8 @@ function get_interchanges_cassandra(d_boms, boms) {
             return {
                 sku: parseInt(i.sku),
                 part_number: get_interchange_part_number(i),
-                manufacturer: get_interchange_manufacturer(i)
+                manufacturer: get_interchange_manufacturer(i),
+                prices: get_interchange_price(i)
             }
         });
         return db
