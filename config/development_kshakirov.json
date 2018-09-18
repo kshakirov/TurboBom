@@ -7,5 +7,10 @@
             "password": "servantes",
             "graph": "BomGraph"
         }
+    },
+    "jwt": {
+        "secret": "keepitsecret",
+        "tokenExpiration": "60d",
+        "issuer": "zoral.com"
     }
 }

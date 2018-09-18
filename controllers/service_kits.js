@@ -88,5 +88,5 @@ function findServiceKitsInterchanges(req, res) {
 
 }
 
-exports.findServiceKitsTest = find_service_kits_base;
+exports.findServiceKitsBase = find_service_kits_base;
 exports.findServiceKits = findServiceKitsInterchanges;

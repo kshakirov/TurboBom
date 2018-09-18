@@ -38,7 +38,7 @@ function find_where_used_cassandra(id, depth = 40) {
         interchange_sku: v.vertices[-3]._key,  
         bom: v.vertices[-2].attributes,
         bom_sku: v.vertices[-2]._key,
-         interchange_header: v.vertices[-2]._key,
+        interchange_header: v.vertices[-2]._key,
         relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
 }`;

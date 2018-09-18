@@ -19,7 +19,7 @@ let serviceController = require('./controllers/service_kits'),
             "manufacturer": "Garrett",
         }];
 
-serviceController.findServiceKitsTest(kits).then(sc => {
+serviceController.findServiceKitsBase(kits).then(sc => {
     console.log(sc);
 });
 

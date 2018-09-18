@@ -1,22 +1,27 @@
 {
-    "TurboGraph":{
-        "dbConfig":{
+    "TurboGraph": {
+        "dbConfig": {
             "url": "http://192.99.147.128:9901",
             "dbName": "Bom",
             "login": "root",
             "password": "servantes",
             "partCollection": "parts",
             "bomEdgesCollection": "bom_edges",
-            "interchangeEdgesCollection" : "interchange_edges",
-            "interchangeHeaderCollection" : "interchange_headers",
-            "altInterchangeEdgesCollection" : "alt_interchange_edges",
-            "altInterchangeHeaderCollection" : "alt_interchange_headers",
+            "interchangeEdgesCollection": "interchange_edges",
+            "interchangeHeaderCollection": "interchange_headers",
+            "altInterchangeEdgesCollection": "alt_interchange_edges",
+            "altInterchangeHeaderCollection": "alt_interchange_headers",
             "graph": "BomGraph",
             "dumpFile": "metadata_arangodb_dev.json"
         },
-        "metadata":{
+        "metadata": {
             "host": "10.1.1.103",
             "port": 8081
+        },
+        "jwt": {
+            "secret": "keepitsecret",
+            "tokenExpiration": "60d",
+            "issuer": "zoral.com"
         }
     }
 }

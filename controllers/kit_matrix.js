@@ -1,5 +1,8 @@
 let bom_model = require('../models/bom'),
-    service_kits = require('../controllers/service_kits');
+    service_kits = require('../controllers/service_kits'),
+    client = require('node-rest-client-promise').Client(),
+    config = require('config'),
+    metadata = config.get('TurboGraph.metadata');
 
 let test_kits = [{
     "part_number": "200115-0000",
@@ -106,7 +109,7 @@ function prep_kit_matrix(km) {
 }
 
 function kit_matrix_base(kits) {
-    return service_kits.findServiceKitsTest(kits).then(sk => {
+    return service_kits.findServiceKitsBase(kits).then(sk => {
         return Promise.all(sk.map(s => bom_model.findOnlyBom(s.tiSku)
         )).then(promises => {
             let km = promises.map((x, xi) => (
@@ -128,15 +131,27 @@ function kit_matrix_base(kits) {
 }
 
 function kit_matrix(req, res) {
-    let kits = test_kits;
-    kit_matrix_base(kits).then(promise => {
-        if (promise) {
-            res.set('Connection', 'close');
-            res.json(promise);
-        } else {
-            res.send("There was a problem getting kit matrix. ");
+    let url = `http://${metadata.host}:${metadata.port}/product/${req.params.id}/kit/`;
+    client.getPromise(url).then(response => {
+            let kits = response.data;
+            if (kits != null && kits.length > 0) {
+                kit_matrix_base(kits).then(promise => {
+                    if (promise) {
+                        res.set('Connection', 'close');
+                        res.json(promise);
+                    } else {
+                        res.send("There was a problem getting kit matrix. ");
+                    }
+                })
+            } else {
+                res.set('Connection', 'close');
+                res.json([]);
+            }
+        },
+        error => {
+            res.send("There was a problem adding the information to the database. " + error);
         }
-    })
+    )
 }
 
 

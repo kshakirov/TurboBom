@@ -8,8 +8,13 @@
             "graph": "BomGraph"
         },
         "metadata": {
-            "host": "10.1.1.103",
+            "host": "192.99.147.128",
             "port": 8081
-        }
+        },
+        "jwt": {
+            "secret": "keepitsecret",
+            "tokenExpiration": "60d",
+            "issuer": "zoral.com"
+            }
     }
 }

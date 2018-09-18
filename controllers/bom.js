@@ -1,6 +1,7 @@
 // Maybe this is just some "joi" schema or uses an ORM like bookshelf etc
 
-let bom_model = require('../models/bom');
+let bom_model = require('../models/bom'),
+    token_tools = require('./token_tools');
 
 
 function get_direct_desc(boms) {
@@ -28,15 +29,15 @@ function get_interchanges(d_boms, boms) {
 }
 
 function get_interchange_part_number(i) {
-    if(i.hasOwnProperty('part_number') && i.part_number !=null){
-        return  i.part_number
+    if (i.hasOwnProperty('part_number') && i.part_number != null) {
+        return i.part_number
     }
     return null;
 }
 
 function get_interchange_manufacturer(i) {
-    if(i.hasOwnProperty('manufacturer') && i.manufacturer !=null){
-        return  i.manufacturer
+    if (i.hasOwnProperty('manufacturer') && i.manufacturer != null) {
+        return i.manufacturer
     }
     return null;
 }
@@ -117,11 +118,43 @@ function findBom(req, res) {
     );
 }
 
+function flatten_price(boms, user_data) {
+    return boms.map(b => {
+        if (b.prices != null) {
+            b.prices = b.prices[user_data.customer.group]
+        }
+        return b
+    })
+}
 
-function _findBomCassandra(id, distance,depth) {
-    return bom_model.findBomCassandra(id, distance, depth).then(
-        bom =>  {
-            return  filter_boms_cassandra(bom);
+function hide_prices(boms) {
+    return boms.map(b => {
+        b.prices = "login";
+        return b
+    })
+}
+
+function add_price(boms, authorization) {
+    let token = token_tools.getToken(authorization);
+    if (token) {
+        let user_data = token_tools.verifyToken(token);
+        return flatten_price(boms, user_data)
+    } else {
+        return hide_prices(boms)
+    }
+
+
+}
+
+function _findBomCassandra(id, distance, depth, authorization) {
+    return bom_model.findBomCassandra(id, distance, depth, authorization).then(
+        bom => {
+            boms = filter_boms_cassandra(bom);
+            if (authorization) {
+                return add_price(boms, authorization)
+            } else {
+                return boms
+            }
 
         },
         function (err) {
@@ -134,14 +167,15 @@ function _findBomCassandra(id, distance,depth) {
 function findBomCassandra(req, res) {
 
     let depth = req.query.depth || 40,
-        distance = parseInt(req.query.distance) || 1,
+        distance = parseInt(req.query.distance) || 4,
+        authorization = req.headers.authorization || false,
         id = req.params.id;
-    _findBomCassandra(id, distance,depth).then(r =>{
-             res.set('Connection', 'close');
-             res.json(r);
-         }, err => {
-             res.send("There was a problem adding the information to the database. " + err);
-         })
+    _findBomCassandra(id, distance, depth, authorization).then(r => {
+        res.set('Connection', 'close');
+        res.json(r);
+    }, err => {
+        res.send("There was a problem adding the information to the database. " + err);
+    })
 }
 
 function findOnlyBom(req, res) {
