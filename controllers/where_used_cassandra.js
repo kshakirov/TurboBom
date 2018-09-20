@@ -42,7 +42,11 @@ function get_ti_sku(p) {
         return p.sku
 
     }
-    return p.interchange_sku
+    if (p.hasOwnProperty('interchange_sku')) {
+        return p.interchange_sku
+    }
+    else
+        return null;
 }
 
 function get_sku(p) {
@@ -57,7 +61,10 @@ function get_ti_part_number(p) {
     if (p.attributes.manufacturer == "Turbo International") {
         return p.attributes.part_number;
     }
-    return p.interchange.part_number
+    if (p.hasOwnProperty('interchange') && p.interchange !== null)
+        return p.interchange.part_number;
+    else
+        return null
 }
 
 function get_part_number(p) {
@@ -128,6 +135,27 @@ function prep_response(pairs, turbo_groups) {
             header: p.interchange_header
         }
     })
+}
+
+function prep_for_cartridges(turbo_groups) {
+    let turbos_hash ={},
+        turbos = turbo_groups.map(tg => {
+        return {
+            description: "",
+            manufacturer: tg.attributes.manufacturer,
+            part_type: tg.attributes.part_type,
+            sku: get_sku(tg),
+            tiSku: get_ti_sku(tg),
+            partNumber: get_part_number(tg),
+            tiPartNumber: get_ti_part_number(tg),
+            prices: get_ti_part_price(tg),
+            header: tg.interchange_header
+        }
+    });
+    turbos.forEach(t=>{
+        turbos_hash[t.sku] = t;
+    });
+    return turbos_hash;
 }
 
 function add_turbos(response, turbo_interchanges) {
@@ -202,10 +230,20 @@ function findWhereUsedCassandra(req, res) {
     WhereUsedModel.findWhereUsedCassandra([req.params.id], []).then(
         function (where_used) {
             let group = group_by_header(filter_turbo_interchanges(where_used));
-            let resp = add_turbos(prep_response(filter_pairs(where_used),
-                filter_turbo_groups(where_used)), group);
-            res.set('Connection', 'close');
-            res.json(add_price(pack_full_response(resp), authorization));
+            let pairs = filter_pairs(where_used),
+                turbo_groups = filter_turbo_groups(where_used);
+            let resp = {};
+            if (pairs.length > 0) {
+                resp = add_turbos(prep_response(pairs,
+                    turbo_groups), group);
+                res.set('Connection', 'close');
+                res.json(add_price(pack_full_response(resp), authorization));
+            } else if (turbo_groups.length > 0) {
+                resp = prep_for_cartridges(turbo_groups);
+                res.set('Connection', 'close');
+                res.json(resp);
+            }
+
         },
         function (err) {
             res.send("There was a problem adding the information to the database. " + err);
