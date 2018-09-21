@@ -15,7 +15,7 @@ function nullify_foreign(p) {
     return {
         tiSku: p.kit.sku,
         sku: "",
-        ti_part_number: p.part_number,
+        ti_part_number: p.kit.part_number,
         part_number: "",
         manufacturer: p.kit.manufacturer,
         description: p.kit.description,
@@ -39,13 +39,14 @@ function crete_ti_part(p) {
 }
 
 function prep_response(promises) {
-    return promises.map(p => {
+    let sks = promises.map(p => {
         if (is_ti_manufacturer(p.kit)) {
             return nullify_foreign(p)
         } else {
             return crete_ti_part(p)
         }
-    })
+    });
+    return sks;
 }
 
 function find_service_kits_base(kits) {
