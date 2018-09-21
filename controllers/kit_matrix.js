@@ -110,6 +110,7 @@ function prep_kit_matrix(km) {
 
 function kit_matrix_base(kits) {
     return service_kits.findServiceKitsBase(kits).then(sk => {
+        sk = sk.filter(s => s!==undefined);
         return Promise.all(sk.map(s => bom_model.findOnlyBom(s.tiSku)
         )).then(promises => {
             let km = promises.map((x, xi) => (

@@ -25,7 +25,7 @@ function nullify_foreign(p) {
 
 function crete_ti_part(p) {
     let ti_part = p.ret.find(r => is_ti_manufacturer(r.attributes));
-    if (ti_part) {
+    if (ti_part !==undefined && ti_part !==null) {
         return {
             ti_part_number: ti_part.attributes.part_number,
             tiSku: ti_part.sku,
