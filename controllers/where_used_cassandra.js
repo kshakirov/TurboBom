@@ -71,8 +71,12 @@ function get_part_number(p) {
     if (p.attributes.manufacturer == "Turbo International") {
         return p.interchange.part_number;
     }
-    return p.attributes.part_number
+    if (p.attributes != null && p.attributes.hasOwnProperty('part_number'))
+        return p.attributes.part_number;
+    else
+        return null
 }
+
 
 function get_ti_part_price(p) {
     if (p.attributes.manufacturer == "Turbo International") {
@@ -114,6 +118,11 @@ function group_by_header(turbo_interchanges) {
     //return result;
 }
 
+function get_turbo_part_numbers(group) {
+    let tpn = group.filter(g=>g.attributes!==null);
+    return tpn.map(g => g.attributes.part_number)
+}
+
 
 function prep_response(pairs, turbo_groups) {
     return pairs.map(p => {
@@ -130,7 +139,7 @@ function prep_response(pairs, turbo_groups) {
             tiSku: get_ti_sku(p),
             partNumber: get_part_number(p),
             tiPartNumber: get_ti_part_number(p),
-            turboPartNumbers: group.map(g => g.attributes.part_number),
+            turboPartNumbers: get_turbo_part_numbers(group),
             prices: get_ti_part_price(p),
             header: p.interchange_header
         }
@@ -138,21 +147,21 @@ function prep_response(pairs, turbo_groups) {
 }
 
 function prep_for_cartridges(turbo_groups) {
-    let turbos_hash ={},
+    let turbos_hash = {},
         turbos = turbo_groups.map(tg => {
-        return {
-            description: "",
-            manufacturer: tg.attributes.manufacturer,
-            part_type: tg.attributes.part_type,
-            sku: get_sku(tg),
-            tiSku: get_ti_sku(tg),
-            partNumber: get_part_number(tg),
-            tiPartNumber: get_ti_part_number(tg),
-            prices: get_ti_part_price(tg),
-            header: tg.interchange_header
-        }
-    });
-    turbos.forEach(t=>{
+            return {
+                description: "",
+                manufacturer: tg.attributes.manufacturer,
+                part_type: tg.attributes.part_type,
+                sku: get_sku(tg),
+                tiSku: get_ti_sku(tg),
+                partNumber: get_part_number(tg),
+                tiPartNumber: get_ti_part_number(tg),
+                prices: get_ti_part_price(tg),
+                header: tg.interchange_header
+            }
+        });
+    turbos.forEach(t => {
         turbos_hash[t.sku] = t;
     });
     return turbos_hash;
