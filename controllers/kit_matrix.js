@@ -2,6 +2,8 @@ let bom_model = require('../models/bom'),
     service_kits = require('../controllers/service_kits'),
     client = require('node-rest-client-promise').Client(),
     config = require('config'),
+    part_controller = require('../controllers/part'),
+    where_used = require('../models/where_used'),
     metadata = config.get('TurboGraph.metadata');
 
 let test_kits = [{
@@ -144,28 +146,79 @@ function kit_matrix_base(kits) {
     })
 }
 
+
+function is_turbo(p) {
+    return p.attributes.part_type.toLowerCase() === "turbo"
+}
+
+function is_cartridge(p) {
+    return p.attributes.part_type.toLowerCase() === "cartridge"
+}
+
+function get_parent_turbo(wus, p) {
+    if (wus !== null && wus !== undefined && p.attributes !== null) {
+        let turbo = wus.find(wu => {
+            return wu.hasOwnProperty('attributes') &&
+                wu.attributes !== null && wu.attributes !== undefined &&
+                wu.attributes.manufacturer !== null
+        });
+        if (turbo != null && turbo !== undefined)
+            return turbo.partId
+
+    } else {
+        return false;
+    }
+
+}
+
+function check_turbo_cartridge(sku) {
+    return part_controller.part(sku).then(p => {
+        if (is_turbo(p)) {
+            return sku;
+        } else if (is_cartridge(p)) {
+            return where_used.findWhereUsed(sku).then(wus => {
+                return get_parent_turbo(wus, p)
+            }, error => {
+                return false;
+            })
+        } else
+            return false;
+    }, error => {
+
+    })
+}
+
 function kit_matrix(req, res) {
-    let url = `http://${metadata.host}:${metadata.port}/product/${req.params.id}/kit/`;
-    client.getPromise(url).then(response => {
-            let kits = response.data;
-            if (kits != null && kits.length > 0) {
-                kit_matrix_base(kits).then(promise => {
-                    if (promise) {
-                        res.set('Connection', 'close');
-                        res.json(promise);
+
+    check_turbo_cartridge(req.params.id).then(sku => {
+        if (sku) {
+            let url = `http://${metadata.host}:${metadata.port}/product/${sku}/kit/`;
+            client.getPromise(url).then(response => {
+                    let kits = response.data;
+                    if (kits != null && kits.length > 0) {
+                        kit_matrix_base(kits).then(promise => {
+                            if (promise) {
+                                res.set('Connection', 'close');
+                                res.json(promise);
+                            } else {
+                                res.send("There was a problem getting kit matrix. ");
+                            }
+                        })
                     } else {
-                        res.send("There was a problem getting kit matrix. ");
+                        res.set('Connection', 'close');
+                        res.json([]);
                     }
-                })
-            } else {
-                res.set('Connection', 'close');
-                res.json([]);
-            }
-        },
-        error => {
-            res.send("There was a problem adding the information to the database. " + error);
+                },
+                error => {
+                    res.send("There was a problem adding the information to the database. " + error);
+                }
+            )
+        } else {
+            res.set('Connection', 'close');
+            res.json([]);
         }
-    )
+    });
+
 }
 
 

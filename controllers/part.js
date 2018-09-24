@@ -22,7 +22,6 @@ function _create_part(part) {
 }
 
 
-
 function removePart(req, res) {
     let response = {
         success: true
@@ -72,10 +71,18 @@ function getPart(req, res) {
     })
 }
 
+function part(id) {
+    return part_model.getPart(id).then((part) => {
+        return part;
+    }, (error) => {
+        return false;
+    })
+}
+
 function upsertPart(req, res) {
-    let   response = {
-            success: true
-        };
+    let response = {
+        success: true
+    };
     let parts = req.body.map(p => _create_part(p));
     parts.forEach(part => {
         let id = part.partId.toString();
@@ -115,4 +122,5 @@ function upsertPart(req, res) {
 exports.removePart = removePart;
 exports.addPart = addPart;
 exports.getPart = getPart;
+exports.part = part;
 exports.upsertPart = upsertPart;
