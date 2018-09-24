@@ -67,10 +67,23 @@ function create_header(name, sku, headers) {
 }
 
 
+function dedup_kit_matrix_header(headers) {
+    let h_hash = {};
+    return headers.filter(h => {
+        if (h_hash.hasOwnProperty(h.field))
+            return false;
+        else {
+            h_hash[h.field] = true;
+            return true
+        }
+    })
+}
+
+
 function create_kit_matrix_table(kits) {
     let kit_matrix_rows = {},
         kit_matrix_headers = [];
-    kits.forEach(value => {
+    let ks = kits.forEach(value => {
         let id = value.part_number,
             sku = value.sku;
         if (value.manufacturer === 'Turbo International') {
@@ -81,7 +94,7 @@ function create_kit_matrix_table(kits) {
         }
 
     });
-
+    kit_matrix_headers = dedup_kit_matrix_header(kit_matrix_headers);
     return [kit_matrix_rows, base_header_array.concat(kit_matrix_headers)]
 }
 
@@ -110,7 +123,7 @@ function prep_kit_matrix(km) {
 
 function kit_matrix_base(kits) {
     return service_kits.findServiceKitsBase(kits).then(sk => {
-        sk = sk.filter(s => s!==undefined);
+        sk = sk.filter(s => s !== undefined);
         return Promise.all(sk.map(s => bom_model.findOnlyBom(s.tiSku)
         )).then(promises => {
             let km = promises.map((x, xi) => (
