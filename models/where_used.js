@@ -29,6 +29,7 @@ function find_where_used_cassandra(id, depth = 40) {
         filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
        return distinct {
         sku: p._key,
+        header_id: p.header || false,
         bomPartId: v.vertices[-3].partId,
         attributes: p.attributes,
         type: p.type || "part",
@@ -48,7 +49,36 @@ function find_where_used_cassandra(id, depth = 40) {
     })
 }
 
+
+function find_where_used_cassandra_extended(id, depth = 40) {
+    let query = ` for  p,e,v
+      in 1..40 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
+       return distinct { 
+        sku: p._key,
+        header_id: p.header || false,
+        bomPartId: p.header? '' :v.vertices[-3].partId,
+        attributes: p.attributes,
+        type: p.type || "part",
+        attributes: p.attributes,
+        edge_type: e.type,
+        interchange: e.type=='interchange'? v.vertices[-1].attributes :  '',
+        interchange_sku: e.type=='interchange'? v.vertices[-1]._key : '',  
+        bom: v.vertices[-2].attributes,
+        bom_sku: (p.header || e.type=='interchange')? '' : v.vertices[-2]._key,
+        interchange_header: (!p.header && e.type=='interchange')? v.vertices[-2]._key: false,
+        relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
+        relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
+}`;
+
+    return db.query(query).then(function (cursor) {
+        return cursor.all();
+    })
+}
+
+
 module.exports = {
     findWhereUsed: find_where_used,
-    findWhereUsedCassandra: find_where_used_cassandra
+    findWhereUsedCassandra: find_where_used_cassandra,
+    findWhereUsedCassandraExt: find_where_used_cassandra_extended
 };
