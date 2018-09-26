@@ -10,7 +10,7 @@ function dto_header_key(promise) {
 
 
 function dto_parts(parts) {
-    return parts.map((p) => {
+    return parts.filter(p => (p !== null && p !== undefined)).map((p) => {
         return {
             sku: parseInt(p.partId),
             attributes: p.attributes
@@ -33,19 +33,19 @@ function findInterchange(req, res) {
             res.json(response);
         },
         function (err) {
-            res.send("There was a problem adding the information to the database. " + err);
+            res.send("There was a problem adding the information to the database. ");
         }
     );
 }
 
 
-function dto_cassandra(response){
-    return response.map(r =>{
+function dto_cassandra(rs) {
+    return rs.filter(r=>(r!==null && r!==undefined)).map(r => {
         return {
             id: r._key,
             manufacturer: r.attributes.manufacturer,
             partType: r.attributes.part_type,
-            part_number:r.attributes.part_number,
+            part_number: r.attributes.part_number,
             inactive: false
         }
     })
@@ -66,10 +66,10 @@ function _findInterchangeCassandra(id) {
 function findInterchangeCassandra(req, res) {
     return _findInterchangeCassandra(req.params.id).then(
         result => {
-            if(result){
+            if (result) {
                 res.set('Connection', 'close');
                 res.json(result);
-            }else{
+            } else {
                 res.send("There was a problem finding interchange ");
             }
         });
