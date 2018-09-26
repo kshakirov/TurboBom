@@ -36,14 +36,24 @@ function regroup_interchanges(ints) {
         let skus = Object.keys(ints[header]);
         if (skus.length > 1) {
             skus.forEach(sk => {
-                let new_obj = copy(ints[header]);
+                let new_obj = copy(ints[header]),
+                    self = new_obj[sk];
                 delete  new_obj[sk];
                 ints_hash[sk] = {
-                    interchanges: new_obj
+                    attributes: self.attributes,
+                    interchanges: new_obj,
+                    relationDistance: self.relationDistance,
+                    relationType: self.relationType
                 }
             })
-        } else if (skus.length == 1) {
-            ints_hash[skus[0]] = {interchanges: false}
+        } else if (skus.length === 1) {
+            let self = ints[header][skus[0]];
+            ints_hash[skus[0]] = {
+                attributes: self.attributes,
+                interchanges: false,
+                relationDistance: self.relationDistance,
+                relationType: self.relationType
+            }
         }
     });
     return ints_hash;
@@ -59,7 +69,7 @@ function group_directs(wus) {
     return dir_hash;
 }
 
-function group_all(dirs, ints) {
+function group_all(dirs, ints, r_ints) {
     let dirs_keys = Object.keys(dirs),
         ints_keys = Object.keys(ints);
     dirs_keys.forEach(k => {
@@ -67,13 +77,31 @@ function group_all(dirs, ints) {
             dirs[k]['interchanges'] = ints[k].interchanges;
         }
     });
+    console.log(`Count ${Object.keys(dirs).length}`);
+    r_ints.forEach(k => {
+        if (!dirs.hasOwnProperty(k)) {
+            //console.log(`Missed ${k}`)
+        }
+    })
 
-    // ints_keys.forEach(k => {
-    //     if (!dirs_keys.hasOwnProperty(k)) {
-    //         dirs[k]['interchanges'] = ints[k].interchanges;
-    //     }
-    // })
+}
 
+function check_direct_interchanges(raw) {
+    let r_ints_hash = {},
+        r_ints = raw.filter(r => {
+            return r.edge_type === 'interchange' && r.header_id === false
+                && (r.relationDistance === 1 || r.relationDistance === 3)
+        });
+    r_ints.forEach(r =>{
+        r_ints_hash[r.bomPartId] = {
+            attributes: r.attributes,
+            sku: r.sku,
+            relationDistance: r.relationDistance,
+            relationType: r.relationType
+
+        }
+    });
+    return r_ints_hash;
 }
 
 function write_to_file(filename, data) {
@@ -89,11 +117,14 @@ function write_to_file(filename, data) {
 
 
 WhereUsedCassandra.findWhereUsedCassandraExt(47808).then(r => {
+    write_to_file("raw_ints.json", check_direct_interchanges(r));
+    write_to_file("raw.json", r);
     let is = group_interchanges(r);
     write_to_file("interchanges.json", is);
     let iis = regroup_interchanges(is);
     write_to_file("n_interchanges.json", iis);
     let ds = group_directs(r);
+    write_to_file("directs.json", ds);
     group_all(ds, iis);
     write_to_file("final.json", ds);
 
