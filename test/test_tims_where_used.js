@@ -78,9 +78,11 @@ function group_all(dirs, ints, r_ints) {
         }
     });
     console.log(`Count ${Object.keys(dirs).length}`);
-    r_ints.forEach(k => {
-        if (!dirs.hasOwnProperty(k)) {
-            //console.log(`Missed ${k}`)
+    Object.keys(r_ints).forEach(k => {
+        if (dirs.hasOwnProperty(k)) {
+            if(!dirs[k].hasOwnProperty('interchanges')){
+                dirs[k].interchanges = r_ints[k]
+            }
         }
     })
 
@@ -116,8 +118,9 @@ function write_to_file(filename, data) {
 }
 
 
-WhereUsedCassandra.findWhereUsedCassandraExt(47808).then(r => {
-    write_to_file("raw_ints.json", check_direct_interchanges(r));
+WhereUsedCassandra.findWhereUsedCassandraExt(47778).then(r => {
+    let raw_ints = check_direct_interchanges(r);
+    write_to_file("raw_ints.json", raw_ints);
     write_to_file("raw.json", r);
     let is = group_interchanges(r);
     write_to_file("interchanges.json", is);
@@ -125,7 +128,7 @@ WhereUsedCassandra.findWhereUsedCassandraExt(47808).then(r => {
     write_to_file("n_interchanges.json", iis);
     let ds = group_directs(r);
     write_to_file("directs.json", ds);
-    group_all(ds, iis);
+    group_all(ds, iis,raw_ints);
     write_to_file("final.json", ds);
 
 });
