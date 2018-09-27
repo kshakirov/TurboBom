@@ -10,7 +10,7 @@ let express = require('express'),
     part = require('./controllers/part'),
     serviceKits = require('./controllers/service_kits'),
     kit_matrix = require('./controllers/kit_matrix'),
-    salesNotes= require('./controllers/sales_notes'),
+    salesNotes = require('./controllers/sales_notes'),
     altBom = require('./controllers/alternative_bom');
 
 // middleware that is specific to this router
@@ -99,7 +99,7 @@ router.get('/parts/:id', function (req, res) {
 
 
 router.get('/parts/:id/ancestors', function (req, res) {
-    whereUsed.findWhereUsed(req, res);
+    whereUsedCassandra.findWhereUsedCassandraSimple(req, res);
 });
 
 router.get('/parts/:id/interchanges', function (req, res) {
@@ -151,10 +151,9 @@ router.get('/product/:id/major_components/', function (req, res) {
 });
 
 router.get('/product/:id/sales_notes/', function (req, res) {
-   salesNotes.findSalesNotes(req,res);
+    salesNotes.findSalesNotes(req, res);
 
 });
-
 
 
 module.exports = router;

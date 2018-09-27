@@ -6,7 +6,7 @@ function create_item(wu) {
         attributes: wu.attributes,
         relationDistance: wu.relationDistance,
         relationType: wu.relationType,
-        sku: wu.sku
+        partId: wu.sku
 
     }
 }
@@ -73,11 +73,11 @@ function group_directs(wus) {
 function create_interchange_hash_fw(int_hash, wu) {
     let i = {};
     i[wu.interchange_sku] = {
-        sku: wu.interchange_sku,
+        partId: wu.interchange_sku,
         attributes: wu.interchange_attributes
     };
     int_hash[wu.sku] = {
-        sku: wu.sku,
+        partId: wu.sku,
         attributes: wu.attributes,
         interchanges: i,
         relationDistance: wu.relationDistance,
@@ -90,17 +90,17 @@ function create_interchange_hash_bk(int_hash, wu) {
 
     if (int_hash.hasOwnProperty(wu.interchange_sku)) {
         int_hash[wu.interchange_sku].interchanges[wu.sku] = {
-            sku: wu.sku,
+            partId: wu.sku,
             attributes: wu.attributes
         };
     } else {
         let i = {};
         i[wu.sku] = {
-            sku: wu.sku,
+            partId: wu.sku,
             attributes: wu.attributes
         };
         int_hash[wu.interchange_sku] = {
-            sku: wu.interchange_sku,
+            partId: wu.interchange_sku,
             attributes: wu.interchange_attributes,
             interchanges: i,
             relationDistance: wu.relationDistance,
@@ -180,6 +180,16 @@ function group_all_simple(dirs, ints) {
     return dirs
 }
 
+function prep_response(items_hash) {
+    return Object.values(items_hash).map(v => {
+            if (v.hasOwnProperty('interchanges')) {
+                v.interchanges = Object.values(v.interchanges);
+            }
+            return v;
+        }
+    )
+}
+
 
 function write_to_file(filename, data) {
     let fs = require('fs');
@@ -208,7 +218,7 @@ function write_to_file(filename, data) {
 //
 // });
 
-WhereUsedCassandra.findWhereUsedCassandraSimple(47778).then(r => {
+WhereUsedCassandra.findWhereUsedCassandraSimple(6505).then(r => {
 
     let items = r.filter(i => i.type !== 'header');
     console.log(`Count: ${items.length}`);
@@ -222,5 +232,7 @@ WhereUsedCassandra.findWhereUsedCassandraSimple(47778).then(r => {
     let all = group_all_simple(ds, is);
     console.log(`Count Interchanges: ${Object.keys(all).length}`);
     write_to_file("all_simple.json", all);
+    let response = prep_response(all);
+    write_to_file("response_simple.json", response);
 
 });

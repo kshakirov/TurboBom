@@ -119,7 +119,7 @@ function group_by_header(turbo_interchanges) {
 }
 
 function get_turbo_part_numbers(group) {
-    let tpn = group.filter(g=>g.attributes!==null);
+    let tpn = group.filter(g => g.attributes !== null);
     return tpn.map(g => g.attributes.part_number)
 }
 
@@ -260,6 +260,123 @@ function findWhereUsedCassandra(req, res) {
     );
 }
 
+function create_item(wu) {
+    return {
+        attributes: wu.attributes,
+        relationDistance: wu.relationDistance,
+        relationType: wu.relationType,
+        partId: wu.sku
+
+    }
+}
+
+
+function create_interchange_hash_fw(int_hash, wu) {
+    let i = {};
+    i[wu.interchange_sku] = {
+        partId: wu.interchange_sku,
+        attributes: wu.interchange_attributes
+    };
+    int_hash[wu.sku] = {
+        partId: wu.sku,
+        attributes: wu.attributes,
+        interchanges: i,
+        relationDistance: wu.relationDistance,
+        relationType: wu.relationType,
+
+    }
+}
+
+function create_interchange_hash_bk(int_hash, wu) {
+
+    if (int_hash.hasOwnProperty(wu.interchange_sku)) {
+        int_hash[wu.interchange_sku].interchanges[wu.sku] = {
+            partId: wu.sku,
+            attributes: wu.attributes
+        };
+    } else {
+        let i = {};
+        i[wu.sku] = {
+            partId: wu.sku,
+            attributes: wu.attributes
+        };
+        int_hash[wu.interchange_sku] = {
+            partId: wu.interchange_sku,
+            attributes: wu.interchange_attributes,
+            interchanges: i,
+            relationDistance: wu.relationDistance,
+            relationType: wu.relationType,
+
+        }
+    }
+}
+
+function group_directs_simple(wus) {
+    let dir_hash = {};
+    wus.filter(wu => {
+        return wu.edge_type === 'direct'
+    }).forEach(wu => {
+        dir_hash[wu.sku] = create_item(wu)
+    });
+    return dir_hash;
+}
+
+function group_interchanges_simple(wus) {
+    let int_hash = {};
+    wus.filter(wu => {
+        return wu.edge_type === 'interchange' && wu.type === 'part'
+    }).forEach(wu => {
+        create_interchange_hash_fw(int_hash, wu);
+        create_interchange_hash_bk(int_hash, wu)
+    });
+    return int_hash;
+}
+
+function group_all_simple(dirs, ints) {
+    let dirs_keys = Object.keys(dirs),
+        ints_keys = Object.keys(ints);
+    dirs_keys.forEach(k => {
+        if (ints.hasOwnProperty(k)) {
+            dirs[k]['interchanges'] = {};
+            Object.keys(ints[k].interchanges).forEach(key => {
+                dirs[k]['interchanges'][key] = ints[k].interchanges[key];
+            })
+        }
+    });
+    Object.keys(ints).forEach(k => {
+        if (!dirs.hasOwnProperty(k)) {
+            dirs[k] = ints[k]
+        }
+    });
+    return dirs
+}
+
+function prep_response_simple(items_hash) {
+    return Object.values(items_hash).map(v => {
+            if (v.hasOwnProperty('interchanges')) {
+                v.interchanges = Object.values(v.interchanges);
+            }
+            return v;
+        }
+    )
+}
+
+function find_where_used_simple(req, res) {
+    WhereUsedModel.findWhereUsedCassandraSimple(req.params.id).then(r => {
+        let items = r.filter(i => i.type !== 'header');
+        let ds = group_directs_simple(items);
+        let is = group_interchanges_simple(items);
+        let all = group_all_simple(ds, is);
+        let response = prep_response_simple(all);
+        res.set('Connection', 'close');
+        res.json(response);
+
+    }, err => {
+        res.send("There was a problem adding the information to the database. " + err);
+    });
+}
+
 
 exports.findWhereUsedCassandraTest = where_used_cassandra;
 exports.findWhereUsedCassandra = findWhereUsedCassandra;
+exports.findWhereUsedCassandraSimple = find_where_used_simple;
