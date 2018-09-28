@@ -321,7 +321,7 @@ function group_directs_simple(wus) {
     return dir_hash;
 }
 
-function group_interchanges_simple(wus) {
+function group_interchanges_simple_old(wus) {
     let int_hash = {};
     wus.filter(wu => {
         return wu.edge_type === 'interchange' && wu.type === 'part'
@@ -361,6 +361,54 @@ function prep_response_simple(items_hash) {
     )
 }
 
+let groupBy = function (xs, key) {
+    return xs.reduce(function (rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+    }, {});
+};
+
+
+function group_by_header(items) {
+    let ints = items.filter(i => i.interchange_header.length > 1);
+    return groupBy(ints, 'interchange_header');
+}
+
+
+function expand_headers(int_headers) {
+    let int_hash = {};
+    Object.values(int_headers).forEach(hh => {
+        let t_hash = {};
+        hh.forEach(h => {
+            t_hash[h.sku] = {
+                sku: h.sku,
+                attributes: h.attributes,
+                relationDistance: h.relationDistance,
+                relationType: h.relationType
+            };
+            t_hash[h.interchange_sku] = {
+                sku: h.interchange_sku,
+                attributes: h.interchange_attributes,
+                relationDistance: h.relationDistance,
+                relationType: h.relationType
+            };
+        });
+        Object.keys(t_hash).forEach(k => {
+            int_hash[k] = t_hash[k];
+            let t_hash_cp = JSON.parse(JSON.stringify(t_hash));
+            delete  t_hash_cp[k];
+            Object.values(t_hash_cp).forEach(v => delete v.interchanges);
+            int_hash[k].interchanges = t_hash_cp;
+        })
+    });
+    return int_hash
+}
+
+function group_interchanges_simple(items) {
+    let int_headers = group_by_header(items);
+    return expand_headers(int_headers);
+}
+
 function find_where_used_simple(req, res) {
     WhereUsedModel.findWhereUsedCassandraSimple(req.params.id).then(r => {
         let items = r.filter(i => i.type !== 'header');
@@ -380,3 +428,9 @@ function find_where_used_simple(req, res) {
 exports.findWhereUsedCassandraTest = where_used_cassandra;
 exports.findWhereUsedCassandra = findWhereUsedCassandra;
 exports.findWhereUsedCassandraSimple = find_where_used_simple;
+exports.group_directs_simple = group_directs_simple;
+exports.group_interchanges_simple = group_interchanges_simple;
+exports.group_all_simple = group_all_simple;
+exports.prep_response_simple = prep_response_simple;
+
+
