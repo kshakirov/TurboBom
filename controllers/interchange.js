@@ -39,13 +39,21 @@ function findInterchange(req, res) {
 }
 
 
+function get_attribute_by_name(r, name) {
+    if (r.hasOwnProperty('attributes') && r.attributes !== null && r.attributes !== undefined) {
+        return r.attributes[name]
+    }
+    return null;
+}
+
+
 function dto_cassandra(rs) {
-    return rs.filter(r=>(r!==null && r!==undefined)).map(r => {
+    return rs.filter(r => (r !== null && r !== undefined)).map(r => {
         return {
             id: r._key,
-            manufacturer: r.attributes.manufacturer,
-            partType: r.attributes.part_type,
-            part_number: r.attributes.part_number,
+            manufacturer: get_attribute_by_name(r, 'manufacturer'),
+            partType: get_attribute_by_name(r, 'part_type'),
+            part_number: get_attribute_by_name(r, 'part_number'),
             inactive: false
         }
     })
