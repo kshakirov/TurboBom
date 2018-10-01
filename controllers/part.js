@@ -13,7 +13,6 @@ function _create_product(body, id) {
 function _create_part(part) {
     return {
         _key: part.id,
-        manufacturerId: part.manufacturerId, //TODO remove later
         partTypeId: part.partTypeId, //TODO remove later
         partId: part.sku,
         sku: part.sku,
@@ -21,6 +20,19 @@ function _create_part(part) {
     };
 }
 
+
+function smart_create_part(part) {
+    let part_body = {
+        _key: part.sku.toString(),
+        sku: part.sku,
+        partId: part.sku,
+        attributes: part.attributes
+    };
+    if (part.hasOwnProperty('partTypeId')) {
+        part_body['partTypeId'] = part.partTypeId;
+    }
+    return part_body
+}
 
 function removePart(req, res) {
     let response = {
@@ -118,9 +130,20 @@ function upsertPart(req, res) {
 
 }
 
+function updateBulk(req, res) {
+    let parts = req.body.map(p => smart_create_part(p));
+    part_model.addBulk(parts).then((part) => {
+        res.sendStatus(200);
+    }, (error) => {
+        res.sendStatus(404);
+    })
+}
+
 
 exports.removePart = removePart;
 exports.addPart = addPart;
 exports.getPart = getPart;
 exports.part = part;
 exports.upsertPart = upsertPart;
+exports.updateBulk = updateBulk;
+

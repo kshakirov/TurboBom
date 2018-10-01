@@ -84,6 +84,10 @@ router.put('/parts/:id', function (req, res) {
     part.upsertPart(req, res);
 });
 
+router.post('/bulk/parts/', function (req, res) {
+    part.updateBulk(req, res);
+});
+
 router.post('/parts/', function (req, res) {
     part.upsertPart(req, res);
 });
