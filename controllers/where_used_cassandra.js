@@ -170,12 +170,14 @@ function prep_for_cartridges(turbo_groups) {
 function add_turbos(response, turbo_interchanges) {
     return response.map(r => {
         let numbers = new Set(r.turboPartNumbers);
-        turbo_interchanges.forEach(ti => {
-            let sti = new Set(ti);
-            if (!numbers.intersect(sti).empty()) {
-                numbers = numbers.union(sti);
-            }
-        });
+        if(Array.isArray(turbo_interchanges)) {
+            turbo_interchanges.forEach(ti => {
+                let sti = new Set(ti);
+                if (!numbers.intersect(sti).empty()) {
+                    numbers = numbers.union(sti);
+                }
+            });
+        }
         r.turboPartNumbers = numbers.get(0);
         return r;
     })
@@ -370,7 +372,7 @@ let groupBy = function (xs, key) {
 
 
 function group_by_header(items) {
-    let ints = items.filter(i => i.interchange_header.length > 1);
+    let ints = items.filter(i =>i.hasOwnProperty('interchange_header') &&  i.interchange_header.length > 1);
     return groupBy(ints, 'interchange_header');
 }
 
