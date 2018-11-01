@@ -253,6 +253,10 @@ function findWhereUsedCassandra(req, res) {
                 resp = prep_for_cartridges(turbo_groups);
                 res.set('Connection', 'close');
                 res.json(resp);
+            } else {
+                res.set('Connection', 'close');
+                res.json({});
+
             }
 
         },
@@ -414,6 +418,7 @@ function group_interchanges_simple(items) {
 function find_where_used_simple(req, res) {
     WhereUsedModel.findWhereUsedCassandraSimple(req.params.id).then(r => {
         let items = r.filter(i => i.type !== 'header');
+        items = items.filter(i=> i.type!=='Created' || i.attributes!=="");
         let ds = group_directs_simple(items);
         let is = group_interchanges_simple(items);
         let all = group_all_simple(ds, is);
