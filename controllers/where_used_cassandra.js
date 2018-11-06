@@ -376,7 +376,8 @@ let groupBy = function (xs, key) {
 
 
 function group_by_header(items) {
-    let ints = items.filter(i =>i.hasOwnProperty('interchange_header') &&  i.interchange_header.length > 1);
+    let ints = items.filter(i =>i.hasOwnProperty('interchange_header') &&
+        i.interchange_header!== null &&  i.interchange_header.length > 1);
     return groupBy(ints, 'interchange_header');
 }
 
