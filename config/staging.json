@@ -15,6 +15,14 @@
             "secret": "keepitsecret",
             "tokenExpiration": "60d",
             "issuer": "zoral.com"
-            }
+        }
+    },
+    "TimmsGraphAttributes": {
+        "dbConfig": {
+            "url": "http://192.99.147.128:8529",
+            "dbName": "TimmsGraphAttriubtes",
+            "login": "root",
+            "password": "servantes"
+        }
     }
 }

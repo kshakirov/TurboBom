@@ -11,6 +11,7 @@ let express = require('express'),
     serviceKits = require('./controllers/service_kits'),
     kit_matrix = require('./controllers/kit_matrix'),
     salesNotes = require('./controllers/sales_notes'),
+    graphAttributes = require('./controllers/graph_attributes'),
     altBom = require('./controllers/alternative_bom');
 
 // middleware that is specific to this router
@@ -156,6 +157,11 @@ router.get('/product/:id/major_components/', function (req, res) {
 
 router.get('/product/:id/sales_notes/', function (req, res) {
     salesNotes.findSalesNotes(req, res);
+
+});
+
+router.get('/graph/:graphId/:nodeId/children', function (req, res) {
+    graphAttributes.getChildren(req, res);
 
 });
 

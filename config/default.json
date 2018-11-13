@@ -20,5 +20,13 @@
         "user": "vagrant",
         "password": "vagrant",
         "database": "metadata"
+    },
+    "TimmsGraphAttributes":{
+        "dbConfig":{
+            "url": "http://127.0.0.1:8529",
+            "dbName": "TimmsGraphAttriubts",
+            "login": "root",
+            "password": "servantes"
+        }
     }
 }
