@@ -7,4 +7,6 @@ let rem_dup_query = `
         REMOVE { _key: p._key } IN parts
     `;
 
-consistencyLib.execQuery(rem_dup_query)
+
+
+consistencyLib.execQuery(re)
