@@ -1,7 +1,7 @@
 {
     "TurboGraph": {
         "dbConfig": {
-            "url": "http://192.99.147.128:8529",
+            "url": "http://arangodb-staging.turbointernational.com",
             "dbName": "BomStaging",
             "login": "root",
             "password": "servantes",
@@ -19,8 +19,8 @@
     },
     "TimmsGraphAttributes": {
         "dbConfig": {
-            "url": "http://192.99.147.128:8529",
-            "dbName": "TimmsGraphAttriubtes",
+            "url": "http://arangodb-staging.turbointernational.com",
+            "dbName": "TimmsGraphAttributes",
             "login": "root",
             "password": "servantes"
         }

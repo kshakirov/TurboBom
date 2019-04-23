@@ -1,16 +1,11 @@
 {
     "TurboGraph": {
         "dbConfig": {
-            "url": "http://127.0.0.1:8529",
+            "url": "http://arangodb-staging.turbointernational.com",
             "dbName": "BomTest",
             "login": "root",
             "password": "servantes",
-            "partCollection": "parts",
-            "bomEdgesCollection": "bom_edges",
-            "interchangeEdgesCollection": "interchange_edges",
-            "interchangeHeaderCollection": "interchange_headers",
-            "altInterchangeEdgesCollection": "alt_interchange_edges",
-            "altInterchangeHeaderCollection": "alt_interchange_headers"
+            "graph": "BomGraph"
         },
         "jwt": {
             "secret": "keepitsecret",
