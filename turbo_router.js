@@ -165,5 +165,10 @@ router.get('/graph/:graphId/:nodeId/children', function (req, res) {
 
 });
 
+router.all('/unauthorized', function (req, res) {
+    res.sendStatus(401)
+
+});
+
 
 module.exports = router;
