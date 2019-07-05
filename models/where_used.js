@@ -7,8 +7,8 @@ db.useBasicAuth(dbConfig.login, dbConfig.password);
 
 function find_where_used(id, depth = 40) {
     let query = ` for  p,e,v 
-        in 1..40 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
-        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
+        in 1..6 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && p.attributes
        return distinct {
         partId: p._key,
         type: p.type,
@@ -25,8 +25,8 @@ function find_where_used(id, depth = 40) {
 
 function find_where_used_cassandra(id, depth = 40) {
     let query = ` for  p,e,v 
-        in 1..40 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
-        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
+        in 1..6 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && p.attributes
        return distinct {
         sku: p._key,
         header_id: p.header || false,
@@ -52,8 +52,8 @@ function find_where_used_cassandra(id, depth = 40) {
 
 function find_where_used_cassandra_extended(id, depth = 40) {
     let query = ` for  p,e,v
-      in 1..40 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
-        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
+      in 1..6 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && p.attributes
        return distinct { 
         sku: p._key,
         header_id: p.header || false,
@@ -79,8 +79,8 @@ function find_where_used_cassandra_extended(id, depth = 40) {
 
 function find_where_used_cassandra_simple(id, depth = 40) {
     let query = ` for  p,e,v
-      in 1..40 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
-        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
+      in 1..6 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && p.attributes
         let is_interchange = e.type=='interchange'
         let is_direct = e.type=='direct'
         let is_header = e.type=='header'

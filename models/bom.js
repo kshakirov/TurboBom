@@ -31,7 +31,7 @@ function docs_exist(parent_id, child_id) {
 module.exports = {
     findBom: function (id, distance, depth = 40) {
         let query = `for  p,e,v 
-        in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        in 1..7 outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter !(e.type=='direct' && v.edges[-2].type =='interchange') &&  count(remove_value(v.edges[*].type,'interchange')) < ${distance + 1}  && !(v.vertices[0].partId== ${id} && v.edges[0].type =='interchange' )
         
        return distinct {
@@ -52,7 +52,7 @@ module.exports = {
 
     findBomCassandra: function (id, distance, depth = 40) {
         let query = `for  p,e,v 
-        in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        in 1..6  outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter !(e.type=='direct' && v.edges[-2].type =='interchange') &&  count(remove_value(v.edges[*].type,'interchange')) < ${distance + 1}  && !(v.vertices[0].partId== ${id} && v.edges[0].type =='interchange' )
         
        return distinct {
@@ -70,6 +70,7 @@ module.exports = {
         relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
 }`;
+      console.log(query);
 
         return db.query(query).then(function (cursor) {
             return cursor.all();
@@ -79,7 +80,7 @@ module.exports = {
         let distance = 10,
             depth = 40,
             query = `for  p,e,v 
-        in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}
+        in 1..6 outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}
         filter   count(v.edges[*]) < ${distance}  
        return distinct {
         partId: p._key,
