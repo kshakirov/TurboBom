@@ -3,6 +3,15 @@
 /*
  * Express Dependencies
  */
+
+let cluster = require('cluster');
+if (cluster.isMaster) {  
+    let cpus = require('os').cpus().length;
+    for (let i = 0; i < cpus; i += 1) {
+        cluster.fork();
+    }    
+} else {
+
 let compression = require('compression');
 let express = require('express');
 let app = express();
@@ -45,3 +54,4 @@ let custom_port = process.argv[2] || 9009;
 app.listen(process.env.PORT || custom_port);
 
 console.log('Express started on port ' + custom_port);
+}
