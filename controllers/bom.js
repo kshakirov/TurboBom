@@ -26,7 +26,7 @@ function get_interchanges(d_boms, boms) {
 
 function filter_boms(boms) {
     let filtered_boms = boms.filter(function (bom) {
-        if (bom.type != 'header')
+        if (bom.type != 'header' && bom.type != 'Created')
             return bom;
     });
     filtered_boms = filtered_boms.map(b =>{
