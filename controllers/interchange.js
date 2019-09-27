@@ -10,7 +10,7 @@ function dto_header_key(promise) {
 
 
 function dto_parts(parts) {
-    return parts.map((p) => {
+    return parts.filter(it => it != null).map((p) => {
         return parseInt(p.partId)
     })
 }
