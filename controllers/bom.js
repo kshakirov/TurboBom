@@ -158,6 +158,15 @@ function _findBomCassandra(id, distance, depth, authorization) {
     return bom_model.findBomCassandra(id, distance, depth, authorization).then(
         bom => {
             boms = filter_boms_cassandra(bom);
+            boms.forEach(it => {
+               it['oe_sku'] = it['sku'];
+               it['sku'] = null;
+               it['oe_part_number'] = it['part_number'];
+               it['oe_part_number'] = null;
+               it['distance'] = it['relationDistance'];
+               delete it['relationDistance'];
+            //    delete it['sku'];
+            });
             if (authorization) {
                 return add_price(boms, authorization)
             } else {
