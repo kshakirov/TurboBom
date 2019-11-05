@@ -56,6 +56,10 @@ function get_sku(p) {
     return p.sku
 }
 
+function get_turbo_type(p) {
+    return p.attributes.turbo_type;
+}
+
 
 function get_ti_part_number(p) {
     if (p.attributes.manufacturer == "Turbo International") {
@@ -154,6 +158,7 @@ function prep_for_cartridges(turbo_groups) {
                 manufacturer: tg.attributes.manufacturer,
                 part_type: tg.attributes.part_type,
                 sku: get_sku(tg),
+                turboType: get_turbo_type(tg),
                 tiSku: get_ti_sku(tg),
                 partNumber: get_part_number(tg),
                 tiPartNumber: get_ti_part_number(tg),
