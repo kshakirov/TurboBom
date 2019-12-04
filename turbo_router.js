@@ -136,7 +136,7 @@ router.get('/product/:id/bom/', function (req, res) {
 });
 
 router.post('/product/:id/where_used/', function (req, res) {
-    whereUsedCassandra.findWhereUsedCassandra(req, res);
+    whereUsedCassandra.findWhereUsedCassandraPart(req, res);
 });
 
 router.get('/product/:id/interchanges/', function (req, res) {

@@ -271,6 +271,24 @@ function findWhereUsedCassandra(req, res) {
     );
 }
 
+function findWhereUsedCassandraPart(req, res) {
+    let authorization = req.headers.authorization || false;
+    WhereUsedModel.findWhereUsedCassandra([req.params.id], []).then(
+        function (where_used) {
+            let group = group_by_header(filter_turbo_interchanges(where_used));
+            let pairs = where_used,
+                turbo_groups = where_used;
+            let resp = add_turbos(prep_response(pairs,
+                turbo_groups), group);
+            res.set('Connection', 'close');
+            res.json(add_price(pack_full_response(resp), authorization));
+        },
+        function (err) {
+            res.send("There was a problem adding the information to the database. " + err);
+        }
+    );
+}
+
 function create_item(wu) {
     return {
         attributes: wu.attributes,
@@ -440,6 +458,7 @@ function find_where_used_simple(req, res) {
 
 exports.findWhereUsedCassandraTest = where_used_cassandra;
 exports.findWhereUsedCassandra = findWhereUsedCassandra;
+exports.findWhereUsedCassandraPart = findWhereUsedCassandraPart;
 exports.findWhereUsedCassandraSimple = find_where_used_simple;
 exports.group_directs_simple = group_directs_simple;
 exports.group_interchanges_simple = group_interchanges_simple;
