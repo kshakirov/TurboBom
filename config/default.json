@@ -20,5 +20,9 @@
         "user": "vagrant",
         "password": "vagrant",
         "database": "metadata"
+    },
+    "InterchangeLogService": {
+      "host": "localhost",
+      "port": "3000"
     }
 }
