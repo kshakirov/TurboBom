@@ -3,31 +3,31 @@ let config = require('config');
 let host = config.get('InterchangeLogService.host');
 let port = config.get('InterchangeLogService.port');
 
-function log(partId, oldHeader, newHeader) {
+function log(partId, oldHeader, newHeader, action) {
     let data = {
         'partId': partId,
         'oldHeader': oldHeader,
-        'newHeader': newHeader
+        'newHeader': newHeader,
+        'action': action
     };
-    axios.post('http://' + host + ':' + port + '/log', data)
+    return axios.post('http://' + host + ':' + port + '/log', data)
         .then((res) => {
-            console.log(`Status: ${res.status}`);
-            console.log('Body: ', res.data);
+            return res.data;
         }).catch((err) => {
-        console.error(err);
-    });
+            console.error(err);
+        });
 }
 
-function logGroup(partIds, oldHeader, newHeader) {
+function logGroup(partIds, oldHeader, newHeader, action) {
     let data = {
         'partIds': partIds,
         'oldHeader': oldHeader,
-        'newHeader': newHeader
+        'newHeader': newHeader,
+        'action': action
     };
-    axios.post('http://' + host + ':' + port + '/log-group', data)
+    return axios.post('http://' + host + ':' + port + '/log-group', data)
         .then((res) => {
-            console.log(`Status: ${res.status}`);
-            console.log('Body: ', res.data);
+            return res.data;
         }).catch((err) => {
         console.error(err);
     });

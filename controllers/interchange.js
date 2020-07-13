@@ -52,16 +52,17 @@ function findInterchangesByHeaderId(req, res) {
 }
 
 function removeInterchange(req, res) {
-    let response = {success: true};
     interchange_model.removeInterchange(req.params.header_id, req.params.item_id).then(
         function () {
-            interchangeLog.log(req.params.item_id, req.params.header_id, null);
-            res.json(response);
+            interchangeLog.log(req.params.item_id, req.params.header_id, 'leave').then(data => {
+                response.description = data[0].description;
+                response.transactionId = data[0].transactionId;
+                response.success = true;
+                res.json(response);
+            });
         },
         function (err) {
-            response.success = false;
-            response.msg = err.message;
-            res.json(response);
+            res.json({'success': true, 'msg': err.message});
         }
     );
 }
@@ -74,8 +75,11 @@ function createInterchange(req, res) {
         return interchange_model.addInterchange(new_header_id, req.params.item_id).then(
             function () {
                 response.headerId = parseInt(new_header_id);
-                interchangeLog.log(req.params.item_id, null, new_header_id);
-                res.json(response);
+                interchangeLog.log(req.params.item_id, null, new_header_id, 'create').then(data => {
+                    response.description = data[0].description;
+                    response.transactionId = data[0].transactionId;
+                    res.json(response);
+                });
             },
             function (err) {
                 response.success = false;
@@ -91,8 +95,11 @@ function addInterchange(req, res) {
     let response = {success: true};
     interchange_model.addInterchange(req.params.header_id, req.params.item_id).then(
         function () {
-            interchangeLog.log(req.params.item_id, null, req.params.header_id);
-            res.json(response);
+            interchangeLog.log(req.params.item_id, null, req.params.header_id, 'add').then(data => {
+                response.description = data[0].description;
+                response.transactionId = data[0].transactionId;
+                res.json(response);
+            });
         },
         function (err) {
             response.success = false;
@@ -103,7 +110,7 @@ function addInterchange(req, res) {
 }
 
 
-function leaveIntechangeGroup(req, res) {
+async function leaveIntechangeGroup(req, res) {
     let response = {success: true};
     return interchange_model.findInterchangeHeaderByItemId(req.params.item_id).then(
         function (header_promise) {
@@ -111,8 +118,12 @@ function leaveIntechangeGroup(req, res) {
             return interchange_model.leaveInterchangeGroup(req.params.item_id).then(function (promise) {
                     response.newHeaderId = parseInt(promise);
                     response.oldHeaderId = parseInt(old_header_id);
-                    interchangeLog.log(req.params.item_id, old_header_id, promise);
-                    res.json(response);
+                    interchangeLog.log(req.params.item_id, old_header_id, promise, 'leave').then(data => {
+                        response.description = data[0].description;
+                        response.transactionId = data[0].transactionId;
+                        res.json(response);
+                    });
+
                 },
                 function (err) {
                     response.success = false;
@@ -136,8 +147,11 @@ function addInterchangeToGroup(req, res) {
             function (promises) {
                 response.newHeaderId = parseInt(promises[0][0].key);
                 response.oldHeaderId = parseInt(old_header_id);
-                interchangeLog.log(req.params.out_item_id, old_header_id, promises[0][0].key);
-                res.json(response);
+                interchangeLog.log(req.params.out_item_id, old_header_id, promises[0][0].key, 'add').then(data => {
+                    response.description = data[0].description;
+                    response.transactionId = data[0].transactionId;
+                    res.json(response);
+                });
             },
             function (err) {
                 response.success = false;
@@ -171,10 +185,12 @@ function mergeIterchangeToAnotherItemGroup(req, res) {
                             function (promise) {
                                 response.newHeaderId = dto_header_key(promise[0]);
                                 response.oldHeaderId = parseInt(old_header_id);
-                                interchangeLog.logGroup(Array.from(ids), old_header_id, dto_header_key(promise[0]));
-                                res.json(response);
+                                interchangeLog.logGroup(Array.from(ids), old_header_id, dto_header_key(promise[0]), 'addGroup').then(data => {
+                                    response.description = data[0].description;
+                                    response.transactionId = data[0].transactionId;
+                                    res.json(response);
+                                });
                             });
-                        res.json(response);
                     })
                 })
             })
