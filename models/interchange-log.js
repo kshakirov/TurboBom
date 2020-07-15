@@ -9,7 +9,7 @@ function create(partId, oldHeader, newHeader) {
         'oldHeader': oldHeader,
         'newHeader': newHeader
     };
-    return axios.post('http://' + host + ':' + port + '/log/create', data)
+    return axios.post('http://' + host + ':' + port + '/log/interchange/create', data)
         .then((res) => {
             return res.data;
         }).catch((err) => {
@@ -23,7 +23,7 @@ function leave(partId, oldHeader, newHeader) {
         'oldHeader': oldHeader,
         'newHeader': newHeader
     };
-    return axios.post('http://' + host + ':' + port + '/log/leave', data)
+    return axios.post('http://' + host + ':' + port + '/log/interchange/leave', data)
         .then((res) => {
             return res.data;
         }).catch((err) => {
@@ -38,7 +38,7 @@ function add(partId, toPartId, oldHeader, newHeader) {
         'oldHeader': oldHeader,
         'newHeader': newHeader
     };
-    return axios.post('http://' + host + ':' + port + '/log/add', data)
+    return axios.post('http://' + host + ':' + port + '/log/interchange/add', data)
         .then((res) => {
             return res.data;
         }).catch((err) => {
@@ -52,7 +52,7 @@ function merge(partIds, oldHeader, newHeader) {
         'oldHeader': oldHeader,
         'newHeader': newHeader
     };
-    return axios.post('http://' + host + ':' + port + '/log/merge', data)
+    return axios.post('http://' + host + ':' + port + '/log/interchange/merge', data)
         .then((res) => {
             return res.data;
         }).catch((err) => {
