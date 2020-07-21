@@ -50,7 +50,7 @@ module.exports = {
     },
     findOnlyBom: function (id) {
         let distance = 10,
-            depth = 40,
+            depth = 5,
             query = `for  p,e,v 
         in 1..${depth} outbound 'parts/${id}' ${dbConfig.bomEdgesCollection}
         filter   count(v.edges[*]) < ${distance}  
