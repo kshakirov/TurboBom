@@ -5,9 +5,9 @@ var db = new Database({url: dbConfig.url});
 db.useDatabase(dbConfig.dbName);
 db.useBasicAuth(dbConfig.login, dbConfig.password);
 
-function find_where_used(id, depth=5) {
+function find_where_used(id, /*todo: depth=5 */) {
     var query = ` for  p,e,v 
-        in 1..${depth} inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        in 1..10 inbound 'parts/${id}' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
        return distinct {
         partId: p._key,
