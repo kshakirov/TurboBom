@@ -53,7 +53,7 @@ function merge_edges_vertices(response) {
 
 function findBom(req, res) {
 
-    let depth = req.query.depth || 40,
+    let depth = req.query.depth || 5,
         distance = parseInt(req.query.distance) || 1;
     bom_model.findBom(req.params.id, distance, depth).then(
         function (bom) {
