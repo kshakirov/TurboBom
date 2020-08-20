@@ -35,10 +35,10 @@ app.use(bodyParser.urlencoded({
 }));
 
 var routers = require('./turbo_router')
-
+var routers2 = require('./turbo_router_v2')
 
 app.use('/', routers)
-
+app.use('/v2', routers2)
 
 
 let custom_port = process.argv[2] || 9009;
