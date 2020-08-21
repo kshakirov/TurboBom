@@ -1,46 +1,63 @@
-let interchange_model = require('../models/interchanges_v2');
+let interchangeModel = require('../models/interchanges_v2');
 
-function dto_header_key(promise) {
-    if (promise && promise.key)
-        return parseInt(promise.key);
-    else
-        return null;
-}
-
-function dto_parts(parts) {
-    return parts.filter(it => it != null).map((p) => {
-        return parseInt(p.partId)
-    })
-}
-
-async function findInterchange(req, res) {
+let findInterchange = async (req, res) => {
     try {
-        let header = await interchange_model.findInterchangeHeaderByItemId(req.params.id);
-        let interchange = await interchange_model.findInterchange(req.params.id);
-        let response = {
-            headerId: dto_header_key(header[0]),
-            parts: dto_parts(interchange)
-        };
         res.set('Connection', 'close');
-        res.json(response);
+        res.json({
+            headerId: (await interchangeModel.findInterchangeHeaderByItemId(req.params.id))[0].key,
+            parts: await interchangeModel.findInterchange(req.params.id)
+        });
     } catch(e) {
-        res.send("There was a problem adding the information to the database. ");
+        res.send(`Arango error: ${e}`);
     }
 }
 
-async function findInterchangesByHeaderId(req, res) {
+let convertPartForEcommerce = (part) => ({
+    'id': part.sku,
+    'manufacturer': part.manufacturer,
+    'partType': part.partType,
+    'description': part.description,
+    'part_number': part.partNumber,
+    'inactive': false
+});
+
+let findInterchangeEcommerce = async (req, res) => {
     try {
-        let interchanges = await interchange_model.findInterchangesByHeaderId(req.params.header_id);
-        let response = {
-            headerId: parseInt(req.params.header_id),
-            parts: [{"id":8389,"manufacturer":"Garrett","partType":"Turbo","description":null,"part_number":"709838-0003","inactive":false}]// dto_parts(interchanges)
-        };
         res.set('Connection', 'close');
-        res.json(response);
+        res.json({
+            headerId: (await interchangeModel.findInterchangeHeaderByItemId(req.params.id))[0].key,
+            parts: (await interchangeModel.findInterchange(req.params.id)).map(it => convertPartForEcommerce(it))
+        });
     } catch(e) {
-        res.send("There was a problem adding the information to the database. " + err);
+        res.send(`Arango error: ${e}`);
+    }
+};
+
+let findInterchangesPage = async (req, res) => {
+    try {
+        res.set('Connection', 'close');
+        res.json({
+            headerId: (await interchangeModel.findInterchangeHeaderByItemId(req.params.id))[0].key,
+            parts: await interchangeModel.findInterchangesPage(req.params.id, req.params.offset, req.params.limit)
+        });
+    } catch(e) {
+        res.send(`Arango error: ${e}`);
+    }
+}
+
+let findInterchangesByHeaderId = async (req, res) => {
+    try {
+        res.set('Connection', 'close');
+        res.json({
+            headerId: parseInt(req.params.header_id),
+            parts: await interchangeModel.findInterchangesByHeaderId(req.params.header_id)
+        });
+    } catch(e) {
+        res.send(`Arango error: ${e}`);
     }
 }
 
 exports.findInterchange = findInterchange;
+exports.findInterchangeEcommerce = findInterchangeEcommerce;
 exports.findInterchangesByHeaderId = findInterchangesByHeaderId;
+exports.findInterchangesPage = findInterchangesPage;

@@ -1,8 +1,8 @@
 {
     "TurboGraph":{
         "dbConfig":{
-            "url": "http://127.0.0.1:8529",
-            "dbName": "BomTest",
+            "url": "http://arangodb-staging.turbointernational.com",
+            "dbName": "BomStaging",
             "login": "root",
             "password": "servantes",
             "partCollection": "parts",
@@ -13,6 +13,18 @@
             "altInterchangeHeaderCollection" : "alt_interchange_headers",
             "graph": "BomGraph",
             "dumpFile": "metadata_arangodb-201711081216.json"
+        }
+    },
+    "TurboGraph_v2":{
+        "dbConfig":{
+            "url": "http://arangodb-staging.turbointernational.com",
+            "dbName": "BomStaging",
+            "login": "root",
+            "password": "servantes",
+            "partCollection": "test_parts",
+            "interchangeEdgesCollection" : "test_interchange_edges",
+            "interchangeHeaderCollection" : "test_interchange_headers",
+            "graph": "TestBomGraph"
         }
     },
     "Mysql":{
