@@ -16,4 +16,12 @@ router.get('/parts/:id/interchanges', function (req, res) {
     interchange.findInterchange(req, res);
 });
 
+router.get('/ecommerce/parts/:id/interchanges', function (req, res) {
+    interchange.findInterchangeEcommerce(req, res);
+});
+
+router.get('/parts/:id/interchanges/:offset/:limit', function (req, res) {
+    interchange.findInterchangesPage(req, res);
+});
+
 module.exports = router;
