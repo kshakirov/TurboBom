@@ -92,6 +92,16 @@ describe('Interchange', function () {
         });
     });
 
+    describe('#testNewStructure()', function () {
+        it('should return  true', function (done) {
+            InterchangesModel.findInterchange(-229).then(function (interchanges) {
+                console.log(interchanges.length);
+                assert.equal(2, interchanges.length);
+                done();
+            })
+        });
+    });
+
     after(function () {
         console.log("Test Finished")
     });
