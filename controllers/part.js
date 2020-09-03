@@ -33,10 +33,14 @@ function addPart(req, res) {
         success: true,
     };
     let product = _create_product(req.body, req.params.id);
+    console.log(new Date() + 'addPart, created product: ' + product);
     return part_model.addPart(product).then(
         () => {
+            console.log(new Date() + 'part_model.addPart succesfully executed: ' + product);
             interchange_model.createInterchangeHeader().then((header_id) => {
+                console.log(new Date() + 'header created: ' + header_id);
                 interchange_model.addInterchange(header_id, req.params.id).then((r) => {
+                    console.log(new Date() + 'interchange added to header: ' + header_id + ' ' + req.params.id);
                     response.headerId = header_id;
                     res.json(response);
                 })
@@ -44,6 +48,7 @@ function addPart(req, res) {
 
         },
         function (err) {
+            console.err(new Date() + 'part_model.addPart error: ' + err);
             response.success = false;
             response.msg = err.message;
             res.json(response);
