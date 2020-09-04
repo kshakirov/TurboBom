@@ -33,10 +33,10 @@ function addPart(req, res) {
         success: true,
     };
     let product = _create_product(req.body, req.params.id);
-    console.log(new Date() + 'addPart, created product: ' + product);
+    console.log(new Date() + 'addPart, created product: ' + JSON.stringify(product));
     return part_model.addPart(product).then(
         () => {
-            console.log(new Date() + 'part_model.addPart succesfully executed: ' + product);
+            console.log(new Date() + 'part_model.addPart succesfully executed: ' + JSON.stringify(product));
             interchange_model.createInterchangeHeader().then((header_id) => {
                 console.log(new Date() + 'header created: ' + header_id);
                 interchange_model.addInterchange(header_id, req.params.id).then((r) => {
