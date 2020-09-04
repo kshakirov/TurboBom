@@ -9,7 +9,7 @@ let parts_collection_name = dbConfig.partCollection;
 module.exports = {
     addPart: function (product) {
         let parts_collection = db.collection(parts_collection_name);
-        console.log(new Date() + 'models/part.addPart, created product: ' + product);
+        console.log(new Date() + 'models/part.addPart, created product: ' + JSON.stringify(product));
         return parts_collection.save(
             product
         );
