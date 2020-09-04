@@ -48,7 +48,7 @@ function addPart(req, res) {
 
         },
         function (err) {
-            console.err(new Date() + 'part_model.addPart error: ' + err);
+            console.error(new Date() + 'part_model.addPart error: ' + err);
             response.success = false;
             response.msg = err.message;
             res.json(response);
