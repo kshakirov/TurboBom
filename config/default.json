@@ -24,6 +24,9 @@
             "partCollection": "test_parts",
             "interchangeEdgesCollection" : "test_interchange_edges",
             "interchangeHeaderCollection" : "test_interchange_headers",
+            "altInterchangeEdgesCollection" : "test_alt_interchange_edges",
+            "altInterchangeHeaderCollection" : "test_alt_interchange_headers",
+            "bomEdgesCollection": "test_bom_edges",
             "graph": "TestBomGraph"
         }
     },
