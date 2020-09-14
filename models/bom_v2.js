@@ -22,6 +22,23 @@ const findBomQuery = `for  p,e,v
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
 }`;
 
+const findBomPageQuery = `for  p,e,v 
+        in 1.._depth outbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter (p.type != 'header' && p.type != 'Created') 
+        && !(e.type=='direct' && v.edges[-2].type =='interchange') 
+        &&  count(remove_value(v.edges[*].type,'interchange')) < _distance  
+        && !(v.vertices[0].partId== _id && v.edges[0].type =='interchange' )
+        LIMIT _offset, _limit
+       return distinct {
+        partId: TO_NUMBER(p._key),
+        bomPartId: v.vertices[-3].partId,
+        nodeType: e.type,
+        qty: e.quantity,
+        type: p.type,
+        relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
+        relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
+}`;
+
 const findOnlyBomQuery = `for  p,e,v 
         in 1.._depth outbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}
         filter   count(v.edges[*]) < _distance  
@@ -56,6 +73,9 @@ let docsExists = async (parent_id, child_id) => {
 let findBom = async (id, distance, depth = 5) =>
     (await db.query(findBomQuery.replace('_id', id).replace('_id', id).replace('_distance', distance + 1).replace('_depth', depth))).all();
 
+let findBomPage = async (offset, limit, id, distance, depth = 5) =>
+    (await db.query(findBomPageQuery.replace('_offset', offset).replace('_limit', limit).replace('_id', id).replace('_id', id).replace('_distance', distance + 1).replace('_depth', depth))).all();
+
 let findOnlyBom = async (id, distance = 11, depth = 5) => (await db.query(findOnlyBomQuery.replace('_id', id).replace('_distance', distance).replace('_depth', depth))).all();
 
 let findBomAsChild = async (id) => (await db.query(findBomAsChildQuery.replace('_id', id))).all();
@@ -84,6 +104,7 @@ let addBom = async (parentId, childId, quantity = 0) => {
 }
 
 exports.findBom = findBom;
+exports.findBomPage = findBomPage;
 exports.findOnlyBom = findOnlyBom;
 exports.findBomAsChild = findBomAsChild;
 exports.removeBom = removeBom;

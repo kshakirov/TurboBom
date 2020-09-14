@@ -11,6 +11,8 @@ let filterBoms = (boms) => getInterchanges(filterDirectBoms(boms), boms);
 
 let findBom = async (req, res) => res.json(filterBoms(await bomModel.findBom(req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
 
+let findBomPage = async (req, res) => res.json(filterBoms(await bomModel.findBomPage(req.params.offset, req.params.limit, req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
+
 let findOnlyBom = async (req, res) => res.json((await bomModel.findOnlyBom(req.params.id)));
 
 let convertToVertice = (response) => response.map((r) => {
@@ -54,6 +56,7 @@ let addBom = async (req, res) => {
 }
 
 exports.findBom = findBom;
+exports.findBomPage = findBomPage;
 exports.findOnlyBom = findOnlyBom;
 exports.findBomAsChild = findBomAsChild;
 exports.removeBom = removeBom;

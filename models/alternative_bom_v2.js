@@ -13,12 +13,24 @@ let findAlternativeBomQuery = `FOR v, e, p IN 1..2 ANY '${dbConfig.partCollectio
             header: v.header,
             altHeader: v._key
           }`;
+let findAlternativeBomPageQuery = `FOR v, e, p IN 1..2 ANY '${dbConfig.partCollection}/_childId' GRAPH '${dbConfig.graph}'
+          FILTER p.edges[0].type == "alt_bom" AND  p.edges[0].parentId==_parentId AND  p.edges[0].childId==_childId
+          LIMIT _offset, _limit
+          RETURN {
+            partId: v.partId,
+            type: v.type,
+            header: v.header,
+            altHeader: v._key
+          }`;
 let findGroubByHeaderQuery = `FOR v, e, p IN 1..1 ANY '${dbConfig.altInterchangeHeaderCollection}/_headerId' GRAPH '${dbConfig.graph}'
           FILTER p.edges[0].type == "alt_bom" parent_part_id
           RETURN  v.partId`;
 
 let findAlternativeBom = async (parentId, childId) =>
     (await db.query(findAlternativeBomQuery.replace('_childId', childId).replace('_childId', childId).replace('_parentId', parentId))).all();
+
+let findAlternativeBomPage = async (offset, limit, parentId, childId) =>
+    (await db.query(findAlternativeBomPageQuery.replace('_offset', offset).replace('_limit', limit).replace('_childId', childId).replace('_childId', childId).replace('_parentId', parentId))).all();
 
 let removeAlternativeBom = async (partId, headerId) => await db.collection(dbConfig.altInterchangeEdgesCollection).remove(headerId + '_' + partId);
 
@@ -64,6 +76,7 @@ let removeAltHeader = async (alt_header_id) => await db.graph(dbConfig.graph).ve
 
 
 exports.findAlternativeBom = findAlternativeBom;
+exports.findAlternativeBomPage = findAlternativeBomPage;
 exports.removeAlternativeBom = removeAlternativeBom;
 exports.findGroupByHeader= findGroupByHeader;
 exports.addAlternativeBom = addAlternativeBom;

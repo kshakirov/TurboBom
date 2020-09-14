@@ -20,6 +20,19 @@ let findAltBom = async (req, res) => {
     }
 }
 
+let findAltBomPage = async (req, res) => {
+    try {
+        const altBoms = (await altBomModel.findAlternativeBomPage(req.params.offset, req.params.limit, req.params.parent_part_id, req.params.child_part_id));
+        let group = {
+            altHeaderId: getHeaderId(altBoms),
+            parts: getOnlyParts(altBoms)
+        }
+        res.json(group.altHeaderId !=null ? [group] : []);
+    } catch (e) {
+        res.send('There was a problem finding  the information in  the database. ' + e);
+    }
+}
+
 let removeAltBom = async (req, res) => {
     try {
         await altBomModel.removeAlternativeBom(req.params.part_id, req.params.alt_header_id);
@@ -89,6 +102,7 @@ let removeAltGroup = async (req, res) => {
 }
 
 exports.findAltBom = findAltBom;
+exports.findAltBomPage = findAltBomPage;
 exports.removeAltBom = removeAltBom;
 exports.addAltBom = addAltBom;
 exports.addAltGroup = addAltGroup;

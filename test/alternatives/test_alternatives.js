@@ -52,8 +52,8 @@ describe('Bom', function () {
     describe('#removeAltBom', function () {
         it('should remove alt bom', function (done) {
             AlternativeBomModel.removeAlternativeBom(8, 111).then((promise) => {
-                AlternativeBomModel.findAlternativeBom(5, 7).then((promise) => {
-                    assert.equal(2, promise.length);
+                AlternativeBomModel.findAlternativeBom(5, 7).then((response) => {
+                    assert.equal(2, response.length);
                     done();
                 })
             })

@@ -4,6 +4,7 @@ let router = express.Router();
 let interchange = require('./controllers/interchange_v2');
 let bom = require('./controllers/bom_v2');
 let altBom = require('./controllers/alternative_bom_v2');
+let whereUsed = require('./controllers/where_used_v2');
 
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
@@ -54,6 +55,14 @@ router.get('/parts/:id/interchanges/:offset/:limit', function (req, res) {
 router.get('/parts/:id/boms', function (req, res) {
     try {
         bom.findBom(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.get('/parts/:id/boms/:offset/:limit', function (req, res) {
+    try {
+        bom.findBomPage(req, res);
     } catch(e) {
         console.log(e);
     }
@@ -112,6 +121,14 @@ router.get('/boms/:parent_part_id/children/:child_part_id/alternatives', functio
     }
 });
 
+router.get('/boms/:parent_part_id/children/:child_part_id/alternatives/:offset/:limit', function (req, res) {
+    try {
+        altBom.findAltBomPage(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
 router.delete('/boms/alternatives/:alt_header_id/parts/:part_id', function (req, res) {
     try {
         altBom.removeAltBom(req, res);
@@ -139,6 +156,22 @@ router.post('/boms/:parent_part_id/children/:child_part_id/alternatives', functi
 router.delete('/boms/:parent_part_id/children/:child_part_id/alternatives/:alt_header_id', function (req, res) {
     try {
         altBom.removeAltGroup(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.get('/parts/:id/ancestors', function (req, res) {
+    try {
+        whereUsed.findWhereUsed(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.get('/parts/:id/ancestors/:offset/:limit', function (req, res) {
+    try {
+        whereUsed.findWhereUsedPage(req, res);
     } catch(e) {
         console.log(e);
     }
