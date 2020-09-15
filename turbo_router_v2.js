@@ -77,6 +77,14 @@ router.put('/interchanges/:in_item_id/merge_group/:out_item_id', function (req, 
     }
 });
 
+router.get('/ecommerce/parts/:id/boms', function (req, res) {
+    try {
+        bom.findBomEcommerce(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
 router.get('/parts/:id/boms', function (req, res) {
     try {
         bom.findBom(req, res);
@@ -189,6 +197,14 @@ router.delete('/boms/:parent_part_id/children/:child_part_id/alternatives/:alt_h
 router.get('/parts/:id/ancestors', function (req, res) {
     try {
         whereUsed.findWhereUsed(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.get('/ecommerce/parts/:id/ancestors', function (req, res) {
+    try {
+        whereUsed.findWhereUsedCassandra(req, res);
     } catch(e) {
         console.log(e);
     }

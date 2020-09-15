@@ -21,6 +21,30 @@ const findBomQuery = `for  p,e,v
         relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
 }`;
+const findBomEcommerceQuery = `for  p,e,v 
+        in 1..6  outbound 'parts/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter !(e.type=='direct' && v.edges[-2].type =='interchange') && 
+         count(remove_value(v.edges[*].type,'interchange')) < _distance  && !(v.vertices[0].partId== _id && v.edges[0].type =='interchange' )
+        
+       return distinct {
+        sku: TO_NUMBER(p._key),
+        partId: p._key,
+        description: p.attributes.description,
+        bomPartId: v.vertices[-3].partId,
+        nodeType: e.type,
+        quantity: e.quantity,
+        part_type: p.attributes.part_type,
+        part_number: p.attributes.part_number,
+        name: p.attributes.name,
+        manufacturer: p.attributes.manufacturer,
+        prices: p.attributes.prices,
+        type: p.type,
+        part_type_parent: null,
+        parentId: null, 
+        prices: [],
+        distance:  count(remove_value(v.edges[*].type,'interchange')),
+        relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
+}`;
 
 const findBomPageQuery = `for  p,e,v 
         in 1.._depth outbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
@@ -74,6 +98,9 @@ let docsExists = async (parent_id, child_id) => {
 let findBom = async (id, distance, depth = 5) =>
     (await db.query(findBomQuery.replace('_id', id).replace('_id', id).replace('_distance', distance + 1).replace('_depth', depth))).all();
 
+let findBomEcommerce = async (id, distance) =>
+    (await db.query(findBomEcommerceQuery.replace('_id', id).replace('_id', id).replace('_distance', distance + 1))).all();
+
 let findBomPage = async (offset, limit, id, distance, depth = 5) =>
     (await db.query(findBomPageQuery.replace('_offset', offset).replace('_limit', limit).replace('_id', id).replace('_id', id).replace('_distance', distance + 1).replace('_depth', depth))).all();
 
@@ -105,6 +132,7 @@ let addBom = async (parentId, childId, quantity = 0) => {
 }
 
 exports.findBom = findBom;
+exports.findBomEcommerce = findBomEcommerce;
 exports.findBomPage = findBomPage;
 exports.findOnlyBom = findOnlyBom;
 exports.findBomAsChild = findBomAsChild;
