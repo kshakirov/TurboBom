@@ -50,6 +50,7 @@ const findOnlyBomQuery = `for  p,e,v
         }`;
 
 const findBomAsChildQuery = `FOR v, e, p IN 1..1 INBOUND '${dbConfig.partCollection}/_id' GRAPH '${dbConfig.graph}'
+            FILTER p.edges[0].type == "direct"
             RETURN {
                 vertice: v,
                 edge: e

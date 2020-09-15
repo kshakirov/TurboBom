@@ -52,6 +52,31 @@ router.get('/parts/:id/interchanges/:offset/:limit', function (req, res) {
     }
 });
 
+router.put('/interchanges/:item_id/leave_group', function (req, res) {
+    try {
+        interchange.leaveIntechangeGroup(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.put('/interchanges/:item_id/merge_group/:picked_id/all', function (req, res) {
+    try {
+        interchange.mergeIterchangeToAnotherItemGroup(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+
+router.put('/interchanges/:in_item_id/merge_group/:out_item_id', function (req, res) {
+    try {
+        interchange.addInterchangeToGroup(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
 router.get('/parts/:id/boms', function (req, res) {
     try {
         bom.findBom(req, res);
