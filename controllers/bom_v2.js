@@ -11,7 +11,7 @@ let filterBoms = (boms) => getInterchanges(filterDirectBoms(boms), boms);
 
 let findBom = async (req, res) => res.json(filterBoms(await bomModel.findBom(req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
 
-`let findBomEcommerce = async (req, res) => res.json(filterBoms(await bomModel.findBomEcommerce(req.params.id, parseInt(req.query.distance) || 1)));
+let findBomEcommerce = async (req, res) => res.json(filterBoms(await bomModel.findBomEcommerce(req.params.id, parseInt(req.query.distance) || 1)));
 
 let findBomPage = async (req, res) => res.json(filterBoms(await bomModel.findBomPage(req.params.offset, req.params.limit, req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
 

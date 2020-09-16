@@ -204,7 +204,7 @@ router.get('/parts/:id/ancestors', function (req, res) {
 
 router.get('/ecommerce/parts/:id/ancestors', function (req, res) {
     try {
-        whereUsed.findWhereUsedCassandra(req, res);
+        whereUsed.findWhereUsedEcommerce(req, res);
     } catch(e) {
         console.log(e);
     }

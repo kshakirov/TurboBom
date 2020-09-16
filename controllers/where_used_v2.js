@@ -29,10 +29,15 @@ let findWhereUsedPage = async (req, res) => {
     }
 }
 
-let findWhereUsedCassandra = async (req, res) => {
+let findWhereUsedEcommerce = async (req, res) => {
     try {
-        let whereUsed = await whereUsedModel.findWhereUsedCassandra(req.params.id);
-        res.json(whereUsed);
+        let whereUsed = await whereUsedModel.findWhereUsedEcommerce(req.params.id);
+        let ress = JSON.stringify(new Map(whereUsed.map(i => [i.sku, i])));
+        res.json(whereUsed.map(i => {
+            let obj = {};
+            obj[i.sku] = i;
+            return obj;
+        }));
     } catch(e) {
         res.send('There was a problem adding the information to the database. ' + e);
     }
@@ -40,6 +45,6 @@ let findWhereUsedCassandra = async (req, res) => {
 
 exports.findWhereUsed = findWhereUsed;
 exports.findWhereUsedPage = findWhereUsedPage;
-exports.findWhereUsedCassandra = findWhereUsedCassandra;
+exports.findWhereUsedEcommerce = findWhereUsedEcommerce;
 
 
