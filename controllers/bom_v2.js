@@ -11,7 +11,73 @@ let filterBoms = (boms) => getInterchanges(filterDirectBoms(boms), boms);
 
 let findBom = async (req, res) => res.json(filterBoms(await bomModel.findBom(req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
 
-let findBomEcommerce = async (req, res) => res.json(filterBoms(await bomModel.findBomEcommerce(req.params.id, parseInt(req.query.distance) || 1)));
+let getDirectDesc = (boms) => boms.filter(b => b.nodeType === 'direct');
+
+let getInterchangePartNumber = (i) => i.hasOwnProperty('part_number') && i.part_number != null ? i.part_number : null;
+
+let getInterchangeManufacturer = (i) => i.hasOwnProperty('manufacturer') && i.manufacturer != null ? i.manufacturer : null;
+
+let getInterchangePrice = (i) => i.hasOwnProperty('prices') && i.prices != null ? i.prices : null;
+
+let getInterchangesCassandra = (dBoms, boms) => {
+    return dBoms.map(db => {
+        db.interchanges = boms.filter(b => b.bomPartId == db.sku);
+        db.interchanges = db.interchanges.map((i) => {
+            return {
+                sku: parseInt(i.sku),
+                part_number: getInterchangePartNumber(i),
+                manufacturer: getInterchangeManufacturer(i),
+                prices: getInterchangePrice(i)
+            };
+        });
+        return db;
+    });
+}
+
+
+let filterBomsCassandra = (boms) => {
+    let filteredBoms =
+        boms.filter(bom => bom.type != 'header')
+            .map(b => {
+        b.sku = parseInt(b.sku);
+        return b;
+    });
+    let directDesc = getDirectDesc(filteredBoms);
+    filteredBoms = getInterchangesCassandra(directDesc, filteredBoms);
+    return filteredBoms;
+}
+
+let _findBomEcommerce = async (id, distance) => {
+    try {
+        let bom = await bomModel.findBomCassandra(id, distance);
+        boms = filterBomsCassandra(bom);
+        boms.forEach(it => {
+            it['oe_sku'] = it['sku'];
+            it['sku'] = null;
+            it['oe_part_number'] = it['part_number'];
+            it['oe_part_number'] = null;
+            it['distance'] = it['relationDistance'];
+            delete it['relationDistance'];
+        });
+     //   if (authorization) {
+      //      return add_price(boms, authorization)
+     //   } else {
+            return boms;
+     //   }
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+let findBomEcommerce = async (req, res) => {
+    try {
+        let distance = parseInt(req.query.distance) || 4,
+            id = req.params.id;
+        res.json((await _findBomEcommerce(id, distance)));
+    } catch(e) {
+        res.send('There was a problem adding the information to the database. ' + e);
+    }
+}
 
 let findBomPage = async (req, res) => res.json(filterBoms(await bomModel.findBomPage(req.params.offset, req.params.limit, req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
 

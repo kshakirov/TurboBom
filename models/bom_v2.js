@@ -80,6 +80,26 @@ const findBomAsChildQuery = `FOR v, e, p IN 1..1 INBOUND '${dbConfig.partCollect
                 edge: e
             }`;
 
+const findBomCassandraQuery = `for  p,e,v 
+        in 1..6  outbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
+        filter !(e.type=='direct' && v.edges[-2].type =='interchange') &&  count(remove_value(v.edges[*].type,'interchange')) < _distance  && !(v.vertices[0].partId== _id && v.edges[0].type =='interchange' )
+        
+       return distinct {
+        sku: p._key,
+         partId: p._key,
+        description: p.attributes.description,
+        bomPartId: v.vertices[-3].partId,
+        nodeType: e.type,
+        quantity: e.quantity,
+        part_type: p.attributes.part_type,
+        part_number: p.attributes.part_number,
+        manufacturer: p.attributes.manufacturer,
+        prices: p.attributes.prices,
+        type: p.type,
+        relationDistance:  count(remove_value(v.edges[*].type,'interchange')),
+        relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
+}`;
+
 let checkCyclic = async (parent_id, child_id) => {
     let query = `FOR v, e IN OUTBOUND SHORTEST_PATH '${dbConfig.partCollection}/${child_id}' TO '${dbConfig.partCollection}/${parent_id}' 
     GRAPH '${dbConfig.graph}' 
@@ -131,6 +151,8 @@ let addBom = async (parentId, childId, quantity = 0) => {
     return {message: "Nodes don't exist"};
 }
 
+let findBomCassandra = async (id, distance) => (await db.query(findBomCassandraQuery.replace('_id', id).replace('_id', id).replace('_distance', distance + 1))).all();
+
 exports.findBom = findBom;
 exports.findBomEcommerce = findBomEcommerce;
 exports.findBomPage = findBomPage;
@@ -139,3 +161,4 @@ exports.findBomAsChild = findBomAsChild;
 exports.removeBom = removeBom;
 exports.updateBom = updateBom;
 exports.addBom = addBom;
+exports.findBomCassandra = findBomCassandra;
