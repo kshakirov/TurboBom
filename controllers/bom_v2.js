@@ -131,3 +131,4 @@ exports.findBomAsChild = findBomAsChild;
 exports.removeBom = removeBom;
 exports.updateBom = updateBom;
 exports.addBom = addBom;
+exports.filterBoms = filterBoms;

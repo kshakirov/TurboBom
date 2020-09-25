@@ -5,6 +5,8 @@ let interchange = require('./controllers/interchange_v2');
 let bom = require('./controllers/bom_v2');
 let altBom = require('./controllers/alternative_bom_v2');
 let whereUsed = require('./controllers/where_used_v2');
+let kitMatrix = require('./controllers/kit_matrix_v2');
+let serviceKits = require('./controllers/service_kits_v2')
 
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
@@ -213,6 +215,22 @@ router.get('/ecommerce/parts/:id/ancestors', function (req, res) {
 router.get('/parts/:id/ancestors/:offset/:limit', function (req, res) {
     try {
         whereUsed.findWhereUsedPage(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.get('/product/:id/kit_matrix/', function (req, res) {
+    try {
+        kitMatrix.getKitMatrix(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.get('/product/:id/service_kits/', function (req, res) {
+    try {
+        serviceKits.findServiceKits(req, res);
     } catch(e) {
         console.log(e);
     }

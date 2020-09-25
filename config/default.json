@@ -21,13 +21,13 @@
             "dbName": "BomStaging",
             "login": "root",
             "password": "servantes",
-            "partCollection": "test_parts",
-            "interchangeEdgesCollection" : "test_interchange_edges",
-            "interchangeHeaderCollection" : "test_interchange_headers",
-            "altInterchangeEdgesCollection" : "test_alt_interchange_edges",
-            "altInterchangeHeaderCollection" : "test_alt_interchange_headers",
-            "bomEdgesCollection": "test_bom_edges",
-            "graph": "TestBomGraph"
+            "partCollection": "parts",
+            "interchangeEdgesCollection" : "interchange_edges",
+            "interchangeHeaderCollection" : "interchange_headers",
+            "altInterchangeEdgesCollection" : "alt_interchange_edges",
+            "altInterchangeHeaderCollection" : "alt_interchange_headers",
+            "bomEdgesCollection": "bom_edges",
+            "graph": "BomGraph"
         }
     },
     "Mysql":{
