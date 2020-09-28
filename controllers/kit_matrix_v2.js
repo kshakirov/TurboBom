@@ -1,5 +1,4 @@
 let bomModel = require('../models/bom_v2'),
-    bomController = require('../controllers/bom_v2'),
     serviceKits = require('../controllers/service_kits_v2'),
     kitMatrix = require('../models/kit_matrix_v2'),
     partController = require('../controllers/part'),

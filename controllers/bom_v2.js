@@ -125,6 +125,7 @@ let addBom = async (req, res) => {
 
 exports.findBom = findBom;
 exports.findBomEcommerce = findBomEcommerce;
+exports._findBomEcommerce = _findBomEcommerce;
 exports.findBomPage = findBomPage;
 exports.findOnlyBom = findOnlyBom;
 exports.findBomAsChild = findBomAsChild;

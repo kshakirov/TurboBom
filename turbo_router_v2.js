@@ -8,6 +8,7 @@ let whereUsed = require('./controllers/where_used_v2');
 let kitMatrix = require('./controllers/kit_matrix_v2');
 let serviceKits = require('./controllers/service_kits_v2');
 let gasketKits = require('./controllers/gasket_kit_v2');
+let majorComponents = require('./controllers/major_component_v2');
 
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
@@ -249,6 +250,14 @@ router.get('/gasket_kit/:id/turbo/', function (req, res) {
 router.get('/turbo/:id/gasket_kit/', function (req, res) {
     try {
         gasketKits.findGasketKitForTurbo(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+router.get('/product/:id/major_components/', function (req, res) {
+    try {
+        majorComponents.getMajorComponents(req, res);
     } catch(e) {
         console.log(e);
     }

@@ -1,6 +1,4 @@
 let interchangeModel = require('../models/interchanges_v2'),
-    client = require('node-rest-client-promise').Client(),
-    config = require('config'),
     kitMatrix = require('../models/kit_matrix_v2');
 
 
