@@ -28,6 +28,11 @@
             "altInterchangeHeaderCollection" : "alt_interchange_headers",
             "bomEdgesCollection": "bom_edges",
             "graph": "BomGraph"
+        },
+        "jwt": {
+            "secret": "keepitsecret",
+            "tokenExpiration": "60d",
+            "issuer": "zoral.com"
         }
     },
     "Mysql":{

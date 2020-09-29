@@ -1,6 +1,30 @@
 let interchangeModel = require('../models/interchanges_v2');
+let tokenTools = require('../tools/token_tools');
 let gasketKitModel = require('../models/gasket_kits_v2');
 
+let hidePrices = (mc) => mc.map(b => {
+    b.prices = 'login';
+    return b;
+});
+
+let flattenPrice = (mc, user_data) =>
+    mc.map(b => {
+        if (b.prices != null) {
+            b.prices = b.prices[user_data.customer.group]
+        }
+        return b;
+    })
+
+let addPrice = (mc, authorization) => {
+    let token = tokenTools.getToken(authorization);
+    if (token) {
+        let userData = tokenTools.verifyToken(token);
+        if(userData) {
+            return flattenPrice(mc, userData);
+        }
+    }
+    return hidePrices(mc);
+}
 
 let convertTurboResponse = (turbos) => turbos.map(it => {
     return {
@@ -44,7 +68,9 @@ let findGasketKitForTurbo = async (req, res) => {
         gasketKits.forEach((gasketKit, index) => {
             gasketKit.interchanges = interchanges[index] ? interchanges[index] : [];
         });
-        res.json(convertGasketKitResponse(gasketKits));
+        gasketKits = convertGasketKitResponse(gasketKits);
+        addPrice(gasketKits, req.headers.authorization);
+        res.json(gasketKits);
     }
 }
 

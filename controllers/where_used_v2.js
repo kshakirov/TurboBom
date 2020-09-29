@@ -122,32 +122,28 @@ let prepResponse = (pairs, turboGroups) => {
     })
 }
 
-let flattenPrice = (mc, userData) => {
-    Object.keys(mc).forEach(key => {
-        if (mc[key].prices != null) {
-            mc[key].prices = mc[key].prices[userData.customer.group]
+let hidePrices = (data) => data.map(b => {
+    b.prices = 'login';
+    return b;
+});
+
+let flattenPrice = (data, user_data) =>
+    data.map(b => {
+        if (b.prices != null) {
+            b.prices = b.prices[user_data.customer.group]
         }
-    });
-    return mc;
-}
+        return b;
+    })
 
-let hidePrices = (mc) => {
-    Object.keys(mc).map(b => {
-        mc[b].prices = 'login';
-    });
-    return mc;
-}
-
-let addPrice = (mc, authorization) => {
-    let token = false;//token_tools.getToken(authorization);
+let addPrice = (data, authorization) => {
+    let token = tokenTools.getToken(authorization);
     if (token) {
-       // let user_data = token_tools.verifyToken(token);
-        return false;//flattenPrice(mc, user_data)
-    } else {
-        return hidePrices(mc)
+        let userData = tokenTools.verifyToken(token);
+        if(userData) {
+            return flattenPrice(data, userData);
+        }
     }
-
-
+    return hidePrices(data);
 }
 
 let packFullResponse = (respFull) => {
@@ -164,7 +160,7 @@ let packFullResponse = (respFull) => {
 
 let findWhereUsedEcommerce = async (req, res) => {
     try {
-        let authorization = false;//req.headers.authorization || false;
+        let authorization = req.headers.authorization || false;
         let whereUsed = await whereUsedModel.findWhereUsedEcommerce(req.params.id);
         let group = groupByHeader(filterTurboInterchanges(whereUsed));
         let pairs = whereUsed, turboGroups = whereUsed;

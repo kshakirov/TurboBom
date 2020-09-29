@@ -146,11 +146,6 @@ router.post('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
     }
 });
 
-
-
-
-
-
 router.get('/boms/:parent_part_id/children/:child_part_id/alternatives', function (req, res) {
     try {
         altBom.findAltBom(req, res);

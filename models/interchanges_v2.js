@@ -13,7 +13,8 @@ let returnStructure = `RETURN {
             manufacturer: v.manufacturer,
             partType: v.partType,
             description: v.description,
-            name: v.name
+            name: v.name,
+            prices: v.group_prices
         }`;
 
 let findInterchangeQuery = `FOR v, e, p IN 2..2 ANY '${dbConfig.partCollection}/_id' GRAPH '${dbConfig.graph}'

@@ -1,4 +1,5 @@
 let bomModel = require('../models/bom_v2');
+let tokenTools = require('../tools/token_tools');
 
 let filterDirectBoms = (boms) => boms.filter(bom => bom.nodeType === 'direct');
 
@@ -47,7 +48,31 @@ let filterBomsCassandra = (boms) => {
     return filteredBoms;
 }
 
-let _findBomEcommerce = async (id, distance) => {
+let hidePrices = (data) => data.map(b => {
+    b.prices = 'login';
+    return b;
+});
+
+let flattenPrice = (data, user_data) =>
+    data.map(b => {
+        if (b.prices != null) {
+            b.prices = b.prices[user_data.customer.group];
+        }
+        return b;
+    })
+
+let addPrice = (data, authorization) => {
+    let token = tokenTools.getToken(authorization);
+    if (token) {
+        let userData = tokenTools.verifyToken(token);
+        if(userData) {
+            return flattenPrice(data, userData);
+        }
+    }
+    return hidePrices(data);
+}
+
+let _findBomEcommerce = async (id, distance, authorization) => {
     try {
         let bom = await bomModel.findBomCassandra(id, distance);
         boms = filterBomsCassandra(bom);
@@ -59,11 +84,8 @@ let _findBomEcommerce = async (id, distance) => {
             it['distance'] = it['relationDistance'];
             delete it['relationDistance'];
         });
-     //   if (authorization) {
-      //      return add_price(boms, authorization)
-     //   } else {
-            return boms;
-     //   }
+        addPrice(boms, authorization);
+        return boms;
     } catch(e) {
         console.log(e);
     }
@@ -73,7 +95,7 @@ let findBomEcommerce = async (req, res) => {
     try {
         let distance = parseInt(req.query.distance) || 4,
             id = req.params.id;
-        res.json((await _findBomEcommerce(id, distance)));
+        res.json((await _findBomEcommerce(id, distance, req.headers.authorization)));
     } catch(e) {
         res.send('There was a problem adding the information to the database. ' + e);
     }

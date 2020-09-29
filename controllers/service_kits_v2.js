@@ -1,6 +1,6 @@
 let interchangeModel = require('../models/interchanges_v2'),
     kitMatrix = require('../models/kit_matrix_v2');
-
+let tokenTools = require('../tools/token_tools');
 
 let isTiManufacturer = (p) => p.hasOwnProperty('manufacturer') && p.manufacturer != null ? p.manufacturer.toLowerCase() === 'turbo international' : false;
 
@@ -31,6 +31,30 @@ let createTiPart = (p) => {
     }
 }
 
+let hidePrices = (data) => data.map(b => {
+    b.prices = 'login';
+    return b;
+});
+
+let flattenPrice = (data, user_data) =>
+    data.map(b => {
+        if (b.prices != null) {
+            b.prices = b.prices[user_data.customer.group]
+        }
+        return b;
+    })
+
+let addPrice = (data, authorization) => {
+    let token = tokenTools.getToken(authorization);
+    if (token) {
+        let userData = tokenTools.verifyToken(token);
+        if(userData) {
+            return flattenPrice(data, userData);
+        }
+    }
+    return hidePrices(data);
+}
+
 let prepareResponse = (kits) => kits.map(p => isTiManufacturer(p.kit) ? nullifyForeign(p) : createTiPart(p));
 
 let findServiceKitsBase = async (kits) => {
@@ -45,8 +69,9 @@ let findServiceKitsBase = async (kits) => {
                 part_number: null,
                 manufacturer: 'Turbo International',
                 description: null,
-                prices: 'login'
+                prices: kit.group_prices
             });
+            addPrice(res);
         } else {
             interchanges[kitCnt].forEach((interchange) => {
                 res.push({
@@ -56,9 +81,10 @@ let findServiceKitsBase = async (kits) => {
                     part_number: interchange.partNumber,
                     manufacturer: 'Turbo International',
                     description: interchange.description,
-                    prices: 'login'
+                    prices: interchange.group_prices
                 });
             });
+            addPrice(res);
         }
     } );
     return res;
@@ -68,7 +94,7 @@ let findServiceKitsInterchanges = async (req, res) => {
     try {
         let turboType = (await kitMatrix.getTurboType(req.params.id))[0];
         let kits = (await kitMatrix.getKitsByTurboType(turboType));
-        let kitsBase = await findServiceKitsBase(kits);
+        let kitsBase = await findServiceKitsBase(kits, req.headers.authorization);
         res.set('Connection', 'close');
         res.json(kitsBase);
     } catch(e) {

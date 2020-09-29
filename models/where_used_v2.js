@@ -28,6 +28,7 @@ var findWhereUsedCassandraQuery = ` for  p,e,v
         in 1..6 inbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && p.attributes
        return distinct {
+        prices: p.group_prices,
         sku: p._key,
         header_id: p.header || false,
         bomPartId: v.vertices[-3].partId,

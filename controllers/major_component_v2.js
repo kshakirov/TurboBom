@@ -1,5 +1,6 @@
 let bomController = require('./bom_v2'),
     distance = 4,
+    tokenTools = require('../tools/token_tools'),
     majorComponents = [
     'Compressor Wheel',
     'Turbine Wheel',
@@ -34,6 +35,25 @@ let hidePrices = (mc) => mc.map(b => {
     return b;
 });
 
+let flattenPrice = (mc, user_data) =>
+    mc.map(b => {
+        if (b.prices != null) {
+            b.prices = b.prices[user_data.customer.group]
+        }
+        return b;
+    })
+
+let addPrice = (mc, authorization) => {
+    let token = tokenTools.getToken(authorization);
+    if (token) {
+        let userData = tokenTools.verifyToken(token);
+        if(userData) {
+            return flattenPrice(mc, userData);
+        }
+
+    }
+    return hidePrices(mc);
+}
 
 let prepareComponent = (b) => {
     if (!isTiPart(b.manufacturer)) {
@@ -57,8 +77,8 @@ let prepareResponse = (boms) => {
 }
 
 let getMajorComponents = async (req, res) => {
-    let response = prepareResponse((await bomController._findBomEcommerce(req.params.id, distance)));
-    hidePrices(response);
+    let response = prepareResponse((await bomController._findBomEcommerce(req.params.id, distance, req.headers.authorization)));
+    //addPrice(response, req.headers.authorization);
     insertNames(response);
     res.json(response);
 

@@ -100,6 +100,7 @@ const findBomCassandraQuery = `for  p,e,v
         sku: p._key,
          partId: p._key,
         description: p.attributes.description,
+        prices: p.prices,
         bomPartId: v.vertices[-3].partId,
         nodeType: e.type,
         quantity: e.quantity,
