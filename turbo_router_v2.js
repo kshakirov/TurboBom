@@ -9,6 +9,7 @@ let kitMatrix = require('./controllers/kit_matrix_v2');
 let serviceKits = require('./controllers/service_kits_v2');
 let gasketKits = require('./controllers/gasket_kit_v2');
 let majorComponents = require('./controllers/major_component_v2');
+let salesNotes = require('./controllers/sales_notes_v2');
 
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
@@ -261,6 +262,16 @@ router.get('/product/:id/major_components/', function (req, res) {
     } catch(e) {
         console.log(e);
     }
+});
+
+router.get('/product/:id/sales_notes/', function (req, res) {
+    try {
+        salesNotes.findSalesNotes(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+
+
 });
 
 module.exports = router;
