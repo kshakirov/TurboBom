@@ -26,10 +26,7 @@ let convertPartForEcommerce = (part) => ({
 let findInterchangeEcommerce = async (req, res) => {
     try {
         res.set('Connection', 'close');
-        res.json({
-            headerId: (await interchangeModel.findInterchangeHeaderByItemId(req.params.id))[0].key,
-            parts: (await interchangeModel.findInterchange(req.params.id)).map(it => convertPartForEcommerce(it))
-        });
+        res.json((await interchangeModel.findInterchange(req.params.id)).map(it => convertPartForEcommerce(it)));
     } catch(e) {
         res.send(`Arango error: ${e}`);
     }

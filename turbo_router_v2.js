@@ -32,7 +32,7 @@ router.get('/parts/:id/interchanges', function (req, res) {
     }
 });
 
-router.get('/ecommerce/parts/:id/interchanges', function (req, res) {
+router.get('/product/:id/interchanges', function (req, res) {
     try {
         interchange.findInterchangeEcommerce(req, res);
     } catch(e) {
@@ -82,7 +82,7 @@ router.put('/interchanges/:in_item_id/merge_group/:out_item_id', function (req, 
     }
 });
 
-router.get('/ecommerce/parts/:id/boms', function (req, res) {
+router.get('/product/:id/bom', function (req, res) {
     try {
         bom.findBomEcommerce(req, res);
     } catch(e) {
@@ -202,7 +202,7 @@ router.get('/parts/:id/ancestors', function (req, res) {
     }
 });
 
-router.get('/ecommerce/parts/:id/ancestors', function (req, res) {
+router.post('/product/:id/where_used', function (req, res) {
     try {
         whereUsed.findWhereUsedEcommerce(req, res);
     } catch(e) {

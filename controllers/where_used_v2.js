@@ -1,4 +1,5 @@
 let whereUsedModel = require('../models/where_used_v2');
+let tokenTools = require('../tools/token_tools');
 
 let filterHeaders = (whereUsed) => whereUsed.filter(used => (used.type !== 'header' && used.type !== 'Created'));
 
@@ -33,12 +34,14 @@ let groupByHeader = (turboInterchanges) => {
     let result = {};
     turboInterchanges.forEach(ti => {
         if (result.hasOwnProperty(ti.header)) {
-            result[ti.header] = result[ti.header].union(new Set(ti.turbos))
+            ti.turbos.forEach(it => {
+                result[ti.header].add(it);
+            })
         } else {
             result[ti.header] = new Set(ti.turbos);
         }
     });
-    return Object.values(result).map(s => s.get(0));
+    return Object.values(result).map(s => s.values().next().value);
 }
 
 let filterTurboInterchanges = (recs) =>
@@ -64,12 +67,12 @@ let addTurbos = (response, turboInterchanges) => {
         if(Array.isArray(turboInterchanges)) {
             turboInterchanges.forEach(ti => {
                 let sti = new Set(ti);
-                if (!numbers.intersect(sti).empty()) {
-                    numbers = numbers.union(sti);
-                }
+                sti.forEach(it => {
+                    numbers.add(it);
+                })
             });
         }
-        r.turboPartNumbers = numbers.size > 0 ? numbers.get(0): null;
+        r.turboPartNumbers = numbers.size > 0 ? Array.from(numbers)[0]: null;
         return r;
     });
 }
@@ -166,7 +169,7 @@ let findWhereUsedEcommerce = async (req, res) => {
         let pairs = whereUsed, turboGroups = whereUsed;
         let resp = addTurbos(prepResponse(pairs, turboGroups), group);
         res.set('Connection', 'close');
-        res.json(addPrice(packFullResponse(resp), authorization));
+        res.json(packFullResponse(addPrice(resp, authorization)));
     } catch(err) {
         res.send('There was a problem adding the information to the database. ' + err);
     }
