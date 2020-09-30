@@ -78,7 +78,7 @@ let _findBomEcommerce = async (id, distance, authorization) => {
         boms = filterBomsCassandra(bom);
         boms.forEach(it => {
             it['oe_sku'] = it['sku'];
-            it['sku'] = null;
+            it['sku'] = it['sku'];
             it['oe_part_number'] = it['part_number'];
             it['oe_part_number'] = null;
             it['distance'] = it['relationDistance'];
