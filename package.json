@@ -10,6 +10,7 @@
     "compression": "^1.7.0",
     "config": "^1.26.1",
     "express": "~4.13.4",
+    "jsonwebtoken": "^8.3.0",
     "mysql": "github:mysqljs/mysql",
     "posix": "^4.1.1",
     "promise-mysql": "^3.0.2",
