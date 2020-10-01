@@ -235,7 +235,7 @@ router.get('/product/:id/service_kits/', function (req, res) {
 });
 
 
-router.get('/gasket_kit/:id/turbo/', function (req, res) {
+router.get('/product/:id/gasket_kit/', function (req, res) {
     try {
         gasketKits.findTurbosForGasketKit(req, res);
     } catch(e) {
@@ -243,7 +243,7 @@ router.get('/gasket_kit/:id/turbo/', function (req, res) {
     }
 });
 
-router.get('/turbo/:id/gasket_kit/', function (req, res) {
+router.get('/product/:id/gasket_turbo', function (req, res) {
     try {
         gasketKits.findGasketKitForTurbo(req, res);
     } catch(e) {
@@ -265,8 +265,15 @@ router.get('/product/:id/sales_notes/', function (req, res) {
     } catch(e) {
         console.log(e);
     }
+});
 
-
+router.post('/product/sales_notes/', function (req, res) {
+    try {
+        console.log(req.body);
+      //  salesNotes.findSalesNotes(req, res);
+    } catch(e) {
+        console.log(e);
+    }
 });
 
 module.exports = router;

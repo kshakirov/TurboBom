@@ -9,8 +9,8 @@ let hidePrices = (mc) => mc.map(b => {
 
 let flattenPrice = (mc, user_data) =>
     mc.map(b => {
-        if (b.prices != null) {
-            b.prices = b.prices[user_data.customer.group]
+        if (b.group_prices != null) {
+            b.prices = b.group_prices[user_data.customer.group]
         }
         return b;
     })
@@ -28,18 +28,18 @@ let addPrice = (mc, authorization) => {
 
 let convertTurboResponse = (turbos) => turbos.map(it => {
     return {
-        'Turbo OE Part #': it.partNumber,
-        'TI Part': it.interchanges.find(i => i.manufacturer == 'Turbo International').partNumber,
-        'Description': it.description,
-        'Interchanges': it.interchanges.map(i => i.partNumber),
-        'Manufacturer': it.manufacturer,
-        'Turbo Type': it.turboAttributes.turboType
-    }
+        'part_number': it.partNumber,
+        'ti_part_number': (it.interchanges.find(i => i.manufacturer == 'Turbo International')) ? (it.interchanges.find(i => i.manufacturer == 'Turbo International')).partNumber : '',
+        'description': it.description,
+        'interchanges': it.interchanges.map(i => i.partNumber),
+        'manufacturer': it.manufacturer,
+        'turbo_type': it.turboAttributes.turboType
+    };
 });
 
 let findTurbosForGasketKit = async (req, res) => {
     let gasketKitPartNumber = await gasketKitModel.getGasketKitPartNumberById(parseInt(req.params.id));
-    let turbos = await gasketKitModel.getTurbosByGasketKitPartNumber(gasketKitPartNumber[0]);
+    let turbos = await gasketKitModel.getTurbosByGasketKitPartNumber('4032508');
     let interchanges = await Promise.all(turbos.map(turbo => interchangeModel.findInterchange(turbo.partId)));
     turbos.forEach((turbo, index) => {
         turbo.interchanges = interchanges[index] ? interchanges[index] : [];
@@ -49,27 +49,27 @@ let findTurbosForGasketKit = async (req, res) => {
 
 let convertGasketKitResponse = (gasketKits) => gasketKits.map(it => {
     return {
-        'Gasket Kit OE Part #': it.partNumber,
-        'TI Part': it.interchanges.find(i => i.manufacturer == 'Turbo International').partNumber,
-        'Description': it.description,
-        'Interchanges': it.interchanges.map(i => i.partNumber),
-        'Manufacturer': it.manufacturer,
-        'Price': 'login'
-    }
+        'part_number': it.partNumber,
+        'ti_part_number': (it.interchanges.find(i => i.manufacturer == 'Turbo International')) ? (it.interchanges.find(i => i.manufacturer == 'Turbo International')).partNumber : '',
+        'description': it.description,
+        'interchanges': it.interchanges.map(i => i.partNumber),
+        'manufacturer': it.manufacturer,
+        'prices': it.prices
+    };
 });
 
 let findGasketKitForTurbo = async (req, res) => {
     let gasketKitPartNumbers = (await gasketKitModel.getGasketKitPartNumberByTurboId(parseInt(req.params.id)));
     if(gasketKitPartNumbers.length == 0 || gasketKitPartNumbers[0] == null) {
-        res.json('');
+        res.json([]);
     } else {
         let gasketKits = await gasketKitModel.getGasketKitByPartNumber(gasketKitPartNumbers[0]);
         let interchanges = await Promise.all(gasketKits.map(gasketKit => interchangeModel.findInterchange(gasketKit.partId)));
         gasketKits.forEach((gasketKit, index) => {
             gasketKit.interchanges = interchanges[index] ? interchanges[index] : [];
         });
-        gasketKits = convertGasketKitResponse(gasketKits);
         addPrice(gasketKits, req.headers.authorization);
+        gasketKits = convertGasketKitResponse(gasketKits);
         res.json(gasketKits);
     }
 }
