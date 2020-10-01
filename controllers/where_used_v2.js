@@ -102,7 +102,7 @@ let getTiPartNumber = (p) => {
 
 let getTurboPartNumbers = (group) => group.filter(g => g.attributes.map(g => g.attributes.part_number));
 
-let getTiPartPrice = (p) => p.attributes.manufacturer == 'Turbo International' ? p.attributes.prices : false;
+let getTiPartPrice = (p) => p.attributes.manufacturer == 'Turbo International' ? p.prices : false;
 
 let prepResponse = (pairs, turboGroups) => {
     return pairs.map(p => {
