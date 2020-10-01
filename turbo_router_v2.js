@@ -269,8 +269,10 @@ router.get('/product/:id/sales_notes/', function (req, res) {
 
 router.post('/product/sales_notes/', function (req, res) {
     try {
-        console.log(req.body);
-      //  salesNotes.findSalesNotes(req, res);
+        Promise.resolve(salesNotes.findSalesNotesForSkus(req.body)).then(value => {
+            res.json(value);
+        });
+
     } catch(e) {
         console.log(e);
     }

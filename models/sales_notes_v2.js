@@ -8,7 +8,7 @@ db.useBasicAuth(dbConfig.login, dbConfig.password);
 
 let getSalesNotesQuery = `FOR part IN parts
   FILTER part.partId == _partId
-  return part.salesNotes`;
+  return {partNumber: part.partNumber, salesNotes: part.salesNotes, sku: part.partId}`;
 
 let getSalesNotes = async (partId) => (await db.query(getSalesNotesQuery.replace('_partId', partId))).all();
 
