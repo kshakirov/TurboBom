@@ -34,7 +34,7 @@ let findSalesNotesForSkus = async (skus) => {
         delete outer.sku;
     })
     salesNotesResponse = salesNotesResponse.map(it => it.salesNotes);
-    salesNotesResponse = salesNotesResponse.reduce((a,b) => a.concat(b));
+    salesNotesResponse = salesNotesResponse.length > 0 ? salesNotesResponse.reduce((a,b) => a.concat(b)) : null;
     if(salesNotesResponse) {
         return formatDate(salesNotesResponse);
     } else {
