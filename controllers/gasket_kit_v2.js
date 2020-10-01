@@ -34,7 +34,7 @@ let convertTurboResponse = (turbos) => turbos.map(it => {
         'ti_id': tiPart ? tiPart.sku : '',
         'ti_part_number': tiPart ? tiPart.partNumber : '',
         'description': it.description,
-        'interchanges': it.interchanges.map(i => i.partNumber),
+        'interchanges': it.interchanges.map(i => { return {'part_number': i.partNumber }} ),
         'manufacturer': it.manufacturer,
         'turbo_type': it.turboAttributes.turboType
     };
@@ -52,13 +52,14 @@ let findTurbosForGasketKit = async (req, res) => {
 
 let convertGasketKitResponse = (gasketKits) => gasketKits.map(it => {
     let tiPart = (it.interchanges.find(i => i.manufacturer == 'Turbo International'));
+
     return {
         'id': it.sku,
         'part_number': it.partNumber,
         'ti_id': tiPart ? tiPart.sku : '',
         'ti_part_number': tiPart ? tiPart.partNumber : '',
         'description': it.description,
-        'interchanges': it.interchanges.map(i => i.partNumber),
+        'interchanges': it.interchanges.map(i => { return {'part_number': i.partNumber }} ),
         'manufacturer': it.manufacturer,
         'prices': it.prices
     };
