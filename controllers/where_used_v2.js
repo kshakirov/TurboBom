@@ -72,7 +72,7 @@ let addTurbos = (response, turboInterchanges) => {
                 })
             });
         }
-        r.turboPartNumbers = numbers.size > 0 ? Array.from(numbers)[0]: null;
+        r.turboPartNumbers = numbers.size > 0 ? Array.from(numbers): null;
         return r;
     });
 }
