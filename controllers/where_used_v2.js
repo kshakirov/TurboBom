@@ -82,7 +82,7 @@ let getTiSku = (p) => p.attributes.manufacturer == 'Turbo International' ? p.sku
 let getSku = (p) => p.attributes.manufacturer == 'Turbo International' ? p.interchange_sku : p.sku;
 
 let getPartNumber = (p) => {
-    if (p.attributes.manufacturer == 'Turbo International') {
+    if (p.attributes.manufacturer == 'Turbo International' && p.interchange) {
         return p.interchange.part_number;
     }
     if (p.attributes != null && p.attributes.hasOwnProperty('part_number'))
@@ -100,7 +100,10 @@ let getTiPartNumber = (p) => {
         return null;
 }
 
-let getTurboPartNumbers = (group) => group.filter(g => g.attributes.map(g => g.attributes.part_number));
+let getTurboPartNumbers = (group) => {
+    let tpn = group.filter(g => g.attributes !== null);
+    return tpn.map(g => g.attributes.part_number);
+}
 
 let getTiPartPrice = (p) => p.attributes.manufacturer == 'Turbo International' ? p.prices : false;
 
