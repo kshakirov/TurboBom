@@ -44,13 +44,13 @@ let findTurbosForGasketKit = async (req, res) => {
     let gasketKitPartNumber = await gasketKitModel.getGasketKitPartNumberById(parseInt(req.params.id));
     let turbos = await gasketKitModel.getTurbosByGasketKitPartNumber(gasketKitPartNumber[0]);
     if(turbos.length == 0  || turbos[0] == null) {
-        res.json({});
+        res.json([]);
     } else {
         let interchanges = await Promise.all(turbos.map(turbo => interchangeModel.findInterchange(turbo.partId)));
         turbos.forEach((turbo, index) => {
             turbo.interchanges = interchanges[index] ? interchanges[index] : [];
         });
-        res.json(convertTurboResponse(turbos)[0]);
+        res.json(convertTurboResponse(turbos));
     }
 }
 
