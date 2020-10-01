@@ -42,12 +42,16 @@ let convertTurboResponse = (turbos) => turbos.map(it => {
 
 let findTurbosForGasketKit = async (req, res) => {
     let gasketKitPartNumber = await gasketKitModel.getGasketKitPartNumberById(parseInt(req.params.id));
-    let turbos = await gasketKitModel.getTurbosByGasketKitPartNumber('4032508');
-    let interchanges = await Promise.all(turbos.map(turbo => interchangeModel.findInterchange(turbo.partId)));
-    turbos.forEach((turbo, index) => {
-        turbo.interchanges = interchanges[index] ? interchanges[index] : [];
-    });
-    return res.json(convertTurboResponse(turbos));
+    let turbos = await gasketKitModel.getTurbosByGasketKitPartNumber(gasketKitPartNumber[0]);
+    if(turbos.length == 0  || turbos[0] == null) {
+        res.json({});
+    } else {
+        let interchanges = await Promise.all(turbos.map(turbo => interchangeModel.findInterchange(turbo.partId)));
+        turbos.forEach((turbo, index) => {
+            turbo.interchanges = interchanges[index] ? interchanges[index] : [];
+        });
+        res.json(convertTurboResponse(turbos)[0]);
+    }
 }
 
 let convertGasketKitResponse = (gasketKits) => gasketKits.map(it => {
@@ -68,7 +72,7 @@ let convertGasketKitResponse = (gasketKits) => gasketKits.map(it => {
 let findGasketKitForTurbo = async (req, res) => {
     let gasketKitPartNumbers = (await gasketKitModel.getGasketKitPartNumberByTurboId(parseInt(req.params.id)));
     if(gasketKitPartNumbers.length == 0 || gasketKitPartNumbers[0] == null) {
-        res.json([]);
+        res.json({});
     } else {
         let gasketKits = await gasketKitModel.getGasketKitByPartNumber(gasketKitPartNumbers[0]);
         let interchanges = await Promise.all(gasketKits.map(gasketKit => interchangeModel.findInterchange(gasketKit.partId)));
@@ -77,7 +81,7 @@ let findGasketKitForTurbo = async (req, res) => {
         });
         addPrice(gasketKits, req.headers.authorization);
         gasketKits = convertGasketKitResponse(gasketKits);
-        res.json(gasketKits);
+        res.json(gasketKits[0]);
     }
 }
 
