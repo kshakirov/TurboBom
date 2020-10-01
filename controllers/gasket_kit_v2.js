@@ -27,9 +27,12 @@ let addPrice = (mc, authorization) => {
 }
 
 let convertTurboResponse = (turbos) => turbos.map(it => {
+    let tiPart = (it.interchanges.find(i => i.manufacturer == 'Turbo International'));
     return {
+        'id': it.sku,
         'part_number': it.partNumber,
-        'ti_part_number': (it.interchanges.find(i => i.manufacturer == 'Turbo International')) ? (it.interchanges.find(i => i.manufacturer == 'Turbo International')).partNumber : '',
+        'ti_id': tiPart ? tiPart.sku : '',
+        'ti_part_number': tiPart ? tiPart.partNumber : '',
         'description': it.description,
         'interchanges': it.interchanges.map(i => i.partNumber),
         'manufacturer': it.manufacturer,
@@ -48,9 +51,12 @@ let findTurbosForGasketKit = async (req, res) => {
 }
 
 let convertGasketKitResponse = (gasketKits) => gasketKits.map(it => {
+    let tiPart = (it.interchanges.find(i => i.manufacturer == 'Turbo International'));
     return {
+        'id': it.sku,
         'part_number': it.partNumber,
-        'ti_part_number': (it.interchanges.find(i => i.manufacturer == 'Turbo International')) ? (it.interchanges.find(i => i.manufacturer == 'Turbo International')).partNumber : '',
+        'ti_id': tiPart ? tiPart.sku : '',
+        'ti_part_number': tiPart ? tiPart.partNumber : '',
         'description': it.description,
         'interchanges': it.interchanges.map(i => i.partNumber),
         'manufacturer': it.manufacturer,
