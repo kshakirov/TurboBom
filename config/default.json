@@ -33,6 +33,13 @@
             "secret": "keepitsecret",
             "tokenExpiration": "60d",
             "issuer": "zoral.com"
+        },
+        "Cache": {
+            "redis": {
+                "host": "127.0.0.1",
+                "port": "6379",
+                "ttl": "300"
+            }
         }
     },
     "Mysql":{

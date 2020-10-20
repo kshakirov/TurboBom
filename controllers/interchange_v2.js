@@ -1,14 +1,29 @@
 const interchangeModel = require('../models/interchanges_v2');
 const interchangeLog = require('../models/interchange-log');
 
+const config = require('config');
+const redisConfig = config.get('TurboGraph_v2.Cache.redis');
+const redis = require('async-redis');
+const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+
+const INTERCHANGE_PREFIX = 'interchange_';
 let findInterchange = async (req, res) => {
     try {
+        let value = await redisClient.get(INTERCHANGE_PREFIX + req.params.id);
+        if(!value || JSON.parse(value).length == 0) {
+            let header = (await interchangeModel.findInterchangeHeaderByItemId(req.params.id))[0].key;
+            let parts = await interchangeModel.findInterchange(req.params.id);
+            value = {
+                headerId: header,
+                parts: parts
+            };
+            await redisClient.set(INTERCHANGE_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+        } else {
+            value = JSON.parse(value);
+        }
         res.set('Connection', 'close');
-        header = (await interchangeModel.findInterchangeHeaderByItemId(req.params.id));
-        res.json({
-            headerId: (await interchangeModel.findInterchangeHeaderByItemId(req.params.id))[0].key,
-            parts: await interchangeModel.findInterchange(req.params.id)
-        });
+
+        res.json(value);
     } catch(e) {
         res.send(`Arango error: ${e}`);
     }
@@ -23,10 +38,18 @@ let convertPartForEcommerce = (part) => ({
     'inactive': false
 });
 
+const INTERCHANGE_ECOMMERCE_PREFIX = 'interchange_ecommerce_';
 let findInterchangeEcommerce = async (req, res) => {
     try {
+        let value = await redisClient.get(INTERCHANGE_ECOMMERCE_PREFIX + req.params.id);
+        if(!value || JSON.parse(value).length == 0) {
+            value = (await interchangeModel.findInterchange(req.params.id)).map(it => convertPartForEcommerce(it))
+            await redisClient.set(INTERCHANGE_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+        } else {
+            value = JSON.parse(value);
+        }
         res.set('Connection', 'close');
-        res.json((await interchangeModel.findInterchange(req.params.id)).map(it => convertPartForEcommerce(it)));
+        res.json(value);
     } catch(e) {
         res.send(`Arango error: ${e}`);
     }
@@ -44,12 +67,20 @@ let findInterchangesPage = async (req, res) => {
     }
 }
 
+const INTERCHANGE_HEADER_PREFIX = 'interchange_header_';
 let findInterchangesByHeaderId = async (req, res) => {
     try {
+        let value = await redisClient.get(INTERCHANGE_HEADER_PREFIX + req.params.header_id);
+        if(!value || JSON.parse(value).length == 0) {
+            value = await interchangeModel.findInterchangesByHeaderId(req.params.header_id);
+            await redisClient.set(INTERCHANGE_HEADER_PREFIX + req.params.header_id, JSON.stringify(value), 'EX', redisConfig.ttl);
+        } else {
+            value = JSON.parse(value);
+        }
         res.set('Connection', 'close');
         res.json({
             headerId: parseInt(req.params.header_id),
-            parts: await interchangeModel.findInterchangesByHeaderId(req.params.header_id)
+            parts: value
         });
     } catch(e) {
         res.send(`Arango error: ${e}`);

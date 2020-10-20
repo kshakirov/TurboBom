@@ -5,6 +5,7 @@
   "dependencies": {
     "arangojs": "^5.7.0",
     "array-flatten": "^2.1.1",
+    "async-redis": "^1.1.7",
     "axios": "^0.19.2",
     "body-parser": "^1.17.2",
     "compression": "^1.7.0",
