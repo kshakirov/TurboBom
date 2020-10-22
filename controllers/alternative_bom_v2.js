@@ -1,4 +1,9 @@
-let altBomModel = require('../models/alternative_bom_v2');
+const altBomModel = require('../models/alternative_bom_v2');
+
+const config = require('config');
+const redisConfig = config.get('TurboGraph_v2.Cache.redis');
+const redis = require('async-redis');
+const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
 
 let getHeaderId = (altBoms) => {
     const header = altBoms.filter((bom) => bom.type === 'alt_header');
@@ -7,14 +12,21 @@ let getHeaderId = (altBoms) => {
 
 let getOnlyParts = (altBoms) => altBoms.filter(bom => bom.type !== 'alt_header').map(p => parseInt(p.partId));
 
+const ALT_BOM_PREFIX = 'alt_bom_';
 let findAltBom = async (req, res) => {
     try {
-        const altBoms = (await altBomModel.findAlternativeBom(req.params.parent_part_id, req.params.child_part_id));
-        let group = {
-            altHeaderId: getHeaderId(altBoms),
-            parts: getOnlyParts(altBoms)
+        let value = await redisClient.get(ALT_BOM_PREFIX + req.params.parent_part_id + '_' + req.params.child_part_id);
+        if(!value || JSON.parse(value).length == 0) {
+            const altBoms = (await altBomModel.findAlternativeBom(req.params.parent_part_id, req.params.child_part_id));
+            value = {
+                altHeaderId: getHeaderId(altBoms),
+                parts: getOnlyParts(altBoms)
+            }
+            await redisClient.set(ALT_BOM_PREFIX + req.params.parent_part_id + '_' + req.params.child_part_id, JSON.stringify(value), 'EX', redisConfig.ttl);
+        } else {
+            value = JSON.parse(value);
         }
-        res.json(group.altHeaderId !=null ? [group] : []);
+        res.json(value.altHeaderId !=null ? [value] : []);
     } catch (e) {
         res.send('There was a problem finding  the information in  the database. ' + e);
     }

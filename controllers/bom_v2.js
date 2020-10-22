@@ -1,6 +1,11 @@
 let bomModel = require('../models/bom_v2');
 let tokenTools = require('../tools/token_tools');
 
+const config = require('config');
+const redisConfig = config.get('TurboGraph_v2.Cache.redis');
+const redis = require('async-redis');
+const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+
 let filterDirectBoms = (boms) => boms.filter(bom => bom.nodeType === 'direct');
 
 let getInterchanges = (d_boms, boms) => d_boms.map(db => {
@@ -10,7 +15,17 @@ let getInterchanges = (d_boms, boms) => d_boms.map(db => {
 
 let filterBoms = (boms) => getInterchanges(filterDirectBoms(boms), boms);
 
-let findBom = async (req, res) => res.json(filterBoms(await bomModel.findBom(req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
+const BOM_PREFIX = 'bom_';
+let findBom = async (req, res) => {
+    let value = await redisClient.get(BOM_PREFIX + req.params.id);
+    if(!value || JSON.parse(value).length == 0) {
+        value = filterBoms(await bomModel.findBom(req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5));
+        await redisClient.set(BOM_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+    } else {
+        value = JSON.parse(value);
+    }
+    res.json(value);
+}
 
 let getDirectDesc = (boms) => boms.filter(b => b.nodeType === 'direct');
 
@@ -91,11 +106,19 @@ let _findBomEcommerce = async (id, distance, authorization) => {
     }
 }
 
+const BOM_ECOMMERCE_PREFIX = 'bom_ecommerce_';
 let findBomEcommerce = async (req, res) => {
     try {
-        let distance = parseInt(req.query.distance) || 4,
-            id = req.params.id;
-        res.json((await _findBomEcommerce(id, distance, req.headers.authorization)));
+        let value = await redisClient.get(BOM_ECOMMERCE_PREFIX + req.params.id);
+        if(!value || JSON.parse(value).length == 0) {
+            let distance = parseInt(req.query.distance) || 4,
+                id = req.params.id;
+            value = (await _findBomEcommerce(id, distance, req.headers.authorization));
+            await redisClient.set(BOM_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+        } else {
+            value = JSON.parse(value);
+        }
+        res.json(value);
     } catch(e) {
         res.send('There was a problem adding the information to the database. ' + e);
     }
@@ -103,14 +126,35 @@ let findBomEcommerce = async (req, res) => {
 
 let findBomPage = async (req, res) => res.json(filterBoms(await bomModel.findBomPage(req.params.offset, req.params.limit, req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
 
-let findOnlyBom = async (req, res) => res.json((await bomModel.findOnlyBom(req.params.id)));
+const BOM_ONLY_PREFIX = 'bom_only_';
+let findOnlyBom = async (req, res) => {
+    let value = await redisClient.get(BOM_ONLY_PREFIX + req.params.id);
+    if(!value || JSON.parse(value).length == 0) {
+        value = (await bomModel.findOnlyBom(req.params.id));
+        await redisClient.set(BOM_ONLY_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+    } else {
+        value = JSON.parse(value);
+    }
+    res.json(value);
+}
 
 let convertToVertice = (response) => response.map((r) => {
     let bom = r.vertice;
     bom.qty = r.edge.quantity;
     return bom
 })
-let findBomAsChild = async (req, res) => res.json(convertToVertice((await bomModel.findBomAsChild(req.params.id))));
+
+const BOM_CHILD_PREFIX = 'bom_child_';
+let findBomAsChild = async (req, res) => {
+    let value = await redisClient.get(BOM_CHILD_PREFIX + req.params.id);
+    if(!value || JSON.parse(value).length == 0) {
+        value = (convertToVertice((await bomModel.findBomAsChild(req.params.id))));
+        await redisClient.set(BOM_CHILD_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+    } else {
+        value = JSON.parse(value);
+    }
+    res.json(value);
+}
 
 let removeBom = async (req, res) => {
     try {
