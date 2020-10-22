@@ -2,6 +2,11 @@ let interchangeModel = require('../models/interchanges_v2'),
     kitMatrix = require('../models/kit_matrix_v2');
 let tokenTools = require('../tools/token_tools');
 
+const config = require('config');
+const redisConfig = config.get('TurboGraph_v2.Cache.redis');
+const redis = require('async-redis');
+const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+
 let isTiManufacturer = (p) => p.hasOwnProperty('manufacturer') && p.manufacturer != null ? p.manufacturer.toLowerCase() === 'turbo international' : false;
 
 let nullifyForeign = (p) => {
@@ -90,13 +95,21 @@ let findServiceKitsBase = async (kits) => {
     return res;
 }
 
+const SERVICE_KITS_PREFIX = 'service_kits_';
 let findServiceKitsInterchanges = async (req, res) => {
     try {
-        let turboType = (await kitMatrix.getTurboType(req.params.id))[0];
-        let kits = (await kitMatrix.getKitsByTurboType(turboType));
-        let kitsBase = await findServiceKitsBase(kits, req.headers.authorization);
+        let value = await redisClient.get(SERVICE_KITS_PREFIX + req.params.id);
+        if(!value || JSON.parse(value).length == 0) {
+            let turboType = (await kitMatrix.getTurboType(req.params.id))[0];
+            let kits = (await kitMatrix.getKitsByTurboType(turboType));
+            value = await findServiceKitsBase(kits, req.headers.authorization);
+            await redisClient.set(SERVICE_KITS_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+        } else {
+            value = JSON.parse(value);
+        }
+
         res.set('Connection', 'close');
-        res.json(kitsBase);
+        res.json(value);
     } catch(e) {
         res.send('There was a problem adding the information to the database. ' + e);
     }
