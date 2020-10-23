@@ -1,5 +1,9 @@
 let salesNotes = require('../models/sales_notes_v2');
 
+const config = require('config');
+const redisConfig = config.get('TurboGraph_v2.Cache.redis');
+const redis = require('async-redis');
+const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
 
 let formatDate = (salesNotes) => salesNotes.map(salesNote => {
     var date = new Date(salesNote.create_date);
@@ -8,19 +12,25 @@ let formatDate = (salesNotes) => salesNotes.map(salesNote => {
     return salesNote;
 });
 
+const SALES_NOTES_PREFIX = 'sales_notes_';
 let findSalesNotes = async (req, res) => {
-    let salesNotesResponse = (await salesNotes.getSalesNotes(req.params.id))[0];
-    if(salesNotesResponse) {
-        salesNotesResponse.salesNotes.forEach(it => {
-            it.partNumber = salesNotesResponse.partNumber;
-            it.sku = salesNotesResponse.sku;
-        })
-        delete salesNotesResponse.partNumber;
-        delete salesNotesResponse.sku;
-        res.json(formatDate(salesNotesResponse.salesNotes));
+    let value = await redisClient.get(SALES_NOTES_PREFIX + req.params.id);
+    if(!value || JSON.parse(value).length == 0) {
+        let salesNotesResponse = (await salesNotes.getSalesNotes(req.params.id))[0];
+        if(salesNotesResponse) {
+            salesNotesResponse.salesNotes.forEach(it => {
+                it.partNumber = salesNotesResponse.partNumber;
+                it.sku = salesNotesResponse.sku;
+            })
+            delete salesNotesResponse.partNumber;
+            delete salesNotesResponse.sku;
+            value = formatDate(salesNotesResponse.salesNotes);
+            await redisClient.set(SALES_NOTES_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+        }
     } else {
-        res.json();
+        value = JSON.parse(value);
     }
+    res.json(value ? value : {});
 }
 
 let findSalesNotesForSkus = async (skus) => {
