@@ -7,7 +7,7 @@ db.useBasicAuth(dbConfig.login, dbConfig.password);
 
 var findWhereUsedQuery = ` for  p,e,v 
         in 1.._depth inbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
-        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
+        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && !p.inactive 
        return distinct {
         partId: p._key,
         type: p.type,
@@ -16,7 +16,7 @@ var findWhereUsedQuery = ` for  p,e,v
 }`;
 var findWhereUsedPageQuery = ` for  p,e,v 
         in 1.._depth inbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
-        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 
+        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && !p.inactive
         LIMIT _offset, _limit
        return distinct {
         partId: p._key,
@@ -26,7 +26,7 @@ var findWhereUsedPageQuery = ` for  p,e,v
 }`;
 var findWhereUsedCassandraQuery = ` for  p,e,v 
         in 1..6 inbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
-        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && p.attributes
+        filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && p.attributes && !p.inactive
        return distinct {
         prices: p.group_prices,
         sku: p._key,

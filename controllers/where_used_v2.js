@@ -84,7 +84,7 @@ let addTurbos = (response, turboInterchanges) => {
                 })
             });
         }
-        r.turboPartNumbers = numbers.size > 0 ? Array.from(numbers): null;
+        r.turboPartNumbers = numbers.size > 0 ? Array.from(numbers): [];
         return r;
     });
 }
@@ -180,14 +180,14 @@ const WHERE_USED_ECOMMERCE_PREFIX = 'where_used_ecommerce_';
 let findWhereUsedEcommerce = async (req, res) => {
     try {
         let authorization = req.headers.authorization || false;
-        let value = await redisClient.get(WHERE_USED_ECOMMERCE_PREFIX + req.params.header_id);
+        let value = await redisClient.get(WHERE_USED_ECOMMERCE_PREFIX + req.params.id);
         if(!value || JSON.parse(value).length == 0) {
             let whereUsed = await whereUsedModel.findWhereUsedEcommerce(req.params.id);
             let group = groupByHeader(filterTurboInterchanges(whereUsed));
             let pairs = whereUsed, turboGroups = whereUsed;
             let resp = addTurbos(prepResponse(pairs, turboGroups), group);
             value = packFullResponse(addPrice(resp, authorization));
-            await redisClient.set(WHERE_USED_ECOMMERCE_PREFIX + req.params.header_id, JSON.stringify(value), 'EX', redisConfig.ttl);
+            await redisClient.set(WHERE_USED_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
         } else {
             value = JSON.parse(value);
         }

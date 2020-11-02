@@ -170,10 +170,16 @@ let removeBom = async (req, res) => {
 }
 
 let updateBom = async (req, res) => {
-    await bomModel.updateBom(req.params.parent_id, req.params.descendant_id, req.body.qty);
-    res.json({
-        success: true
-    });
+    try {
+        await bomModel.updateBom(req.params.parent_id, req.params.descendant_id, req.body.qty);
+        res.json({
+            success: true
+        });
+    } catch(e) {
+        res.json({
+            success: false
+        });
+    }
 }
 
 let addBom = async (req, res) => {
