@@ -175,18 +175,23 @@ let packFullResponse = (respFull) => {
     });
     return result;
 }
-
+//whereUsed.filter(it => it.attributes.part_number == '17202-54030')
+//whereUsed.filter(it => it.attributes.part_type == 'Cartridge')
+//whereUsed.filter(it => it.attributes.part_type == 'Turbo' || it.attributes.part_type == 'Cartridge')
 const WHERE_USED_ECOMMERCE_PREFIX = 'where_used_ecommerce_';
 let findWhereUsedEcommerce = async (req, res) => {
     try {
         let authorization = req.headers.authorization || false;
         let value = await redisClient.get(WHERE_USED_ECOMMERCE_PREFIX + req.params.id);
-        if(!value || JSON.parse(value).length == 0) {
+        if(true) {
             let whereUsed = await whereUsedModel.findWhereUsedEcommerce(req.params.id);
+            whereUsed = whereUsed.filter(it => it.attributes.part_type == 'Turbo' || it.attributes.part_type == 'Cartridge');
             let group = groupByHeader(filterTurboInterchanges(whereUsed));
             let pairs = whereUsed, turboGroups = whereUsed;
             let resp = addTurbos(prepResponse(pairs, turboGroups), group);
+
             value = packFullResponse(addPrice(resp, authorization));
+
             await redisClient.set(WHERE_USED_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
         } else {
             value = JSON.parse(value);
