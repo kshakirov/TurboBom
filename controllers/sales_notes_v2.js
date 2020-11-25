@@ -17,7 +17,7 @@ let findSalesNotes = async (req, res) => {
     let value = await redisClient.get(SALES_NOTES_PREFIX + req.params.id);
     if(!value || JSON.parse(value).length == 0) {
         let salesNotesResponse = (await salesNotes.getSalesNotes(req.params.id))[0];
-        if(salesNotesResponse) {
+        if(salesNotesResponse && salesNotesResponse.salesNotes) {
             salesNotesResponse.salesNotes.forEach(it => {
                 it.partNumber = salesNotesResponse.partNumber;
                 it.sku = salesNotesResponse.sku;
