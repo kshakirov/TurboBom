@@ -30,14 +30,14 @@ const findBomEcommerceQuery = `for  p,e,v
        return distinct {
         sku: TO_NUMBER(p._key),
         partId: p._key,
-        description: p.attributes.description,
+        description: p.description,
         bomPartId: v.vertices[-3].partId,
         nodeType: e.type,
         quantity: e.quantity,
-        part_type: p.attributes.part_type,
-        part_number: p.attributes.part_number,
-        name: p.attributes.name,
-        manufacturer: p.attributes.manufacturer,
+        part_type: p.partType,
+        part_number: p.partNumber,
+        name: p.name,
+        manufacturer: p.manufacturer,
         prices: p.attributes.prices,
         type: p.type,
         part_type_parent: null,
@@ -166,7 +166,7 @@ let addBom = async (parentId, childId, quantity = 0) => {
     return {message: "Nodes don't exist"};
 }
 
-let findBomCassandra = async (id, distance) => (await db.query(findBomCassandraQuery.replace('_id', id).replace('_id', id).replace('_distance', distance + 1))).all();
+let findBomCassandra = async (id, distance) => (await db.query(findBomEcommerceQuery.replace('_id', id).replace('_id', id).replace('_distance', distance + 1))).all();
 
 exports.findBom = findBom;
 exports.findOnlyTiDirectBom = findOnlyTiDirectBom;

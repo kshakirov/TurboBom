@@ -93,13 +93,18 @@ let _findBomEcommerce = async (id, distance, authorization) => {
         boms = filterBomsCassandra(bom);
         boms.forEach(it => {
             it['oe_sku'] = it['sku'];
-            it['sku'] = it['sku'];
             it['oe_part_number'] = it['part_number'];
-            it['oe_part_number'] = null;
-            it['distance'] = it['relationDistance'];
+            it['part_number'] = null;
             delete it['relationDistance'];
+            delete it['partId'];
+            delete it['prices'];
+            delete it['bomPartId'];
+            delete it['nodeType'];
+            delete it['manufacturer'];
+            delete it['nodeType'];
+            delete it['relationType'];
         });
-        addPrice(boms, authorization);
+       // addPrice(boms, authorization);
         return boms;
     } catch(e) {
         console.log(e);

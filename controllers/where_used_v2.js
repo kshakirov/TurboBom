@@ -183,7 +183,7 @@ let findWhereUsedEcommerce = async (req, res) => {
     try {
         let authorization = req.headers.authorization || false;
         let value = await redisClient.get(WHERE_USED_ECOMMERCE_PREFIX + req.params.id);
-        if(true) {
+        if(!value || JSON.parse(value).length == 0) {
             let whereUsed = await whereUsedModel.findWhereUsedEcommerce(req.params.id);
             whereUsed = whereUsed.filter(it => it.attributes.part_type == 'Turbo' || it.attributes.part_type == 'Cartridge');
             let group = groupByHeader(filterTurboInterchanges(whereUsed));
