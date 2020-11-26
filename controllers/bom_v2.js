@@ -87,20 +87,28 @@ let addPrice = (data, authorization) => {
     return hidePrices(data);
 }
 
+let isTiItem = (item) => item['manufacturer'] == 'Turbo International';
+
 let _findBomEcommerce = async (id, distance, authorization) => {
     try {
         let bom = await bomModel.findBomCassandra(id, distance);
         boms = filterBomsCassandra(bom);
         boms.forEach(it => {
-            it['oe_sku'] = it['sku'];
-            it['oe_part_number'] = it['part_number'];
-            it['part_number'] = null;
+            if(isTiItem(it)) {
+            } else {
+                const tiPart = it.interchanges.find(it => isTiItem(it));
+                if(tiPart) {
+                    it.interchanges = it.interchanges.filter(it => it != tiPart);
+                    it['oe_sku'] = it['sku'];
+                    it['oe_part_number'] = it['part_number'];
+                    it['sku'] = tiPart['sku'];
+                    it['part_number'] = tiPart['part_number'];
+                }
+            }
             delete it['relationDistance'];
             delete it['partId'];
             delete it['prices'];
             delete it['bomPartId'];
-            delete it['nodeType'];
-            delete it['manufacturer'];
             delete it['nodeType'];
             delete it['relationType'];
         });
@@ -115,6 +123,7 @@ const BOM_ECOMMERCE_PREFIX = 'bom_ecommerce_';
 let findBomEcommerce = async (req, res) => {
     try {
         let value = await redisClient.get(BOM_ECOMMERCE_PREFIX + req.params.id);
+        //!value || JSON.parse(value).length == 0
         if(!value || JSON.parse(value).length == 0) {
             let distance = parseInt(req.query.distance) || 4,
                 id = req.params.id;
