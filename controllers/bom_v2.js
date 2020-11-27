@@ -97,12 +97,15 @@ let _findBomEcommerce = async (id, distance, authorization) => {
             if(isTiItem(it)) {
             } else {
                 const tiPart = it.interchanges.find(it => isTiItem(it));
+                it['oe_sku'] = it['sku'];
+                it['oe_part_number'] = it['part_number'];
                 if(tiPart) {
                     it.interchanges = it.interchanges.filter(it => it != tiPart);
-                    it['oe_sku'] = it['sku'];
-                    it['oe_part_number'] = it['part_number'];
                     it['sku'] = tiPart['sku'];
                     it['part_number'] = tiPart['part_number'];
+                } else {
+                    delete it['sku'];
+                    delete it['part_number'];
                 }
             }
             delete it['relationDistance'];
@@ -113,7 +116,8 @@ let _findBomEcommerce = async (id, distance, authorization) => {
             delete it['relationType'];
         });
        // addPrice(boms, authorization);
-        return boms;
+        boms = boms.sort((a,b) => (a.part_number > b.part_number) ? 1 : ((b.part_number > a.part_number) ? -1 : 0));
+        return boms.filter(it => it['part_number']).concat(boms.filter(it => !it['part_number']));
     } catch(e) {
         console.log(e);
     }
