@@ -6,6 +6,8 @@ const redisConfig = config.get('TurboGraph_v2.Cache.redis');
 const redis = require('async-redis');
 const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
 
+const partModel = require('../models/part');
+
 let filterDirectBoms = (boms) => boms.filter(bom => bom.nodeType === 'direct');
 
 let getInterchanges = (d_boms, boms) => d_boms.map(db => {
@@ -89,7 +91,7 @@ let addPrice = (data, authorization) => {
 
 let isTiItem = (item) => item['manufacturer'] == 'Turbo International';
 
-let _findBomEcommerce = async (id, distance, authorization) => {
+let _findBomEcommerce = async (id, part, distance, authorization) => {
     try {
         let bom = await bomModel.findBomCassandra(id, distance);
         boms = filterBomsCassandra(bom);
@@ -116,6 +118,9 @@ let _findBomEcommerce = async (id, distance, authorization) => {
             delete it['relationType'];
         });
        // addPrice(boms, authorization);
+        if(!isTiItem(part.manufacturer)) {
+            boms = boms.filter(it => it.oe_part_number);
+        }
         boms = boms.sort((a,b) => (a.part_number > b.part_number) ? 1 : ((b.part_number > a.part_number) ? -1 : 0));
         return boms.filter(it => it['part_number']).concat(boms.filter(it => !it['part_number']));
     } catch(e) {
@@ -129,9 +134,9 @@ let findBomEcommerce = async (req, res) => {
         let value = await redisClient.get(BOM_ECOMMERCE_PREFIX + req.params.id);
         //!value || JSON.parse(value).length == 0
         if(!value || JSON.parse(value).length == 0) {
-            let distance = parseInt(req.query.distance) || 4,
-                id = req.params.id;
-            value = (await _findBomEcommerce(id, distance, req.headers.authorization));
+            let distance = parseInt(req.query.distance) || 4, id = req.params.id;
+            let part = await partModel.getPart(id);
+            value = (await _findBomEcommerce(id, part, distance, req.headers.authorization));
             await redisClient.set(BOM_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
         } else {
             value = JSON.parse(value);
