@@ -96,7 +96,7 @@ let _findBomEcommerce = async (id, distance, authorization) => {
         boms.forEach(it => {
             if(isTiItem(it)) {
             } else {
-                const tiPart = it.interchanges.find(it => isTiItem(it));
+                const tiPart = it.interchanges.sort((a,b) => (a.part_number > b.part_number) ? 1 : ((b.part_number > a.part_number) ? -1 : 0)).find(it => isTiItem(it));
                 it['oe_sku'] = it['sku'];
                 it['oe_part_number'] = it['part_number'];
                 if(tiPart) {
