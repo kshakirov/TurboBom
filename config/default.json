@@ -38,7 +38,8 @@
             "redis": {
                 "host": "127.0.0.1",
                 "port": "6379",
-                "ttl": "300"
+                "ttl": "300",
+                "enabled": false
             }
         }
     },

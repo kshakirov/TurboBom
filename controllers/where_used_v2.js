@@ -1,10 +1,6 @@
 let whereUsedModel = require('../models/where_used_v2');
 let tokenTools = require('../tools/token_tools');
-
-const config = require('config');
-const redisConfig = config.get('TurboGraph_v2.Cache.redis');
-const redis = require('async-redis');
-const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+const redisService = require('../service/redis.service');
 
 let filterHeaders = (whereUsed) => whereUsed.filter(used => (used.type !== 'header' && used.type !== 'Created'));
 
@@ -20,10 +16,10 @@ let convertToDto = (whereUseds) =>
 const WHERE_USED_PREFIX = 'where_used_';
 let findWhereUsed = async (req, res) => {
     try {
-        let value = await redisClient.get(WHERE_USED_PREFIX + req.params.header_id);
+        let value = await redisService.getItem(WHERE_USED_PREFIX + req.params.header_id);
         if(!value || JSON.parse(value).length == 0) {
             value = convertToDto(await whereUsedModel.findWhereUsed([req.params.id], 5));
-            await redisClient.set(WHERE_USED_PREFIX + req.params.header_id, JSON.stringify(value), 'EX', redisConfig.ttl);
+            await redisService.setItem(WHERE_USED_PREFIX + req.params.header_id, JSON.stringify(value));
         } else {
             value = JSON.parse(value);
         }
@@ -182,7 +178,7 @@ const WHERE_USED_ECOMMERCE_PREFIX = 'where_used_ecommerce_';
 let findWhereUsedEcommerce = async (req, res) => {
     try {
         let authorization = req.headers.authorization || false;
-        let value = await redisClient.get(WHERE_USED_ECOMMERCE_PREFIX + req.params.id);
+        let value = await redisService.getItem(WHERE_USED_ECOMMERCE_PREFIX + req.params.id);
         if(!value || JSON.parse(value).length == 0) {
             let whereUsed = await whereUsedModel.findWhereUsedEcommerce(req.params.id);
             whereUsed = whereUsed.filter(it => it.attributes.part_type == 'Turbo' || it.attributes.part_type == 'Cartridge');
@@ -192,7 +188,7 @@ let findWhereUsedEcommerce = async (req, res) => {
 
             value = packFullResponse(addPrice(resp, authorization));
 
-            await redisClient.set(WHERE_USED_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+            await redisService.setItem(WHERE_USED_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value));
         } else {
             value = JSON.parse(value);
         }
