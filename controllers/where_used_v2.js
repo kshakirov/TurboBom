@@ -116,7 +116,10 @@ let getTurboPartNumbers = (group) => {
 let getTiPartPrice = (p) => p.attributes.manufacturer == 'Turbo International' ? p.prices : false;
 
 let getTiPartforPart = (pairs, groups, partNumber) =>
-    pairs.find(pair => pair.attributes.manufacturer == 'Turbo International' && (groups.find(it => it.has(pair.attributes.part_number)).has(partNumber)));
+    pairs.find(pair => {
+        let group = groups.find(it => it.has(pair.attributes.part_number));
+        return group && pair.attributes.manufacturer == 'Turbo International' && group.has(partNumber)
+    });
 
 let prepResponse = (pairs, turboGroups, groups) => {
   //  let turboInternationalPart = pairs.find(it => it.attributes.manufacturer == 'Turbo International');
