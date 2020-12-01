@@ -58,12 +58,12 @@ let filterTurboInterchanges = (recs) =>
             rec.edge_type === 'interchange' &&
             rec.interchange !== null &&
             rec.interchange.part_type === 'Turbo' &&
-            rec.attributes.part_type === 'Turbo')
+            rec.partType === 'Turbo')
         .map(ti => {
         return {
             header: ti.interchange_header,
             turbos: [
-                ti.attributes.part_number,
+                ti.partNumber,
                 ti.interchange.part_number
             ]
         };
@@ -85,62 +85,35 @@ let addTurbos = (response, turboInterchanges) => {
     });
 }
 
-let getTiSku = (p) => p.attributes.manufacturer == 'Turbo International' ? p.sku : p.hasOwnProperty('interchange_sku') ? p.interchange_sku: null;
+let getTurboPartNumbers = (group) => group.map(g => g.partNumber);
 
-let getSku = (p) => p.attributes.manufacturer == 'Turbo International' ? p.interchange_sku : p.sku;
-
-let getPartNumber = (p) => {
-    if (p.attributes.manufacturer == 'Turbo International' && p.interchange) {
-        return p.interchange.part_number;
-    }
-    if (p.attributes != null && p.attributes.hasOwnProperty('part_number'))
-        return p.attributes.part_number;
-    else
-        return null;
-}
-let getTiPartNumber = (p) => {
-    if (p.attributes.manufacturer == 'Turbo International') {
-        return p.attributes.part_number;
-    }
-    if (p.hasOwnProperty('interchange') && p.interchange !== null)
-        return p.interchange.part_number;
-    else
-        return null;
-}
-
-let getTurboPartNumbers = (group) => {
-    let tpn = group.filter(g => g.attributes !== null);
-    return tpn.map(g => g.attributes.part_number);
-}
-
-let getTiPartPrice = (p) => p.attributes.manufacturer == 'Turbo International' ? p.prices : false;
+let getTiPartPrice = (p) => p.manufacturer == 'Turbo International' ? p.prices : false;
 
 let getTiPartforPart = (pairs, groups, partNumber) =>
     pairs.find(pair => {
-        let group = groups.find(it => it.has(pair.attributes.part_number));
-        return group && pair.attributes.manufacturer == 'Turbo International' && group.has(partNumber)
+        let group = groups.find(it => it.has(pair.partNumber));
+        return group && pair.manufacturer == 'Turbo International' && group.has(partNumber)
     });
 
 let prepResponse = (pairs, turboGroups, groups) => {
-  //  let turboInternationalPart = pairs.find(it => it.attributes.manufacturer == 'Turbo International');
     return pairs.map(p => {
         let group = turboGroups.filter(g => {
             if (g.bom_sku == p.sku || g.bom_sku == p.interchange_sku)
                 return true;
         });
-        let tiPart = getTiPartforPart(pairs, groups, p.attributes.part_number);
+        let tiPart = getTiPartforPart(pairs, groups, p.partNumber);
         return {
             description: '',
-            manufacturer: p.attributes.manufacturer,
-            partType: p.attributes.part_type,
+            manufacturer: p.manufacturer,
+            partType: p.partType,
             sku: parseInt(p.sku),
             tiSku: tiPart ? p.sku != tiPart.sku ? parseInt(tiPart.sku) : null : null,
-            partNumber: p.attributes.part_number,
-            tiPartNumber: tiPart ? p.sku != tiPart.sku ? tiPart.attributes.part_number : null : null,
+            partNumber: p.partNumber,
+            tiPartNumber: tiPart ? p.sku != tiPart.sku ? tiPart.partNumber : null : null,
             turboPartNumbers: getTurboPartNumbers(group),
             prices: getTiPartPrice(p),
-            turboType: p.attributes.turbo_type,
-            turboModel: p.attributes.turbo_model
+            turboType: p.turboType,
+            turboModel: p.turboModel
         }
     })
 }
@@ -188,7 +161,7 @@ let findWhereUsedEcommerce = async (req, res) => {
         let value = await redisService.getItem(WHERE_USED_ECOMMERCE_PREFIX + req.params.id);
         if(!value || JSON.parse(value).length == 0) {
             let whereUsed = await whereUsedModel.findWhereUsedEcommerce(req.params.id);
-            whereUsed = whereUsed.filter(it => it.attributes.part_type == 'Turbo' || it.attributes.part_type == 'Cartridge');
+            whereUsed = whereUsed.filter(it => it.partType == 'Turbo' || it.partType == 'Cartridge');
             let whereUsedSet = [];
             whereUsed.forEach(whereUsed => {
                 if(!whereUsedSet.find(it => it.sku == whereUsed.sku)) {
@@ -201,9 +174,6 @@ let findWhereUsedEcommerce = async (req, res) => {
             let resp = addTurbos(prepResponse(pairs, turboGroups, group), group);
 
             value = addPrice(resp, authorization); //packFullResponse(addPrice(resp, authorization));
-            // sku manufacturer partNumber parttype description tiSku tiPartNumber turboType turboPartnumbers turboModel prices
-            // remove: header
-            // move part_type -> partType
             let objValue = {};
             value.forEach(it => {
                 objValue[it.sku] = it;
