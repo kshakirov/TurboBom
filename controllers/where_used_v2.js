@@ -130,8 +130,8 @@ let prepResponse = (pairs, turboGroups, groups) => {
             description: '',
             manufacturer: p.attributes.manufacturer,
             partType: p.attributes.part_type,
-            sku: p.sku,
-            tiSku: tiPart ? p.sku != tiPart.sku ? tiPart.sku : null : null,
+            sku: parseInt(p.sku),
+            tiSku: tiPart ? p.sku != tiPart.sku ? parseInt(tiPart.sku) : null : null,
             partNumber: p.attributes.part_number,
             tiPartNumber: tiPart ? p.sku != tiPart.sku ? tiPart.attributes.part_number : null : null,
             turboPartNumbers: getTurboPartNumbers(group),
@@ -192,8 +192,8 @@ let findWhereUsedEcommerce = async (req, res) => {
                     whereUsedSet.push(whereUsed);
                 }
             });
-            whereUsed = whereUsedSet;
             let group = groupByHeader(filterTurboInterchanges(whereUsed));
+            whereUsed = whereUsedSet;
             let pairs = whereUsed, turboGroups = whereUsed;
             let resp = addTurbos(prepResponse(pairs, turboGroups, group), group);
 
