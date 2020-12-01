@@ -137,7 +137,7 @@ let prepResponse = (pairs, turboGroups, groups) => {
             turboPartNumbers: getTurboPartNumbers(group),
             prices: getTiPartPrice(p),
             turboType: p.attributes.turbo_type,
-            turboModel: null
+            turboModel: p.attributes.turbo_model
         }
     })
 }

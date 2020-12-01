@@ -55,7 +55,7 @@ var findWhereUsedCassandraQuery = ` for  p,e,v
         sku: p._key,
         header_id: p.header || false,
         bomPartId: v.vertices[-3].partId,
-        attributes: {'manufacturer': p.manufacturer, 'part_number': p.partNumber, 'part_type': p.partType, 'turbo_type': p.attributes.turbo_type},
+        attributes: {'manufacturer': p.manufacturer, 'part_number': p.partNumber, 'part_type': p.partType, 'turbo_type': p.turboAttributes.turboType, 'turbo_model': p.turboAttributes.turboModel},
         type: p.type || "part",
         edge_type: e.type,
         interchange: {'part_type': v.vertices[-3].partType, 'part_number': v.vertices[-3].partNumber},
