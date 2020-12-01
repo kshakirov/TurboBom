@@ -129,15 +129,15 @@ let prepResponse = (pairs, turboGroups, groups) => {
         return {
             description: '',
             manufacturer: p.attributes.manufacturer,
-            part_type: p.attributes.part_type,
+            partType: p.attributes.part_type,
             sku: p.sku,
             tiSku: tiPart ? p.sku != tiPart.sku ? tiPart.sku : null : null,
             partNumber: p.attributes.part_number,
             tiPartNumber: tiPart ? p.sku != tiPart.sku ? tiPart.attributes.part_number : null : null,
             turboPartNumbers: getTurboPartNumbers(group),
             prices: getTiPartPrice(p),
-            header: p.interchange_header,
-            turboType: p.attributes.turbo_type
+            turboType: p.attributes.turbo_type,
+            turboModel: null
         }
     })
 }
@@ -198,7 +198,14 @@ let findWhereUsedEcommerce = async (req, res) => {
             let resp = addTurbos(prepResponse(pairs, turboGroups, group), group);
 
             value = addPrice(resp, authorization); //packFullResponse(addPrice(resp, authorization));
-
+            // sku manufacturer partNumber parttype description tiSku tiPartNumber turboType turboPartnumbers turboModel prices
+            // remove: header
+            // move part_type -> partType
+            let objValue = {};
+            value.forEach(it => {
+                objValue[it.sku] = it;
+            });
+            value = objValue;
             await redisService.setItem(WHERE_USED_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value));
         } else {
             value = JSON.parse(value);
