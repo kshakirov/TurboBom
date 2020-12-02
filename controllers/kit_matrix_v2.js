@@ -4,6 +4,10 @@ let bomModel = require('../models/bom_v2'),
     partController = require('../controllers/part'),
     whereUsed = require('../models/where_used');
 
+const whereUsedService = require('../controllers/where_used_v2');
+
+const partModel = require('../models/part');
+
 const redisService = require('../service/redis.service');
 
 let test_kits = [{
@@ -182,10 +186,28 @@ let checkTurboCartridge = (sku) => {
 const KIT_MATRIX_PREFIX = 'kit_matrix_';
 let getKitMatrix = async (req, res) => {
     try {
+        let part;
+        try {
+            part = await partModel.getPart(req.params.id);
+        } catch(e) {
+            res.json([]);
+            return;
+        }
         let value = await redisService.getItem(KIT_MATRIX_PREFIX + req.params.id);
         if(!value || JSON.parse(value).length == 0) {
-            let turboType = (await kitMatrix.getTurboType(req.params.id))[0];
-            let kits = (await kitMatrix.getKitsByTurboType(turboType));
+            let turboTypes;
+            let kits;
+            if(part.partType == 'Turbo') {
+                let turboType = (await kitMatrix.getTurboType(req.params.id))[0];
+                kits = (await kitMatrix.getKitsByTurboType(turboType));
+            } else { // todo: only for cartridges? if(part.partType == 'Cartridge')
+                let whereUsed = (await whereUsedService.findWhereUsedData(req.params.id, req.headers.authorization || false));
+                turboTypes = Array.from(new Set(Object.keys(whereUsed).map(it => whereUsed[it].turboType)));
+                kits = [];
+                (await Promise.all(turboTypes.map(turboType => (kitMatrix.getKitsByTurboType(turboType))))).forEach(turboTypeKits => {
+                    kits = kits.concat(turboTypeKits);
+                });
+            }
             let kitBomPairs = (await Promise.all(kits.map(kit => bomModel.findOnlyTiDirectBom(kit.tiSku))))
                 .map((x, xi) => (
                     {
