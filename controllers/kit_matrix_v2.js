@@ -4,10 +4,7 @@ let bomModel = require('../models/bom_v2'),
     partController = require('../controllers/part'),
     whereUsed = require('../models/where_used');
 
-const config = require('config');
-const redisConfig = config.get('TurboGraph_v2.Cache.redis');
-const redis = require('async-redis');
-const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+const redisService = require('../service/redis.service');
 
 let test_kits = [{
     "part_number": "200115-0000",
@@ -100,6 +97,7 @@ let createKitMatrixTable = (kits) => {
 
     });
     kitMatrixHeaders = dedupKitMatrixHeader(kitMatrixHeaders);
+    if(Object.keys(kitMatrixRows).length == 0) return [];
     return [kitMatrixRows, baseHeaderArray.concat(kitMatrixHeaders)]
 }
 
@@ -184,7 +182,7 @@ let checkTurboCartridge = (sku) => {
 const KIT_MATRIX_PREFIX = 'kit_matrix_';
 let getKitMatrix = async (req, res) => {
     try {
-        let value = await redisClient.get(KIT_MATRIX_PREFIX + req.params.id);
+        let value = await redisService.getItem(KIT_MATRIX_PREFIX + req.params.id);
         if(!value || JSON.parse(value).length == 0) {
             let turboType = (await kitMatrix.getTurboType(req.params.id))[0];
             let kits = (await kitMatrix.getKitsByTurboType(turboType));
@@ -197,7 +195,7 @@ let getKitMatrix = async (req, res) => {
                 ));
             let preparedMatrix = prepKitMatrix(kitBomPairs);
             value = createKitMatrixTable(preparedMatrix);
-            await redisClient.set(KIT_MATRIX_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+            await redisService.setItem(KIT_MATRIX_PREFIX + req.params.id, JSON.stringify(value));
         } else {
             value = JSON.parse(value);
         }
