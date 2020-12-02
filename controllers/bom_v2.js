@@ -131,11 +131,17 @@ let _findBomEcommerce = async (id, part, distance, authorization) => {
 const BOM_ECOMMERCE_PREFIX = 'bom_ecommerce_';
 let findBomEcommerce = async (req, res) => {
     try {
+        let part;
+        try {
+            part = await partModel.getPart(id);
+        } catch(e) {
+            res.json([]);
+            return;
+        }
         let value = await redisClient.get(BOM_ECOMMERCE_PREFIX + req.params.id);
         //!value || JSON.parse(value).length == 0
         if(!value || JSON.parse(value).length == 0) {
             let distance = parseInt(req.query.distance) || 4, id = req.params.id;
-            let part = await partModel.getPart(id);
             value = (await _findBomEcommerce(id, part, distance, req.headers.authorization));
             await redisClient.set(BOM_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
         } else {
