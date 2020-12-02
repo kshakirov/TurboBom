@@ -69,6 +69,21 @@ let filterTurboInterchanges = (recs) =>
         };
     });
 
+let filterAllInterchanges = (recs) =>
+    recs.filter(
+        rec => rec.type === 'part' &&
+            rec.edge_type === 'interchange' &&
+            rec.interchange !== null)
+        .map(ti => {
+            return {
+                header: ti.interchange_header,
+                turbos: [
+                    ti.partNumber,
+                    ti.interchange.part_number
+                ]
+            };
+        });
+
 let addTurbos = (response, turboInterchanges) => {
     return response.map(r => {
         let numbers = new Set(r.turboPartNumbers);
@@ -157,41 +172,46 @@ let packFullResponse = (respFull) => {
 const WHERE_USED_ECOMMERCE_PREFIX = 'where_used_ecommerce_';
 let findWhereUsedEcommerce = async (req, res) => {
     try {
-        let authorization = req.headers.authorization || false;
-        let value = await redisService.getItem(WHERE_USED_ECOMMERCE_PREFIX + req.params.id);
-        if(!value || JSON.parse(value).length == 0) {
-            let whereUsed = await whereUsedModel.findWhereUsedEcommerce(req.params.id);
-            whereUsed = whereUsed.filter(it => it.partType == 'Turbo' || it.partType == 'Cartridge');
-            let whereUsedSet = [];
-            whereUsed.forEach(whereUsed => {
-                if(!whereUsedSet.find(it => it.sku == whereUsed.sku)) {
-                    whereUsedSet.push(whereUsed);
-                }
-            });
-            let group = groupByHeader(filterTurboInterchanges(whereUsed));
-            whereUsed = whereUsedSet;
-            let pairs = whereUsed, turboGroups = whereUsed;
-            let resp = addTurbos(prepResponse(pairs, turboGroups, group), group);
-
-            value = addPrice(resp, authorization); //packFullResponse(addPrice(resp, authorization));
-            let objValue = {};
-            value.forEach(it => {
-                objValue[it.sku] = it;
-            });
-            value = objValue;
-            await redisService.setItem(WHERE_USED_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value));
-        } else {
-            value = JSON.parse(value);
-        }
+        let value = await findWhereUsedData(req.params.id, req.headers.authorization || false);
         res.set('Connection', 'close');
         res.json(value);
     } catch(err) {
         res.send('There was a problem adding the information to the database. ' + err);
     }
 }
+let findWhereUsedData = async(id, authorization) => {
+    let value = await redisService.getItem(WHERE_USED_ECOMMERCE_PREFIX + id);
+    if(!value || JSON.parse(value).length == 0) {
+        let whereUsed = await whereUsedModel.findWhereUsedEcommerce(id);
+        whereUsed = whereUsed.filter(it => it.partType == 'Turbo' || it.partType == 'Cartridge');
+        let whereUsedSet = [];
+        whereUsed.forEach(whereUsed => {
+            if(!whereUsedSet.find(it => it.sku == whereUsed.sku)) {
+                whereUsedSet.push(whereUsed);
+            }
+        });
+        let group = groupByHeader(filterTurboInterchanges(whereUsed));
+        let groupAllTypes = groupByHeader(filterAllInterchanges(whereUsed));
+        whereUsed = whereUsedSet;
+        let pairs = whereUsed, turboGroups = whereUsed;
+        let resp = addTurbos(prepResponse(pairs, turboGroups, groupAllTypes), group);
+
+        value = addPrice(resp, authorization);
+        let objValue = {};
+        value.forEach(it => {
+            objValue[it.sku] = it;
+        });
+        value = objValue;
+        await redisService.setItem(WHERE_USED_ECOMMERCE_PREFIX + id, JSON.stringify(value));
+    } else {
+        value = JSON.parse(value);
+    }
+    return value;
+}
 
 exports.findWhereUsed = findWhereUsed;
 exports.findWhereUsedPage = findWhereUsedPage;
 exports.findWhereUsedEcommerce = findWhereUsedEcommerce;
+exports.findWhereUsedData = findWhereUsedData;
 
 
