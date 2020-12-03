@@ -13,6 +13,11 @@ let getTurboTypeQuery = `FOR part IN parts
 
 let getKitsByTurboTypeQuery = `FOR part IN parts
   FILTER part.attributes.part_type == 'Kit' and 
+         CONTAINS_ARRAY(part.kitAttributes.turboType, '_turboType')
+  return {tiSku: part.partId, ti_part_number: part.attributes.part_number, description: part.description}`;
+
+let getTiKitsByTurboTypeQuery = `FOR part IN parts
+  FILTER part.attributes.part_type == 'Kit' and 
          part.attributes.manufacturer == 'Turbo International' and
          CONTAINS_ARRAY(part.kitAttributes.turboType, '_turboType')
   return {tiSku: part.partId, ti_part_number: part.attributes.part_number, description: part.description}`;
@@ -23,7 +28,10 @@ let getTurboType = async (partId) => (await db.query(getTurboTypeQuery.replace('
 
 let getKitsByTurboType = async (turboType) => (await db.query(getKitsByTurboTypeQuery.replace('_turboType', turboType))).all();
 
+let getTiKitsByTurboType = async (turboType) => (await db.query(getTiKitsByTurboTypeQuery.replace('_turboType', turboType))).all();
+
 exports.getTurboType = getTurboType;
 exports.getKitsByTurboType = getKitsByTurboType;
+exports.getTiKitsByTurboType = getTiKitsByTurboType;
 
 
