@@ -13,10 +13,8 @@ let bomController = require('./bom_v2'),
     'Cartridge'
 ];
 
-const config = require('config');
-const redisConfig = config.get('TurboGraph_v2.Cache.redis');
-const redis = require('async-redis');
-const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+const redisService = require('../service/redis.service');
+const partModel = require('../models/part');
 
 let isTiPart = (manufacturer) => manufacturer != null && manufacturer.toLowerCase() == 'turbo international';
 
@@ -83,13 +81,20 @@ let prepareResponse = (boms) => {
 
 const MAJOR_COMPONENTS_PREFIX = 'major_components_';
 let getMajorComponents = async (req, res) => {
-    let value = await redisClient.get(MAJOR_COMPONENTS_PREFIX + req.params.id);
+    let value = await redisService.getItem(MAJOR_COMPONENTS_PREFIX + req.params.id);
+    let part;
+    try {
+        part = await partModel.getPart(req.params.id);
+    } catch(e) {
+        res.json([]);
+        return;
+    }
     if(!value || JSON.parse(value).length == 0) {
-        let response = prepareResponse((await bomController._findBomEcommerce(req.params.id, distance, req.headers.authorization)));
+        let response = prepareResponse((await bomController._findBomEcommerce(req.params.id, part, distance, req.headers.authorization)));
         //addPrice(response, req.headers.authorization);
         insertNames(response);
         value = response;
-        await redisClient.set(MAJOR_COMPONENTS_PREFIX + req.params.id, JSON.stringify(value), 'EX', redisConfig.ttl);
+        await redisService.setItem(MAJOR_COMPONENTS_PREFIX + req.params.id, JSON.stringify(value));
     } else {
         value = JSON.parse(value);
     }
