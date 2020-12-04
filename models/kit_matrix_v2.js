@@ -7,7 +7,7 @@ db.useBasicAuth(dbConfig.login, dbConfig.password);
 
 
 let getTurboTypeQuery = `FOR part IN parts
-  FILTER part.partId == _partId
+  FILTER to_number(part._key) == _partId
   return part.turboAttributes.turboType
   `;
 
@@ -15,13 +15,13 @@ let getKitsByTurboTypeQuery = `FOR part IN parts
   FILTER part.attributes.part_type == 'Kit' and 
          CONTAINS_ARRAY(part.kitAttributes.turboType, '_turboType') and
          part.inactive == false
-  return {tiSku: part.partId, ti_part_number: part.attributes.part_number, description: part.description, manufacturer: part.manufacturer}`;
+  return {tiSku: to_number(part._key), ti_part_number: part.attributes.part_number, description: part.description, manufacturer: part.manufacturer}`;
 
 let getTiKitsByTurboTypeQuery = `FOR part IN parts
   FILTER part.attributes.part_type == 'Kit' and 
          part.attributes.manufacturer == 'Turbo International' and
          CONTAINS_ARRAY(part.kitAttributes.turboType, '_turboType')
-  return {tiSku: part.partId, ti_part_number: part.attributes.part_number, description: part.description}`;
+  return {tiSku: to_number(part._key), ti_part_number: part.attributes.part_number, description: part.description}`;
 
 //example part: 6751
 

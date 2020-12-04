@@ -8,7 +8,7 @@ db.useBasicAuth(dbConfig.login, dbConfig.password);
 let findAlternativeBomQuery = `FOR v, e, p IN 1..2 ANY '${dbConfig.partCollection}/_childId' GRAPH '${dbConfig.graph}'
           FILTER p.edges[0].type == "alt_bom" AND  p.edges[0].parentId==_parentId AND  p.edges[0].childId==_childId
           RETURN {
-            partId: v.partId,
+            partId: to_number(v._key),
             type: v.type,
             header: v.header,
             altHeader: v._key
@@ -17,14 +17,14 @@ let findAlternativeBomPageQuery = `FOR v, e, p IN 1..2 ANY '${dbConfig.partColle
           FILTER p.edges[0].type == "alt_bom" AND  p.edges[0].parentId==_parentId AND  p.edges[0].childId==_childId
           LIMIT _offset, _limit
           RETURN {
-            partId: v.partId,
+            partId: to_number(v._key),
             type: v.type,
             header: v.header,
             altHeader: v._key
           }`;
 let findGroubByHeaderQuery = `FOR v, e, p IN 1..1 ANY '${dbConfig.altInterchangeHeaderCollection}/_headerId' GRAPH '${dbConfig.graph}'
           FILTER p.edges[0].type == "alt_bom" parent_part_id
-          RETURN  v.partId`;
+          RETURN  to_number(v._key)`;
 
 let findAlternativeBom = async (parentId, childId) =>
     (await db.query(findAlternativeBomQuery.replace('_childId', childId).replace('_childId', childId).replace('_parentId', parentId))).all();

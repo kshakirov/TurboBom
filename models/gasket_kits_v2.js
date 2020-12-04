@@ -10,12 +10,12 @@ let getGasketKitByPartNumberQuery = `FOR part IN parts
   return part`;
 
 let getGasketKitPartNumberByTurboIdQuery = `FOR part IN parts
-  FILTER part.partId == _partId
+  FILTER to_number(part._key) == _partId
   return part.turboAttributes.gasketKit`;
 
 
 let getGasketKitPartNumberByIdQuery = `FOR part IN parts
-  FILTER part.partId == _partId
+  FILTER to_number(part._key) == _partId
   return part.partNumber`;
 
 let getTurbosByGasketKitPartNumberQuery = `FOR part IN parts
