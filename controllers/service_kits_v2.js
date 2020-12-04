@@ -62,33 +62,35 @@ let prepareResponse = (kits) => kits.map(p => isTiManufacturer(p.kit) ? nullifyF
 let findServiceKitsBase = async (kits) => {
     var res = [];
     let interchanges = await Promise.all(kits.map(k => interchangeModel.findInterchange(k.tiSku)));
-    //let tiInterchanges = {};
+    let tiInterchanges = {};
+    let usedTiInterchanges = {};
     kits.forEach((kit, kitCnt) => {
         if(interchanges[kitCnt].length == 0) {
-            res.push({
-                tiSku: kit.tiSku,
-                sku: null,
-                ti_part_number: kit.ti_part_number,
-                part_number: null,
-                manufacturer: 'Turbo International',
-                description: null,
-                prices: kit.group_prices
-            });
-            addPrice(res);
-        } else {
-            // interchanges[kitCnt].filter((interchange => interchange.manufacturer == 'Turbo International')).forEach(it => {
-            //     tiInterchanges[it.sku] = it;
+            // res.push({
+            //     tiSku: kit.tiSku,
+            //     sku: null,
+            //     ti_part_number: kit.ti_part_number,
+            //     part_number: null,
+            //     manufacturer: 'Turbo International',
+            //     description: null,
+            //     prices: kit.group_prices
             // });
+            // addPrice(res);
+        } else {
+             interchanges[kitCnt].filter((interchange => interchange.manufacturer == 'Turbo International')).forEach(it => {
+                 tiInterchanges[it.sku] = it;
+             });
             let interchange = interchanges[kitCnt]
                 .sort((a,b) => (a.partNumber > b.partNumber) ? 1 : ((b.partNumber > a.partNumber) ? -1 : 0))
                 .find((interchange => interchange.manufacturer == 'Turbo International'));
             if(interchange) {
+                usedTiInterchanges[interchange.sku] = interchange;
                 res.push( {
                     part_number: kit.ti_part_number,
                     ti_part_number: interchange.partNumber,
-                    sku: kit.sku,
-                    description: interchange.description.length == 0 ? null : interchange.description,
-                    manufacturer: interchange.manufacturer,
+                    sku: kit.tiSku,
+                    description: kit.description.length == 0 ? null : kit.description,
+                    manufacturer: kit.manufacturer,
                     tiSku: interchange.sku,
                     prices: interchange.group_prices
                 });
