@@ -115,7 +115,7 @@ let _findBomEcommerce = async (id, part, distance, authorization) => {
             delete it['nodeType'];
             delete it['relationType'];
         });
-       // addPrice(boms, authorization);
+        addPrice(boms, authorization);
         if(!isTiItem(part)) {
             boms = boms.filter(it => it.oe_part_number);
         }
