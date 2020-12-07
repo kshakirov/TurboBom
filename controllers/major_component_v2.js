@@ -92,6 +92,9 @@ let getMajorComponents = async (req, res) => {
     if(!value || JSON.parse(value).length == 0) {
         let response = prepareResponse((await bomController._findBomEcommerce(req.params.id, part, distance, req.headers.authorization)));
         //addPrice(response, req.headers.authorization);
+        response.forEach(it => {
+            delete it.manufacturer;
+        })
         insertNames(response);
         value = response;
         await redisService.setItem(MAJOR_COMPONENTS_PREFIX + req.params.id, JSON.stringify(value));
