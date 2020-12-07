@@ -38,11 +38,10 @@ const findBomEcommerceQuery = `for  p,e,v
         part_number: p.partNumber,
         name: p.name,
         manufacturer: p.manufacturer,
-        prices: p.attributes.prices,
+        prices: p.group_prices,
         type: p.type,
         part_type_parent: null,
         parentId: null, 
-        prices: [],
         distance:  count(remove_value(v.edges[*].type,'interchange')),
         relationType: count(remove_value(v.edges[*].type,'direct')) == 0 
 }`;

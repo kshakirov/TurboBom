@@ -110,7 +110,6 @@ let _findBomEcommerce = async (id, part, distance, authorization) => {
             }
             delete it['relationDistance'];
             delete it['partId'];
-            delete it['prices'];
             delete it['bomPartId'];
             delete it['nodeType'];
             delete it['relationType'];
