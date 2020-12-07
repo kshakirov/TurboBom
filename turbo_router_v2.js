@@ -210,6 +210,14 @@ router.post('/product/:id/where_used', function (req, res) {
     }
 });
 
+router.post('/product/:id/where_used/:offset/:limit', function (req, res) {
+    try {
+        whereUsed.findWhereUsedEcommerce(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
 router.get('/parts/:id/ancestors/:offset/:limit', function (req, res) {
     try {
         whereUsed.findWhereUsedPage(req, res);

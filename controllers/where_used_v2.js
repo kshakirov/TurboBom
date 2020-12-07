@@ -172,17 +172,22 @@ let packFullResponse = (respFull) => {
 const WHERE_USED_ECOMMERCE_PREFIX = 'where_used_ecommerce_';
 let findWhereUsedEcommerce = async (req, res) => {
     try {
-        let value = await findWhereUsedData(req.params.id, req.headers.authorization || false);
+        let value = await findWhereUsedData(req.params.id, req.headers.authorization || false, req.params.offset, req.params.limit);
         res.set('Connection', 'close');
         res.json(value);
     } catch(err) {
         res.send('There was a problem adding the information to the database. ' + err);
     }
 }
-let findWhereUsedData = async(id, authorization) => {
+let findWhereUsedData = async(id, authorization, offset, limit) => {
     let value = await redisService.getItem(WHERE_USED_ECOMMERCE_PREFIX + id);
     if(!value || JSON.parse(value).length == 0) {
-        let whereUsed = await whereUsedModel.findWhereUsedEcommerce(id);
+        let whereUsed;
+        if(offset && limit) {
+            whereUsed = await whereUsedModel.findWhereUsedEcommercePage(id, offset, limit);
+        } else {
+            whereUsed = await whereUsedModel.findWhereUsedEcommerce(id);;
+        }
         whereUsed = whereUsed.filter(it => it.partType == 'Turbo' || it.partType == 'Cartridge');
         let whereUsedSet = [];
         whereUsed.forEach(whereUsed => {
