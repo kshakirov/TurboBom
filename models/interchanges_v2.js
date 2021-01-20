@@ -14,7 +14,8 @@ let returnStructure = `RETURN {
             partType: v.partType,
             description: v.description,
             name: v.name,
-            prices: v.group_prices
+            prices: v.group_prices,
+            inactive: v.inactive
         }`;
 
 let findInterchangeQuery = `FOR v, e, p IN 2..2 ANY '${dbConfig.partCollection}/_id' GRAPH '${dbConfig.graph}'

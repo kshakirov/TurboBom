@@ -10,6 +10,7 @@ let serviceKits = require('./controllers/service_kits_v2');
 let gasketKits = require('./controllers/gasket_kit_v2');
 let majorComponents = require('./controllers/major_component_v2');
 let salesNotes = require('./controllers/sales_notes_v2');
+let standardOversize = require('./controllers/standard_oversize_v2');
 
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
@@ -285,5 +286,14 @@ router.post('/product/sales_notes/', function (req, res) {
         console.log(e);
     }
 });
+
+router.get('/product/:id/standard_oversize/', function (req, res) {
+    try {
+        standardOversize.getStandardOversize(req, res);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
 
 module.exports = router;
