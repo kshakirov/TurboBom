@@ -1,87 +1,47 @@
-let express = require('express');
-let router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-let interchange = require('./controllers/interchange_v2');
-let bom = require('./controllers/bom_v2');
-let altBom = require('./controllers/alternative_bom_v2');
-let whereUsed = require('./controllers/where_used_v2');
-let kitMatrix = require('./controllers/kit_matrix_v2');
-let serviceKits = require('./controllers/service_kits_v2');
-let gasketKits = require('./controllers/gasket_kit_v2');
-let majorComponents = require('./controllers/major_component_v2');
-let salesNotes = require('./controllers/sales_notes_v2');
-let standardOversize = require('./controllers/standard_oversize_v2');
+const wrapperUtil = require('./wrapper-util');
+
+const interchange = require('./controllers/interchange_v2');
+const bom = require('./controllers/bom_v2');
+const altBom = require('./controllers/alternative_bom_v2');
+const whereUsed = require('./controllers/where_used_v2');
+const kitMatrix = require('./controllers/kit_matrix_v2');
+const serviceKits = require('./controllers/service_kits_v2');
+const gasketKits = require('./controllers/gasket_kit_v2');
+const majorComponents = require('./controllers/major_component_v2');
+const salesNotes = require('./controllers/sales_notes_v2');
+const standardOversize = require('./controllers/standard_oversize_v2');
 
 router.use(function timeLog(req, res, next) {
-    console.log('Time: ', Date.now());
     next()
 });
 
-router.get('/interchanges/:header_id', function (req, res) {
-    try {
-        interchange.findInterchangesByHeaderId(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.get('/interchanges/:header_id', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchangesByHeaderId, wrapperUtil.pHeaderId, wrapperUtil.redisInterchangeHeaderId));
+router.get('/parts/:id/interchanges', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchange, wrapperUtil.pId, wrapperUtil.redisInterchangeId));
+router.get('/product/:id/interchanges', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchangeEcommerce, wrapperUtil.pId, wrapperUtil.redisInterchangeEcommerceId));
+router.get('metadata/parts/:id/interchanges', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchange, wrapperUtil.pId, wrapperUtil.redisInterchangeId));
+router.get('/parts/:id/interchanges/:offset/:limit', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchangesPage, wrapperUtil.pIdPage, null));
 
-router.get('/parts/:id/interchanges', function (req, res) {
-    try {
-        interchange.findInterchange(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.put('/interchanges/:item_id/leave_group', (req, res) => interchange.leaveIntechangeGroup(req, res));
 
-router.get('/product/:id/interchanges', function (req, res) {
-    try {
-        interchange.findInterchangeEcommerce(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.get('/metadata/parts/:id/interchanges', function (req, res) {
-    try {
-        interchange.findInterchange(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.put('/interchanges/:item_id/merge_group/:picked_id/all', (req, res) => interchange.mergeIterchangeToAnotherItemGroup(req, res));
 
 
-router.get('/parts/:id/interchanges/:offset/:limit', function (req, res) {
-    try {
-        interchange.findInterchangesPage(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.put('/interchanges/:item_id/leave_group', function (req, res) {
-    try {
-        interchange.leaveIntechangeGroup(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.put('/interchanges/:item_id/merge_group/:picked_id/all', function (req, res) {
-    try {
-        interchange.mergeIterchangeToAnotherItemGroup(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.put('/interchanges/:in_item_id/merge_group/:out_item_id', (req, res) => interchange.addInterchangeToGroup(req, res));
 
 
-router.put('/interchanges/:in_item_id/merge_group/:out_item_id', function (req, res) {
-    try {
-        interchange.addInterchangeToGroup(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+
+
+
+
+
+
+
+
+
+
 
 router.get('/product/:id/bom', function (req, res) {
     try {
