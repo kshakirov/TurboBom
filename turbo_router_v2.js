@@ -25,87 +25,20 @@ router.get('metadata/parts/:id/interchanges', (req, res) => wrapperUtil.wrapper(
 router.get('/parts/:id/interchanges/:offset/:limit', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchangesPage, wrapperUtil.pIdPage, null));
 
 router.put('/interchanges/:item_id/leave_group', (req, res) => interchange.leaveIntechangeGroup(req, res));
-
 router.put('/interchanges/:item_id/merge_group/:picked_id/all', (req, res) => interchange.mergeIterchangeToAnotherItemGroup(req, res));
-
-
 router.put('/interchanges/:in_item_id/merge_group/:out_item_id', (req, res) => interchange.addInterchangeToGroup(req, res));
 
 
+router.get('/product/:id/bom', (req, res) => wrapperUtil.wrapper(req, res, bom.findBomEcommerce, wrapperUtil.pIdAuthorizationDistance, wrapperUtil.redisBomEcommerceId));
+router.get('/parts/:id/boms', (req, res) => wrapperUtil.wrapper(req, res, bom.findBom, wrapperUtil.pIdDistanceDepth, wrapperUtil.redisBomId));
+router.get('/parts/:id/boms/:offset/:limit', (req, res) => wrapperUtil.wrapper(req, res, bom.findBomPage, wrapperUtil.pOffsetLimitIdDistanceDepth, null));
+router.get('/parts/:id/boms/only', (req, res) => wrapperUtil.wrapper(req, res, bom.findOnlyBom, wrapperUtil.pId, wrapperUtil.redisBomOnlyId));
+router.get('/parts/:id/boms/parents', (req, res) => wrapperUtil.wrapper(req, res, bom.findBomAsChild, wrapperUtil.pId, wrapperUtil.redisBomChildId));
 
+router.delete('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.removeBom(req, res));
+router.put('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.updateBom(req, res));
+router.post('/boms/:parent_id/descendant/:descendant_id', (req, res) bom.addBom(req, res));
 
-
-
-
-
-
-
-
-
-
-router.get('/product/:id/bom', function (req, res) {
-    try {
-        bom.findBomEcommerce(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.get('/parts/:id/boms', function (req, res) {
-    try {
-        bom.findBom(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.get('/parts/:id/boms/:offset/:limit', function (req, res) {
-    try {
-        bom.findBomPage(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.get('/parts/:id/boms/only', function (req, res) {
-    try {
-        bom.findOnlyBom(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.get('/parts/:id/boms/parents', function (req, res) {
-    try {
-        bom.findBomAsChild(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.delete('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
-    try {
-        bom.removeBom(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.put('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
-    try {
-        bom.updateBom(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.post('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
-    try {
-        bom.addBom(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
 
 router.get('/boms/:parent_part_id/children/:child_part_id/alternatives', function (req, res) {
     try {

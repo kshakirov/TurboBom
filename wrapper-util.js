@@ -5,10 +5,18 @@ module.exports ={
     redisInterchangeId: (id) => 'interchange_' + id,
     redisInterchangeEcommerceId: (id) => 'interchange_ecommerce_' + id,
 
+    redisBomEcommerceId: (id) => 'bom_ecommerce_' + id,
+    redisBomId: (id) => 'bom_' + id,
+    redisBomOnlyId: (id) => 'bom_only_' + id,
+    redisBomChildId: (id) => 'bom_child_' + id,
+
     pId : (req) => ([req.params.id]),
     pIdPage : (req) => ([req.params.id, req.params.offset, req.params.limit]),
     pHeaderId : (req) => [req.params.header_id],
     pIdHeaderId : (req) => ([req.params.header_id, req.params.id]),
+    pIdAuthorizationDistance : (req) => ([req.params.id, req.headers.authorization, req.query.distance]),
+    pIdDistanceDepth : (req) => ([req.params.id, req.query.distance, req.query.depth]),
+    pOffsetLimitIdDistanceDepth : (req) => ([req.params.offset, req.params.limit, req.params.id, req.query.distance , req.query.depth]),
 
     wrapper : async (req, res, controlFunction, controlParamFunction, redisParamFunction) => {
         let c_params = controlParamFunction.apply(null, [req]);

@@ -15,17 +15,7 @@ let getInterchanges = (d_boms, boms) => d_boms.map(db => {
 
 let filterBoms = (boms) => getInterchanges(filterDirectBoms(boms), boms);
 
-const BOM_PREFIX = 'bom_';
-let findBom = async (req, res) => {
-    let value = await redisService.getItem(BOM_PREFIX + req.params.id);
-    if(!value || JSON.parse(value).length == 0) {
-        value = filterBoms(await bomModel.findBom(req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5));
-        await redisService.setItem(BOM_PREFIX + req.params.id, JSON.stringify(value));
-    } else {
-        value = JSON.parse(value);
-    }
-    res.json(value);
-}
+let findBom = async (id, distance, depth) => filterBoms(await bomModel.findBom(id, parseInt(distance) || 1, depth || 5));
 
 let getDirectDesc = (boms) => boms.filter(b => b.nodeType === 'direct');
 
@@ -125,44 +115,15 @@ let _findBomEcommerce = async (id, part, distance, authorization) => {
     }
 }
 
-const BOM_ECOMMERCE_PREFIX = 'bom_ecommerce_';
-let findBomEcommerce = async (req, res) => {
-    try {
-        let part;
-        try {
-            part = await partModel.getPart(req.params.id);
-        } catch(e) {
-            res.json([]);
-            return;
-        }
-        let value = await redisService.getItem(BOM_ECOMMERCE_PREFIX + req.params.id);
-        //!value || JSON.parse(value).length == 0
-        if(!value || JSON.parse(value).length == 0) {
-            let distance = parseInt(req.query.distance) || 4, id = req.params.id;
-            value = (await _findBomEcommerce(id, part, distance, req.headers.authorization));
-            await redisService.setItem(BOM_ECOMMERCE_PREFIX + req.params.id, JSON.stringify(value));
-        } else {
-            value = JSON.parse(value);
-        }
-        res.json(value);
-    } catch(e) {
-        res.send('There was a problem adding the information to the database. ' + e);
-    }
+let findBomEcommerce = async (id, authorization, distanceParam) => {
+    let part = await partModel.getPart(id);
+    let distance = parseInt(distanceParam) || 4;
+    return (await _findBomEcommerce(id, part, distance, authorization));
 }
 
-let findBomPage = async (req, res) => res.json(filterBoms(await bomModel.findBomPage(req.params.offset, req.params.limit, req.params.id, parseInt(req.query.distance) || 1, req.query.depth || 5)));
+let findBomPage = async (offset, limit, id, distance, depth) => filterBoms(await bomModel.findBomPage(offset, limit, id, parseInt(distance) || 1, depth || 5));
 
-const BOM_ONLY_PREFIX = 'bom_only_';
-let findOnlyBom = async (req, res) => {
-    let value = await redisService.getItem(BOM_ONLY_PREFIX + req.params.id);
-    if(!value || JSON.parse(value).length == 0) {
-        value = (await bomModel.findOnlyBom(req.params.id));
-        await redisService.setItem(BOM_ONLY_PREFIX + req.params.id, JSON.stringify(value));
-    } else {
-        value = JSON.parse(value);
-    }
-    res.json(value);
-}
+let findOnlyBom = async (id) => (await bomModel.findOnlyBom(id));
 
 let convertToVertice = (response) => response.map((r) => {
     let bom = r.vertice;
@@ -170,17 +131,7 @@ let convertToVertice = (response) => response.map((r) => {
     return bom
 })
 
-const BOM_CHILD_PREFIX = 'bom_child_';
-let findBomAsChild = async (req, res) => {
-    let value = await redisService.getItem(BOM_CHILD_PREFIX + req.params.id);
-    if(!value || JSON.parse(value).length == 0) {
-        value = (convertToVertice((await bomModel.findBomAsChild(req.params.id))));
-        await redisService.setItem(BOM_CHILD_PREFIX + req.params.id, JSON.stringify(value));
-    } else {
-        value = JSON.parse(value);
-    }
-    res.json(value);
-}
+let findBomAsChild = async (id) => (convertToVertice((await bomModel.findBomAsChild(id))));
 
 let removeBom = async (req, res) => {
     try {
