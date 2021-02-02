@@ -1,4 +1,4 @@
-let PartController = require('../../controllers/part'),
+let PartController = require('../../services/part'),
     InterchangesModel = require('../../models/interchanges'),
     DbTools = require('../../api/db_tools'),
     assert = require('assert');

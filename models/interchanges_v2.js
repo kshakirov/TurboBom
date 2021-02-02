@@ -1,11 +1,14 @@
-let config = require('config');
-let dbConfig = config.get('TurboGraph_v2.dbConfig');
-let Database = require('arangojs').Database;
-let db = new Database({url: dbConfig.url});
+const config = require('config');
+const dbConfig = config.get('TurboGraph_v2.dbConfig');
+const Database = require('arangojs').Database;
+const db = new Database({url: dbConfig.url});
 db.useDatabase(dbConfig.dbName);
 db.useBasicAuth(dbConfig.login, dbConfig.password);
 
-let executeQuery = async (query) => (await db.query(query)).all();
+const SAVE = 'save', REMOVE = 'remove';
+
+const EDGES = db.collection(dbConfig.interchangeEdgesCollection);
+const HEADERS = db.collection(dbConfig.interchangeHeaderCollection);
 
 let returnStructure = `RETURN {
             sku: v.sku,
@@ -18,75 +21,56 @@ let returnStructure = `RETURN {
             inactive: v.inactive
         }`;
 
-let findInterchangeQuery = `FOR v, e, p IN 2..2 ANY '${dbConfig.partCollection}/_id' GRAPH '${dbConfig.graph}'
+let findInterchangeQuery = (id) => `FOR v, e, p IN 2..2 ANY '${dbConfig.partCollection}/${id}' GRAPH '${dbConfig.graph}'
         FILTER p.edges[0].type == 'interchange'
         ${returnStructure}`;
 
-let findInterchangesPageQuery = `FOR v, e, p IN 2..2 ANY '${dbConfig.partCollection}/_id' GRAPH '${dbConfig.graph}'
+let findInterchangesPageQuery = (id, offset, limit) => `FOR v, e, p IN 2..2 ANY '${dbConfig.partCollection}/${id}' GRAPH '${dbConfig.graph}'
         FILTER p.edges[0].type == 'interchange'
-        LIMIT _offset, _limit
+        LIMIT ${offset}, ${limit}
         ${returnStructure}`;
 
-let findInterchangesByHeaderIdQuery = `FOR v, e, p IN 1..1 OUTBOUND '${dbConfig.interchangeHeaderCollection}/_header_id' GRAPH '${dbConfig.graph}'  ${returnStructure}`;
+let findInterchangesByHeaderIdQuery = (headerId) => `FOR v, e, p IN 1..1 OUTBOUND '${dbConfig.interchangeHeaderCollection}/${headerId}' GRAPH '${dbConfig.graph}'  ${returnStructure}`;
 
-let findInterchangeHeaderByItemIdQuery = `FOR v, e, p IN 1..1 INBOUND '${dbConfig.partCollection}/_id' GRAPH '${dbConfig.graph}'
+let findInterchangeHeaderByItemIdQuery = (id) => `FOR v, e, p IN 1..1 INBOUND '${dbConfig.partCollection}/${id}' GRAPH '${dbConfig.graph}'
           FILTER p.edges[0].type == "interchange"
           RETURN  { key: p.vertices[1]._key }`;
 
-let findInterchange = (id) => executeQuery(findInterchangeQuery.replace('_id', id));
-
-
-let findInterchangesPage = (id, offset, limit) => executeQuery(findInterchangesPageQuery.replace('_id', id).replace('_offset', (offset < 0 || limit < 0) ? 0 : offset).replace('_limit', (offset < 0 || limit < 0) ? 0 : limit));
-
-let findInterchangesByHeaderId = (header_id) => executeQuery(findInterchangesByHeaderIdQuery.replace('_header_id', header_id));
-
-let findInterchangeHeaderByItemId = (id) => executeQuery(findInterchangeHeaderByItemIdQuery.replace('_id', id));
-
-let removeInterchange = async (header_id, item_id) => db.collection(dbConfig.interchangeEdgesCollection).remove(header_id.toString() + '_' + item_id.toString());
-
-let createInterchangeHeader = async () => (await db.collection(dbConfig.interchangeHeaderCollection).save({ type: 'header' }))._key;
-
-let addInterchange = async (headerId, itemId) => await db.collection(dbConfig.interchangeEdgesCollection).save(
-    {
-        _key: headerId.toString() + '_' + itemId.toString(),
-        type: 'interchange',
-        _from: 'interchange_headers/' + headerId,
-        _to: 'parts/' + itemId
-    }
-);
-
-let leaveInterchangeGroup = async (id) => {
+let selectQuery = async (query) => {
     try {
-        let oldHeaderId = (await findInterchangeHeaderByItemId(id))[0].key;
-        await removeInterchange(oldHeaderId, id);
-        let headerId = (await createInterchangeHeader());
-        await addInterchange(headerId, id);
-        return headerId;
+        return (await db.query(query)).all();
     } catch(e) {
         console.log(e);
-        return false;
     }
-};
-
-let addInterchangeToGroup = async (inItemId, outItemId) => {
-    let inHeader = (await findInterchangeHeaderByItemId(inItemId));
-    let outHeader = (await findInterchangeHeaderByItemId(outItemId));
-    let outOutput = await removeInterchange(outHeader[0].key, outItemId);
-    let inOutput = await addInterchange(inHeader[0].key, outItemId);
-    return [outOutput, inOutput];
-};
-
-let mergeItemGroupToAnotherItemGroup = async (id, pickedId) => {
-    let interchanges = (await findInterchange(pickedId));
-    let tuples = interchanges.map(it => addInterchangeToGroup(id, it.partId));
-    tuples.push(addInterchangeToGroup(id, pickedId));
-    return tuples;
 }
+
+let execute = async (collection, fnName, arg) => {
+    try {
+        await collection;
+        return await collection[fnName](arg);
+    } catch(e) {
+        console.log(e);
+    }
+}
+
+
+let findInterchange = (id) => selectQuery(findInterchangeQuery(id));
+let findInterchangesPage = (id, offset, limit) => selectQuery(findInterchangesPageQuery(id, (offset < 0 || limit < 0) ? 0 : offset, (offset < 0 || limit < 0) ? 0 : limit));
+let findInterchangesByHeaderId = (header_id) => selectQuery(findInterchangesByHeaderIdQuery(header_id));
+let findInterchangeHeaderByItemId = (id) => selectQuery(findInterchangeHeaderByItemIdQuery(id));
+let removeInterchange = async (id) => execute(EDGES, REMOVE, id);
+let createInterchangeHeader = async () => execute(HEADERS, SAVE, { type: 'header' });
+let addInterchange = async (headerId, itemId) => execute(EDGES, SAVE, {
+    _key: headerId.toString() + '_' + itemId.toString(),
+    type: 'interchange',
+    _from: 'interchange_headers/' + headerId,
+    _to: 'parts/' + itemId
+});
 
 exports.findInterchange = findInterchange;
 exports.findInterchangesByHeaderId = findInterchangesByHeaderId;
 exports.findInterchangeHeaderByItemId = findInterchangeHeaderByItemId;
 exports.findInterchangesPage = findInterchangesPage;
-exports.leaveInterchangeGroup = leaveInterchangeGroup;
-exports.mergeItemGroupToAnotherItemGroup = mergeItemGroupToAnotherItemGroup;
-exports.addInterchangeToGroup = addInterchangeToGroup;
+exports.createInterchangeHeader = createInterchangeHeader;
+exports.removeInterchange = removeInterchange;
+exports.addInterchange = addInterchange;

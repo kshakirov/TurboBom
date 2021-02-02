@@ -1,6 +1,6 @@
 let whereUsedModel = require('../models/where_used_v2');
 let tokenTools = require('../tools/token_tools');
-const redisService = require('../service/redis.service');
+const redisService = require('./redis.service');
 
 let filterHeaders = (whereUsed) => whereUsed.filter(used => (used.type !== 'header' && used.type !== 'Created'));
 

@@ -2,7 +2,7 @@ let interchangeModel = require('../models/interchanges_v2'),
     kitMatrix = require('../models/kit_matrix_v2');
 let tokenTools = require('../tools/token_tools');
 
-const redisService = require('../service/redis.service');
+const redisService = require('./redis.service');
 
 let isTiManufacturer = (p) => p.hasOwnProperty('manufacturer') && p.manufacturer != null ? p.manufacturer.toLowerCase() === 'turbo international' : false;
 

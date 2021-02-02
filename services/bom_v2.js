@@ -1,7 +1,7 @@
 let bomModel = require('../models/bom_v2');
 let tokenTools = require('../tools/token_tools');
 
-const redisService = require('../service/redis.service');
+const redisService = require('./redis.service');
 
 
 const partModel = require('../models/part');

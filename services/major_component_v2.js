@@ -13,7 +13,7 @@ let bomController = require('./bom_v2'),
     'Cartridge'
 ];
 
-const redisService = require('../service/redis.service');
+const redisService = require('./redis.service');
 const partModel = require('../models/part');
 
 let isTiPart = (manufacturer) => manufacturer != null && manufacturer.toLowerCase() == 'turbo international';

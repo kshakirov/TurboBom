@@ -3,16 +3,16 @@ const router = express.Router();
 
 const wrapperUtil = require('./wrapper-util');
 
-const interchange = require('./controllers/interchange_v2');
-const bom = require('./controllers/bom_v2');
-const altBom = require('./controllers/alternative_bom_v2');
-const whereUsed = require('./controllers/where_used_v2');
-const kitMatrix = require('./controllers/kit_matrix_v2');
-const serviceKits = require('./controllers/service_kits_v2');
-const gasketKits = require('./controllers/gasket_kit_v2');
-const majorComponents = require('./controllers/major_component_v2');
-const salesNotes = require('./controllers/sales_notes_v2');
-const standardOversize = require('./controllers/standard_oversize_v2');
+const interchange = require('./services/interchange_v2');
+const bom = require('./services/bom_v2');
+const altBom = require('./services/alternative_bom_v2');
+const whereUsed = require('./services/where_used_v2');
+const kitMatrix = require('./services/kit_matrix_v2');
+const serviceKits = require('./services/service_kits_v2');
+const gasketKits = require('./services/gasket_kit_v2');
+const majorComponents = require('./services/major_component_v2');
+const salesNotes = require('./services/sales_notes_v2');
+const standardOversize = require('./services/standard_oversize_v2');
 
 router.use(function timeLog(req, res, next) {
     next()
@@ -37,7 +37,7 @@ router.get('/parts/:id/boms/parents', (req, res) => wrapperUtil.wrapper(req, res
 
 router.delete('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.removeBom(req, res));
 router.put('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.updateBom(req, res));
-router.post('/boms/:parent_id/descendant/:descendant_id', (req, res) bom.addBom(req, res));
+router.post('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.addBom(req, res));
 
 
 router.get('/boms/:parent_part_id/children/:child_part_id/alternatives', function (req, res) {

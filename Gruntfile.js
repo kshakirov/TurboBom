@@ -17,7 +17,7 @@ module.exports = function (grunt) {
             scripts: {
                 files: [
                     'assets/scripts/**/*.js',
-                    'controllers/**/*.js',
+                    'services/**/*.js',
                     'models/**/*.js',
                     'turbo_router.js'
                 ],

@@ -1,14 +1,14 @@
 let bomModel = require('../models/bom_v2'),
-    serviceKits = require('../controllers/service_kits_v2'),
+    serviceKits = require('.//service_kits_v2'),
     kitMatrix = require('../models/kit_matrix_v2'),
-    partController = require('../controllers/part'),
+    partController = require('.//part'),
     whereUsed = require('../models/where_used');
 
-const whereUsedService = require('../controllers/where_used_v2');
+const whereUsedService = require('.//where_used_v2');
 
 const partModel = require('../models/part');
 
-const redisService = require('../service/redis.service');
+const redisService = require('./redis.service');
 
 let test_kits = [{
     "part_number": "200115-0000",

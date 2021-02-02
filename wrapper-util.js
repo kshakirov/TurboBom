@@ -1,4 +1,4 @@
-const redisService = require('./service/redis.service');
+const redisService = require('./services/redis.service');
 
 module.exports ={
     redisInterchangeHeaderId : (id) => 'interchange_header_' + id,

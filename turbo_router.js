@@ -1,11 +1,11 @@
 let  express = require('express');
 let  router = express.Router();
 
-let  bom = require('./controllers/bom');
-let  whereUsed = require('./controllers/where_used');
-let  interchange = require('./controllers/interchange');
-let  part = require('./controllers/part');
-let altBom = require('./controllers/alternative_bom');
+let  bom = require('./services/bom');
+let  whereUsed = require('./services/where_used');
+let  interchange = require('./services/interchange');
+let  part = require('./services/part');
+let altBom = require('./services/alternative_bom');
 
 // middleware that is specific to this router
 
