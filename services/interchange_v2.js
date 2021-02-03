@@ -10,114 +10,101 @@ const convertPartForEcommerce = (part) => ({
     'inactive': false
 });
 
-const findInterchange = async (id) => {
-    return {
-        headerId: (await interchangeModel.findInterchangeHeaderByItemId(id))[0].key,
-        parts: await interchangeModel.findInterchange(id)
-    };
-}
+const find = async (id) => ({
+    headerId: (await interchangeModel.findHeaderByItemId(id))[0].key,
+    parts: await interchangeModel.find(id)
+});
 
-const findInterchangeEcommerce = async (id) => (await interchangeModel.findInterchange(id)).map(it => convertPartForEcommerce(it));
+const findEcommerce = async (id) => (await interchangeModel.find(id)).map(it => convertPartForEcommerce(it));
 
-const findInterchangesPage = async (id, offset, limit) => {
-    return {
-        headerId: (await interchangeModel.findInterchangeHeaderByItemId(id))[0].key,
-        parts: await interchangeModel.findInterchangesPage(id, offset, limit)
-    };
-}
+const findPage = async (id, offset, limit) => ({
+    headerId: (await interchangeModel.findHeaderByItemId(id))[0].key,
+    parts: await interchangeModel.findPage(id, offset, limit)
+});
 
-const findInterchangesByHeaderId = async (headerId) => await interchangeModel.findInterchangesByHeaderId(headerId);
+const findByHeaderId = async (headerId) => await interchangeModel.findByHeaderId(headerId);
 
-let leaveInterchangeGroup = async (id) => {
-    try {
-        let oldHeaderId = (await interchangeModel.findInterchangeHeaderByItemId(id))[0].key;
-        await interchangeModel.removeInterchange(oldHeaderId + '_' + id);
-        let headerId = (await interchangeModel.createInterchangeHeader())._key;
-        await interchangeModel.addInterchange(headerId, id);
-        return headerId;
-    } catch(e) {
-        console.log(e);
-        return false;
-    }
+const leaveInterchangeGroup = async (id) => {
+    let oldHeaderId = (await interchangeModel.findHeaderByItemId(id))[0].key;
+    await interchangeModel.remove(oldHeaderId + '_' + id);
+    let headerId = (await interchangeModel.createHeader())._key;
+    await interchangeModel.add({
+        _key: headerId.toString() + '_' + id.toString(),
+        type: 'interchange',
+        _from: 'interchange_headers/' + headerId,
+        _to: 'parts/' + id
+    });
+    return headerId;
 };
 
-let leaveIntechangeGroup = async (req, res) => {
-    try {
-        let response = {success: true};
-        let oldHeaderId = (await interchangeModel.findInterchangeHeaderByItemId(req.params.item_id))[0].key;
-        response.oldHeaderId = parseInt(oldHeaderId);
-        let newHeaderId = (await leaveInterchangeGroup(req.params.item_id));
-        response.newHeaderId = parseInt(newHeaderId);
-        let logData = (await interchangeLog.leave(req.params.item_id, oldHeaderId, newHeaderId));
-        response.description = logData.description;
-        response.transactionId = logData.transactionId;
-        res.json(response);
-    } catch(e) {
-        res.json({
-            success: false,
-            msg: e.message
-        });
-    }
+const leaveGroup = async (itemId) => {
+    let response = {success: true};
+    let oldHeaderId = (await interchangeModel.findHeaderByItemId(itemId))[0].key;
+    response.oldHeaderId = parseInt(oldHeaderId);
+    let newHeaderId = (await leaveInterchangeGroup(itemId));
+    response.newHeaderId = parseInt(newHeaderId);
+    let logData = (await interchangeLog.leave(itemId, oldHeaderId, newHeaderId));
+    response.description = logData.description;
+    response.transactionId = logData.transactionId;
+    return response;
 }
 
-let addInterchangeToGroupHelper = async (inItemId, outItemId) => {
-    let inHeader = (await interchangeModel.findInterchangeHeaderByItemId(inItemId));
-    let outHeader = (await interchangeModel.findInterchangeHeaderByItemId(outItemId));
-    let outOutput = await interchangeModel.removeInterchange(outHeader[0].key, outItemId);
-    let inOutput = await interchangeModel.addInterchange(inHeader[0].key, outItemId);
+const addInterchangeToGroupHelper = async (inItemId, outItemId) => {
+    let inHeader = (await interchangeModel.findHeaderByItemId(inItemId));
+    let outHeader = (await interchangeModel.findHeaderByItemId(outItemId));
+    let outOutput = await interchangeModel.remove(outHeader[0].key, outItemId);
+    let inOutput = await interchangeModel.add({
+        _key: inHeader[0].key.toString() + '_' + outItemId.toString(),
+        type: 'interchange',
+        _from: 'interchange_headers/' + inHeader[0].key,
+        _to: 'parts/' + outItemId
+    });
     return [outOutput, inOutput];
 };
 
-let mergeItemGroupToAnotherItemGroup = async (id, pickedId) => {
-    let interchanges = (await interchangeModel.findInterchange(pickedId));
+const mergeItemGroupToAnotherItemGroup = async (id, pickedId) => {
+    let interchanges = (await interchangeModel.find(pickedId));
     let tuples = interchanges.map(it => addInterchangeToGroupHelper(id, it.partId));
     tuples.push(addInterchangeToGroupHelper(id, pickedId));
     return tuples;
 }
 
-let mergeIterchangeToAnotherItemGroup = async (req, res) => {
+const mergeToAnotherItemGroup = async (itemId, pickedId) => {
     let response = {success: true};
-    let ids = [parseInt(req.params.item_id), parseInt(req.params.picked_id)];
-    let oldHeaderId = (await interchangeModel.findInterchangeHeaderByItemId(req.params.picked_id))[0].key;
-    (await interchangeModel.findInterchange(req.params.picked_id)).forEach(function (interchange) {
+    let ids = [parseInt(itemId), parseInt(pickedId)];
+    let oldHeaderId = (await interchangeModel.findHeaderByItemId(pickedId))[0].key;
+    (await interchangeModel.find()).forEach(function (interchange) {
         ids.push(interchange.partId);
     });
-    await mergeItemGroupToAnotherItemGroup(req.params.item_id, req.params.picked_id);
-    let newHeaderId = await interchangeModel.findInterchangeHeaderByItemId(req.params.item_id);
+    await mergeItemGroupToAnotherItemGroup(itemId, pickedId);
+    let newHeaderId = await interchangeModel.findHeaderByItemId(itemId);
 
     response.newHeaderId = parseInt(newHeaderId[0]);
     response.oldHeaderId = parseInt(oldHeaderId);
     let logData = (await interchangeLog.merge(Array.from(ids), oldHeaderId, response.newHeaderId, 'addGroup'));
     response.description = logData.description;
     response.transactionId = logData.transactionId;
-    res.json(response);
+    return response;
 };
 
-let addInterchangeToGroup = async (req, res) => {
-    try {
-        let response = {success: true};
-        let actions = [];
-        let oldHeaderId = (await interchangeModel.findInterchangeHeaderByItemId(req.params.out_item_id))[0].key;
-        actions.push(await interchangeModel.findInterchangeHeaderByItemId(req.params.in_item_id));
-        actions.push(await addInterchangeToGroupHelper(req.params.in_item_id, req.params.out_item_id));
-        response.newHeaderId = parseInt(actions[0][0].key);
-        response.oldHeaderId = parseInt(oldHeaderId);
-        let logData = await interchangeLog.add(req.params.out_item_id, req.params.in_item_id, oldHeaderId, actions[0][0].key);
-        response.description = logData.description;
-        response.transactionId = logData.transactionId;
-        res.json(response);
-    } catch(e) {
-        res.json({
-            success: false,
-            msg: e.message
-        });
-    }
+const addToGroup = async (outItemId, inItemId) => {
+    let response = {success: true};
+    let actions = [];
+    let oldHeaderId = (await interchangeModel.findHeaderByItemId(outItemId))[0].key;
+    actions.push(await interchangeModel.findHeaderByItemId(inItemId));
+    actions.push(await addInterchangeToGroupHelper(inItemId, outItemId));
+    response.newHeaderId = parseInt(actions[0][0].key);
+    response.oldHeaderId = parseInt(oldHeaderId);
+    let logData = await interchangeLog.add(outItemId, inItemId, oldHeaderId, actions[0][0].key);
+    response.description = logData.description;
+    response.transactionId = logData.transactionId;
+    return response;
 }
 
-exports.findInterchange = findInterchange;
-exports.findInterchangeEcommerce = findInterchangeEcommerce;
-exports.findInterchangesByHeaderId = findInterchangesByHeaderId;
-exports.findInterchangesPage = findInterchangesPage;
-exports.leaveIntechangeGroup = leaveIntechangeGroup;
-exports.mergeIterchangeToAnotherItemGroup = mergeIterchangeToAnotherItemGroup;
-exports.addInterchangeToGroup = addInterchangeToGroup;
+exports.find = find;
+exports.findEcommerce = findEcommerce;
+exports.findByHeaderId = findByHeaderId;
+exports.findPage = findPage;
+exports.leaveGroup = leaveGroup;
+exports.mergeToAnotherItemGroup = mergeToAnotherItemGroup;
+exports.addToGroup = addToGroup;

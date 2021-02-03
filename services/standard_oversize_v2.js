@@ -22,9 +22,9 @@ let getStandardOversize = async (req, res) => {
         if(part.standardOversize.standard_part) {
             part = await partModel.getPart(part.standardOversize.standard_part.toString());
         }
-        let originalInterchanges = transformInterchanges(await interchangeModel.findInterchange(part.sku));
+        let originalInterchanges = transformInterchanges(await interchangeModel.find(part.sku));
         let additionalParts = await partModel.getParts(part.standardOversize.skus);
-        let additionalPartsInterchanges = additionalParts.map(it => interchangeModel.findInterchange(it.sku.toString()));
+        let additionalPartsInterchanges = additionalParts.map(it => interchangeModel.find(it.sku.toString()));
         Promise.all(additionalPartsInterchanges).then(resolvedInterchanges => {
             let table = [];
             let indx = 0;

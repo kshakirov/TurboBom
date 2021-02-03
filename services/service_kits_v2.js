@@ -74,7 +74,7 @@ let findServiceKitsBase = async (kits) => {
                 prices: kit.group_prices
             });
         } else {
-            let interchanges = await interchangeModel.findInterchange(kit.tiSku);
+            let interchanges = await interchangeModel.find(kit.tiSku);
             let interchange = interchanges
                 .sort((a,b) => (a.partNumber > b.partNumber) ? 1 : ((b.partNumber > a.partNumber) ? -1 : 0))
                 .find((interchange => interchange.manufacturer == 'Turbo International'));
@@ -103,7 +103,7 @@ let findServiceKitsBase = async (kits) => {
         }
     }
     addPrice(res);
-    // let interchanges = await Promise.all(kits.map(k => interchangeModel.findInterchange(k.tiSku)));
+    // let interchanges = await Promise.all(kits.map(k => interchangeModel.find(k.tiSku)));
     // let tiInterchanges = {};
     // let usedTiInterchanges = {};
     // kits.forEach((kit, kitCnt) => {

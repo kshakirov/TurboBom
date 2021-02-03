@@ -51,7 +51,7 @@ let findTurbosForGasketKit = async (req, res) => {
     if(!value || JSON.parse(value).length == 0) {
         let gasketKitPartNumber = await gasketKitModel.getGasketKitPartNumberById(parseInt(req.params.id));
         let turbos = await gasketKitModel.getTurbosByGasketKitPartNumber(gasketKitPartNumber[0]);
-        let interchanges = await Promise.all(turbos.map(turbo => interchangeModel.findInterchange(turbo.partId)));
+        let interchanges = await Promise.all(turbos.map(turbo => interchangeModel.find(turbo.partId)));
         turbos.forEach((turbo, index) => {
             turbo.interchanges = interchanges[index] ? interchanges[index] : [];
         });
@@ -85,7 +85,7 @@ let findGasketKitForTurbo = async (req, res) => {
     if(!value || JSON.parse(value).length == 0) {
         let gasketKitPartNumbers = (await gasketKitModel.getGasketKitPartNumberByTurboId(parseInt(req.params.id)));
         let gasketKits = await gasketKitModel.getGasketKitByPartNumber(gasketKitPartNumbers[0]);
-        let interchanges = await Promise.all(gasketKits.map(gasketKit => interchangeModel.findInterchange(gasketKit.partId)));
+        let interchanges = await Promise.all(gasketKits.map(gasketKit => interchangeModel.find(gasketKit.partId)));
         gasketKits.forEach((gasketKit, index) => {
             gasketKit.interchanges = interchanges[index] ? interchanges[index] : [];
         });

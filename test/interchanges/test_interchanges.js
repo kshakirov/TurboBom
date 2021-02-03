@@ -12,7 +12,7 @@ describe('Interchange', function () {
             })        // runs before all tests in this block
         })
     });
-    describe('#findInterchange()', function () {
+    describe('#find()', function () {
         it('should return  8 when the value is not present', function (done) {
             InterchangesModel.findInterchange(8).then(function (promise) {
                 assert.equal(10, promise.length);
@@ -44,7 +44,7 @@ describe('Interchange', function () {
     });
 
 
-    describe('#findInterchangesByHeaderId()', function () {
+    describe('#findByHeaderId()', function () {
         it('should return   5 results', function (done) {
             InterchangesModel.findInterchangesByHeaderId(11).then(function (promise) {
                 assert.equal(5, promise.length);
@@ -55,7 +55,7 @@ describe('Interchange', function () {
     });
 
 
-    describe('#addInterchangeToGroup()', function () {
+    describe('#addToGroup()', function () {
         it('should return  true', function (done) {
             InterchangesModel.addInterchangeToGroup(7, 2).then(function (promise) {
                 console.log(promise);

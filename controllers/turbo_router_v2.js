@@ -1,39 +1,41 @@
 const express = require('express');
 const router = express.Router();
 
-const wrapperUtil = require('./wrapper-util');
+const W = require('./controller-wrapper');
+const redisKeys = require('./redis-keys');
+const params = require('./request-params-functions');
 
-const interchange = require('./services/interchange_v2');
-const bom = require('./services/bom_v2');
-const altBom = require('./services/alternative_bom_v2');
-const whereUsed = require('./services/where_used_v2');
-const kitMatrix = require('./services/kit_matrix_v2');
-const serviceKits = require('./services/service_kits_v2');
-const gasketKits = require('./services/gasket_kit_v2');
-const majorComponents = require('./services/major_component_v2');
-const salesNotes = require('./services/sales_notes_v2');
-const standardOversize = require('./services/standard_oversize_v2');
+const interchange = require('../services/interchange_v2');
+const bom = require('../services/bom_v2');
+const altBom = require('../services/alternative_bom_v2');
+const whereUsed = require('../services/where_used_v2');
+const kitMatrix = require('../services/kit_matrix_v2');
+const serviceKits = require('../services/service_kits_v2');
+const gasketKits = require('../services/gasket_kit_v2');
+const majorComponents = require('../services/major_component_v2');
+const salesNotes = require('../services/sales_notes_v2');
+const standardOversize = require('../services/standard_oversize_v2');
 
 router.use(function timeLog(req, res, next) {
     next()
 });
 
-router.get('/interchanges/:header_id', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchangesByHeaderId, wrapperUtil.pHeaderId, wrapperUtil.redisInterchangeHeaderId));
-router.get('/parts/:id/interchanges', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchange, wrapperUtil.pId, wrapperUtil.redisInterchangeId));
-router.get('/product/:id/interchanges', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchangeEcommerce, wrapperUtil.pId, wrapperUtil.redisInterchangeEcommerceId));
-router.get('metadata/parts/:id/interchanges', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchange, wrapperUtil.pId, wrapperUtil.redisInterchangeId));
-router.get('/parts/:id/interchanges/:offset/:limit', (req, res) => wrapperUtil.wrapper(req, res, interchange.findInterchangesPage, wrapperUtil.pIdPage, null));
+router.get('/interchanges/:header_id', (req, res) => W.execute(req, res, interchange.findByHeaderId, params.pHeaderId, redisKeys.redisInterchangeHeaderId));
+router.get('/parts/:id/interchanges', (req, res) => W.execute(req, res, interchange.find, params.pId, redisKeys.redisInterchangeId));
+router.get('/product/:id/interchanges', (req, res) => W.execute(req, res, interchange.findEcommerce, params.pId, redisKeys.redisInterchangeEcommerceId));
+router.get('metadata/parts/:id/interchanges', (req, res) => W.execute(req, res, interchange.find, params.pId, redisKeys.redisInterchangeId));
+router.get('/parts/:id/interchanges/:offset/:limit', (req, res) => W.execute(req, res, interchange.findPage, params.pIdPage, null));
 
-router.put('/interchanges/:item_id/leave_group', (req, res) => interchange.leaveIntechangeGroup(req, res));
-router.put('/interchanges/:item_id/merge_group/:picked_id/all', (req, res) => interchange.mergeIterchangeToAnotherItemGroup(req, res));
-router.put('/interchanges/:in_item_id/merge_group/:out_item_id', (req, res) => interchange.addInterchangeToGroup(req, res));
+router.put('/interchanges/:item_id/leave_group', (req, res) => W.execute(req, res, interchange.leaveGroup, params.pItemId, null));
+router.put('/interchanges/:item_id/merge_group/:picked_id/all', (req, res) => W.execute(req, res, interchange.mergeToAnotherItemGroup, params.pItemIdPickedId, null));
+router.put('/interchanges/:in_item_id/merge_group/:out_item_id', (req, res) => W.execute(req, res, interchange.addToGroup, params.pOutItemIdInItemId, null));
 
 
-router.get('/product/:id/bom', (req, res) => wrapperUtil.wrapper(req, res, bom.findBomEcommerce, wrapperUtil.pIdAuthorizationDistance, wrapperUtil.redisBomEcommerceId));
-router.get('/parts/:id/boms', (req, res) => wrapperUtil.wrapper(req, res, bom.findBom, wrapperUtil.pIdDistanceDepth, wrapperUtil.redisBomId));
-router.get('/parts/:id/boms/:offset/:limit', (req, res) => wrapperUtil.wrapper(req, res, bom.findBomPage, wrapperUtil.pOffsetLimitIdDistanceDepth, null));
-router.get('/parts/:id/boms/only', (req, res) => wrapperUtil.wrapper(req, res, bom.findOnlyBom, wrapperUtil.pId, wrapperUtil.redisBomOnlyId));
-router.get('/parts/:id/boms/parents', (req, res) => wrapperUtil.wrapper(req, res, bom.findBomAsChild, wrapperUtil.pId, wrapperUtil.redisBomChildId));
+router.get('/product/:id/bom', (req, res) => W.execute(req, res, bom.findBomEcommerce, params.pIdAuthorizationDistance, redisKeys.redisBomEcommerceId));
+router.get('/parts/:id/boms', (req, res) => W.execute(req, res, bom.findBom, params.pIdDistanceDepth, redisKeys.redisBomId));
+router.get('/parts/:id/boms/:offset/:limit', (req, res) => W.execute(req, res, bom.findBomPage, params.pOffsetLimitIdDistanceDepth, null));
+router.get('/parts/:id/boms/only', (req, res) => W.execute(req, res, bom.findOnlyBom, params.pId, redisKeys.redisBomOnlyId));
+router.get('/parts/:id/boms/parents', (req, res) => W.execute(req, res, bom.findBomAsChild, params.pId, redisKeys.redisBomChildId));
 
 router.delete('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.removeBom(req, res));
 router.put('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.updateBom(req, res));

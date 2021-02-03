@@ -1,47 +1,30 @@
 'use strict';
 
-/*
- * Express Dependencies
- */
-var compression = require('compression')
-var express = require('express');
-var app = express();
-var port = 9009;
-var bodyParser = require('body-parser');
-var posix = require('posix');
+const compression = require('compression')
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const posix = require('posix');
 posix.setrlimit('nofile', { soft: 50000});
 
-
-// For gzip compression
-//app.use(express.compress());
 app.use(compression())
 app.use(require('connect-livereload')({
     port: 35730
 }));
-/*
- * Config for Production and Development
- */
-
-
-
-/*
- * Routes
- */
-// Index Page
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-var routers = require('./turbo_router')
-var routers2 = require('./turbo_router_v2')
+const routers = require('./controllers/turbo_router')
+const routers2 = require('./controllers/turbo_router_v2')
 
 app.use('/', routers)
 app.use('/v2', routers2)
 
 
-let custom_port = process.argv[2] || 9009;
+const custom_port = process.argv[2] || 9009;
 app.listen(process.env.PORT || custom_port);
 
 console.log('Express started on port ' + custom_port);
