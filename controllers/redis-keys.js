@@ -1,10 +1,10 @@
 module.exports = {
-    redisInterchangeHeaderId: (id) => 'interchange_header_' + id,
-    redisInterchangeId: (id) => 'interchange_' + id,
-    redisInterchangeEcommerceId: (id) => 'interchange_ecommerce_' + id,
+    interchangeHeaderId: (id) => 'interchange_header_' + id,
+    interchangeId: (id) => 'interchange_' + id,
+    interchangeEcommerceId: (id) => 'interchange_ecommerce_' + id,
 
-    redisBomEcommerceId: (id) => 'bom_ecommerce_' + id,
-    redisBomId: (id) => 'bom_' + id,
-    redisBomOnlyId: (id) => 'bom_only_' + id,
-    redisBomChildId: (id) => 'bom_child_' + id,
+    bomEcommerceId: (id) => 'bom_ecommerce_' + id,
+    bomId: (id) => 'bom_' + id,
+    bomOnlyId: (id) => 'bom_only_' + id,
+    bomChildId: (id) => 'bom_child_' + id,
 }

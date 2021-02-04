@@ -20,10 +20,10 @@ router.use(function timeLog(req, res, next) {
     next()
 });
 
-router.get('/interchanges/:header_id', (req, res) => W.execute(req, res, interchange.findByHeaderId, params.pHeaderId, redisKeys.redisInterchangeHeaderId));
-router.get('/parts/:id/interchanges', (req, res) => W.execute(req, res, interchange.find, params.pId, redisKeys.redisInterchangeId));
-router.get('/product/:id/interchanges', (req, res) => W.execute(req, res, interchange.findEcommerce, params.pId, redisKeys.redisInterchangeEcommerceId));
-router.get('metadata/parts/:id/interchanges', (req, res) => W.execute(req, res, interchange.find, params.pId, redisKeys.redisInterchangeId));
+router.get('/interchanges/:header_id', (req, res) => W.execute(req, res, interchange.findByHeaderId, params.pHeaderId, redisKeys.interchangeHeaderId));
+router.get('/parts/:id/interchanges', (req, res) => W.execute(req, res, interchange.find, params.pId, redisKeys.interchangeId));
+router.get('/product/:id/interchanges', (req, res) => W.execute(req, res, interchange.findEcommerce, params.pId, redisKeys.interchangeEcommerceId));
+router.get('metadata/parts/:id/interchanges', (req, res) => W.execute(req, res, interchange.find, params.pId, redisKeys.interchangeId));
 router.get('/parts/:id/interchanges/:offset/:limit', (req, res) => W.execute(req, res, interchange.findPage, params.pIdPage, null));
 
 router.put('/interchanges/:item_id/leave_group', (req, res) => W.execute(req, res, interchange.leaveGroup, params.pItemId, null));
@@ -31,11 +31,11 @@ router.put('/interchanges/:item_id/merge_group/:picked_id/all', (req, res) => W.
 router.put('/interchanges/:in_item_id/merge_group/:out_item_id', (req, res) => W.execute(req, res, interchange.addToGroup, params.pOutItemIdInItemId, null));
 
 
-router.get('/product/:id/bom', (req, res) => W.execute(req, res, bom.findBomEcommerce, params.pIdAuthorizationDistance, redisKeys.redisBomEcommerceId));
-router.get('/parts/:id/boms', (req, res) => W.execute(req, res, bom.findBom, params.pIdDistanceDepth, redisKeys.redisBomId));
+router.get('/product/:id/bom', (req, res) => W.execute(req, res, bom.findBomEcommerce, params.pIdAuthorizationDistance, redisKeys.bomEcommerceId));
+router.get('/parts/:id/boms', (req, res) => W.execute(req, res, bom.findBom, params.pIdDistanceDepth, redisKeys.bomId));
 router.get('/parts/:id/boms/:offset/:limit', (req, res) => W.execute(req, res, bom.findBomPage, params.pOffsetLimitIdDistanceDepth, null));
-router.get('/parts/:id/boms/only', (req, res) => W.execute(req, res, bom.findOnlyBom, params.pId, redisKeys.redisBomOnlyId));
-router.get('/parts/:id/boms/parents', (req, res) => W.execute(req, res, bom.findBomAsChild, params.pId, redisKeys.redisBomChildId));
+router.get('/parts/:id/boms/only', (req, res) => W.execute(req, res, bom.findOnlyBom, params.pId, redisKeys.bomOnlyId));
+router.get('/parts/:id/boms/parents', (req, res) => W.execute(req, res, bom.findBomAsChild, params.pId, redisKeys.bomChildId));
 
 router.delete('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.removeBom(req, res));
 router.put('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.updateBom(req, res));

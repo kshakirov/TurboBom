@@ -1,5 +1,5 @@
 let partModel = require('../models/part');
-let interchangeModel = require('../models/interchanges_v2');
+let interchangeModel = require('../models/interchanges/interchanges_v2');
 
 let transformInterchanges = (interchanges) => interchanges.map(it => {
     return {

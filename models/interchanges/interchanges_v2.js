@@ -1,5 +1,5 @@
-const queries = require('../queries/interchanges');
-const utils = require('../services/arangoutils');
+const queries = require('./queries/interchanges');
+const utils = require('../utils/arangoutils');
 const config = require('config');
 const dbConfig = config.get('TurboGraph_v2.dbConfig');
 

@@ -1,4 +1,4 @@
-let interchangeModel = require('../models/interchanges_v2');
+let interchangeModel = require('../models/interchanges/interchanges_v2');
 let tokenTools = require('../tools/token_tools');
 let gasketKitModel = require('../models/gasket_kits_v2');
 

@@ -1,4 +1,4 @@
-const interchangeModel = require('../models/interchanges_v2');
+const interchangeModel = require('../models/interchanges/interchanges_v2');
 const interchangeLog = require('../models/interchange-log');
 
 const convertPartForEcommerce = (part) => ({
@@ -24,7 +24,7 @@ const findPage = async (id, offset, limit) => ({
 
 const findByHeaderId = async (headerId) => await interchangeModel.findByHeaderId(headerId);
 
-const leaveInterchangeGroup = async (id) => {
+const _leaveGroup = async (id) => {
     let oldHeaderId = (await interchangeModel.findHeaderByItemId(id))[0].key;
     await interchangeModel.remove(oldHeaderId + '_' + id);
     let headerId = (await interchangeModel.createHeader())._key;
@@ -41,7 +41,7 @@ const leaveGroup = async (itemId) => {
     let response = {success: true};
     let oldHeaderId = (await interchangeModel.findHeaderByItemId(itemId))[0].key;
     response.oldHeaderId = parseInt(oldHeaderId);
-    let newHeaderId = (await leaveInterchangeGroup(itemId));
+    let newHeaderId = (await _leaveGroup(itemId));
     response.newHeaderId = parseInt(newHeaderId);
     let logData = (await interchangeLog.leave(itemId, oldHeaderId, newHeaderId));
     response.description = logData.description;
@@ -49,7 +49,7 @@ const leaveGroup = async (itemId) => {
     return response;
 }
 
-const addInterchangeToGroupHelper = async (inItemId, outItemId) => {
+const addToGroupHelper = async (inItemId, outItemId) => {
     let inHeader = (await interchangeModel.findHeaderByItemId(inItemId));
     let outHeader = (await interchangeModel.findHeaderByItemId(outItemId));
     let outOutput = await interchangeModel.remove(outHeader[0].key, outItemId);
@@ -64,8 +64,8 @@ const addInterchangeToGroupHelper = async (inItemId, outItemId) => {
 
 const mergeItemGroupToAnotherItemGroup = async (id, pickedId) => {
     let interchanges = (await interchangeModel.find(pickedId));
-    let tuples = interchanges.map(it => addInterchangeToGroupHelper(id, it.partId));
-    tuples.push(addInterchangeToGroupHelper(id, pickedId));
+    let tuples = interchanges.map(it => addToGroupHelper(id, it.partId));
+    tuples.push(addToGroupHelper(id, pickedId));
     return tuples;
 }
 
@@ -92,7 +92,7 @@ const addToGroup = async (outItemId, inItemId) => {
     let actions = [];
     let oldHeaderId = (await interchangeModel.findHeaderByItemId(outItemId))[0].key;
     actions.push(await interchangeModel.findHeaderByItemId(inItemId));
-    actions.push(await addInterchangeToGroupHelper(inItemId, outItemId));
+    actions.push(await addToGroupHelper(inItemId, outItemId));
     response.newHeaderId = parseInt(actions[0][0].key);
     response.oldHeaderId = parseInt(oldHeaderId);
     let logData = await interchangeLog.add(outItemId, inItemId, oldHeaderId, actions[0][0].key);
