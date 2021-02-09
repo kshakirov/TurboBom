@@ -2,7 +2,7 @@ const redisService = require('../services/redis.service');
 
 module.exports ={
 
-    execute : async (req, res, controlFunction, controlParamFunction, redisParamFunction) => {
+    execute : (req, res) => async (controlFunction, controlParamFunction, redisParamFunction) => {
         let c_params = controlParamFunction.apply(null, [req]);
         let r_params;
         if(redisParamFunction != null) {
