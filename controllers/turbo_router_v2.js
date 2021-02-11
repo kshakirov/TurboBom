@@ -5,7 +5,7 @@ const W = require('./controller-wrapper');
 const redisKeys = require('./redis-keys');
 const params = require('./request-params-functions');
 
-const interchange = require('../services/interchange_v2');
+const interchange = require('../controllers/partials/interchange');
 const bom = require('../services/bom_v2');
 const altBom = require('../services/alternative_bom_v2');
 const whereUsed = require('../services/where_used_v2');
@@ -20,15 +20,31 @@ router.use(function timeLog(req, res, next) {
     next()
 });
 
-router.get('/interchanges/:header_id', async (req, res) => W.execute(req, res)(interchange.findByHeaderId, params.pHeaderId, redisKeys.interchangeHeaderId));
-router.get('/parts/:id/interchanges', (req, res) => W.execute(req, res)(interchange.find, params.pId, redisKeys.interchangeId));
-router.get('/product/:id/interchanges', (req, res) => W.execute(req, res)(interchange.findEcommerce, params.pId, redisKeys.interchangeEcommerceId));
-router.get('metadata/parts/:id/interchanges', (req, res) => W.execute(req, res)(interchange.find, params.pId, redisKeys.interchangeId));
-router.get('/parts/:id/interchanges/:offset/:limit', (req, res) => W.execute(req, res)(interchange.findPage, params.pIdPage, null));
+router.get('/interchanges/:header_id', (req, res) => interchange.findByHeaderId(req, res));
+router.get('/parts/:id/interchanges', (req, res) => interchange.find(req, res));
+router.get('/product/:id/interchanges', (req, res) => interchange.findEcommerce(req, res));
+router.get('metadata/parts/:id/interchanges', (req, res) => interchange.find(req, res));
+router.get('/parts/:id/interchanges/:offset/:limit', (req, res) => interchange.findPage(req, res));
 
-router.put('/interchanges/:item_id/leave_group', (req, res) => W.execute(req, res)(interchange.leaveGroup, params.pItemId, null));
-router.put('/interchanges/:item_id/merge_group/:picked_id/all', (req, res) => W.execute(req, res)(interchange.mergeToAnotherItemGroup, params.pItemIdPickedId, null));
-router.put('/interchanges/:in_item_id/merge_group/:out_item_id', (req, res) => W.execute(req, res)(interchange.addToGroup, params.pOutItemIdInItemId, null));
+router.put('/interchanges/:item_id/leave_group', (req, res) => interchange.leaveGroup(req, res));
+router.put('/interchanges/:item_id/merge_group/:picked_id/all', (req, res) => interchange.mergeToAnotherItemGroup(req, res));
+router.put('/interchanges/:in_item_id/merge_group/:out_item_id', (req, res) => interchange.addToGroup(req, res));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 router.get('/product/:id/bom', (req, res) => W.execute(req, res)(bom.findBomEcommerce, params.pIdAuthorizationDistance, redisKeys.bomEcommerceId));
