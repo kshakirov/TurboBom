@@ -1,4 +1,4 @@
-const interchange = require('../../services/interchange_v2');
+const interchange = require('../../services/interchange/interchange_v2');
 const redisKeys = require('../redis-keys');
 const params = require('../request-params-functions');
 const W = require('../controller-wrapper');

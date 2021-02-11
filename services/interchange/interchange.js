@@ -1,5 +1,5 @@
-let interchange_model = require('../models/interchanges');
-const interchangeLog = require('../models/interchange-log');
+let interchange_model = require('../../models/interchanges');
+const interchangeLog = require('../../models/interchange-log');
 
 function dto_header_key(promise) {
     if (promise && promise.key)

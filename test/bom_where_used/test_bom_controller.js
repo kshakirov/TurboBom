@@ -1,4 +1,4 @@
-var interchangeController = require('../../services/interchange')
+var interchangeController = require('../../services/interchange/interchange')
 it('should respond with redirect on post', function (done) {
     request(app)
         .post('/api/members')

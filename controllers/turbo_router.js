@@ -3,7 +3,7 @@ let  router = express.Router();
 
 let  bom = require('../services/bom');
 let  whereUsed = require('../services/where_used');
-let  interchange = require('../services/interchange');
+let  interchange = require('../services/interchange/interchange');
 let  part = require('../services/part');
 let altBom = require('../services/alternative_bom');
 

@@ -1,5 +1,5 @@
-const interchangeModel = require('../models/interchanges/interchanges_v2');
-const interchangeLog = require('../models/interchange-log');
+const interchangeModel = require('../../models/interchanges/interchanges_v2');
+const interchangeLog = require('../../models/interchange-log');
 
 const convertPartForEcommerce = (part) => ({
     'id': part.sku,
@@ -10,24 +10,24 @@ const convertPartForEcommerce = (part) => ({
     'inactive': false
 });
 
-const find = async (id) => ({
-    headerId: (await interchangeModel.findHeaderByItemId(id))[0].key,
-    parts: await interchangeModel.find(id)
-});
+const find = async (id) => findPage(id, 0, Number.MAX_SAFE_INTEGER);
 
 const findEcommerce = async (id) => (await interchangeModel.find(id)).map(it => convertPartForEcommerce(it));
 
-const findPage = async (id, offset, limit) => ({
-    headerId: (await interchangeModel.findHeaderByItemId(id))[0].key,
-    parts: await interchangeModel.findPage(id, offset, limit)
-});
+const findPage = async (id, offset, limit) => {
+    const [headers, parts] = await Promise.all([interchangeModel.findHeaderByItemId(id), interchangeModel.findPage(id, offset, limit)]);
+    return {
+        headerId: headers[0].key,
+        parts: parts
+    };
+}
 
 const findByHeaderId = async (headerId) => await interchangeModel.findByHeaderId(headerId);
 
 const _leaveGroup = async (id) => {
-    let oldHeaderId = (await interchangeModel.findHeaderByItemId(id))[0].key;
+    const oldHeaderId = (await interchangeModel.findHeaderByItemId(id))[0].key;
     await interchangeModel.remove(oldHeaderId + '_' + id);
-    let headerId = (await interchangeModel.createHeader())._key;
+    const headerId = (await interchangeModel.createHeader())._key;
     await interchangeModel.add({
         _key: headerId.toString() + '_' + id.toString(),
         type: 'interchange',
@@ -38,22 +38,21 @@ const _leaveGroup = async (id) => {
 };
 
 const leaveGroup = async (itemId) => {
-    let response = {success: true};
-    let oldHeaderId = (await interchangeModel.findHeaderByItemId(itemId))[0].key;
+    const response = {success: true};
+    const [oldHeaders, newHeaderId] = await Promise.all([interchangeModel.findHeaderByItemId(itemId), _leaveGroup(itemId)]);
+    const oldHeaderId = oldHeaders[0].key;
     response.oldHeaderId = parseInt(oldHeaderId);
-    let newHeaderId = (await _leaveGroup(itemId));
     response.newHeaderId = parseInt(newHeaderId);
-    let logData = (await interchangeLog.leave(itemId, oldHeaderId, newHeaderId));
+    const logData = (await interchangeLog.leave(itemId, oldHeaderId, newHeaderId));
     response.description = logData.description;
     response.transactionId = logData.transactionId;
     return response;
 }
 
 const addToGroupHelper = async (inItemId, outItemId) => {
-    let inHeader = (await interchangeModel.findHeaderByItemId(inItemId));
-    let outHeader = (await interchangeModel.findHeaderByItemId(outItemId));
-    let outOutput = await interchangeModel.remove(outHeader[0].key, outItemId);
-    let inOutput = await interchangeModel.add({
+    const [inHeader, outHeader] = await Promise.all([interchangeModel.findHeaderByItemId(inItemId), interchangeModel.findHeaderByItemId(outItemId)]);
+    const outOutput = await interchangeModel.remove(outHeader[0].key, outItemId);
+    const inOutput = await interchangeModel.add({
         _key: inHeader[0].key.toString() + '_' + outItemId.toString(),
         type: 'interchange',
         _from: 'interchange_headers/' + inHeader[0].key,
@@ -63,39 +62,37 @@ const addToGroupHelper = async (inItemId, outItemId) => {
 };
 
 const mergeItemGroupToAnotherItemGroup = async (id, pickedId) => {
-    let interchanges = (await interchangeModel.find(pickedId));
-    let tuples = interchanges.map(it => addToGroupHelper(id, it.partId));
+    const interchanges = (await interchangeModel.find(pickedId));
+    const tuples = interchanges.map(it => addToGroupHelper(id, it.partId));
     tuples.push(addToGroupHelper(id, pickedId));
     return tuples;
 }
 
 const mergeToAnotherItemGroup = async (itemId, pickedId) => {
-    let response = {success: true};
-    let ids = [parseInt(itemId), parseInt(pickedId)];
-    let oldHeaderId = (await interchangeModel.findHeaderByItemId(pickedId))[0].key;
+    const response = {success: true};
+    const ids = [parseInt(itemId), parseInt(pickedId)];
+    const oldHeaderId = (await interchangeModel.findHeaderByItemId(pickedId))[0].key;
     (await interchangeModel.find()).forEach(function (interchange) {
         ids.push(interchange.partId);
     });
     await mergeItemGroupToAnotherItemGroup(itemId, pickedId);
-    let newHeaderId = await interchangeModel.findHeaderByItemId(itemId);
+    const newHeaderId = await interchangeModel.findHeaderByItemId(itemId);
 
     response.newHeaderId = parseInt(newHeaderId[0]);
     response.oldHeaderId = parseInt(oldHeaderId);
-    let logData = (await interchangeLog.merge(Array.from(ids), oldHeaderId, response.newHeaderId, 'addGroup'));
+    const logData = (await interchangeLog.merge(Array.from(ids), oldHeaderId, response.newHeaderId, 'addGroup'));
     response.description = logData.description;
     response.transactionId = logData.transactionId;
     return response;
 };
 
 const addToGroup = async (outItemId, inItemId) => {
-    let response = {success: true};
-    let actions = [];
-    let oldHeaderId = (await interchangeModel.findHeaderByItemId(outItemId))[0].key;
-    actions.push(await interchangeModel.findHeaderByItemId(inItemId));
-    actions.push(await addToGroupHelper(inItemId, outItemId));
-    response.newHeaderId = parseInt(actions[0][0].key);
+    const response = {success: true};
+    const [oldHeaders, newHeader] = await Promise.all((interchangeModel.findHeaderByItemId(outItemId)), interchangeModel.findHeaderByItemId(inItemId), addToGroupHelper(inItemId, outItemId));
+    const oldHeaderId = oldHeaders[0].key;
+    response.newHeaderId = parseInt(newHeader[0].key);
     response.oldHeaderId = parseInt(oldHeaderId);
-    let logData = await interchangeLog.add(outItemId, inItemId, oldHeaderId, actions[0][0].key);
+    const logData = await interchangeLog.add(outItemId, inItemId, oldHeaderId, newHeader[0].key);
     response.description = logData.description;
     response.transactionId = logData.transactionId;
     return response;
