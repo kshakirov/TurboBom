@@ -24,30 +24,7 @@ const findPage = async (id, offset, limit) => {
 
 const findByHeaderId = async (headerId) => await interchangeModel.findByHeaderId(headerId);
 
-const _leaveGroup = async (id) => {
-    const oldHeaderId = (await interchangeModel.findHeaderByItemId(id))[0].key;
-    await interchangeModel.remove(oldHeaderId + '_' + id);
-    const headerId = (await interchangeModel.createHeader())._key;
-    await interchangeModel.add({
-        _key: headerId.toString() + '_' + id.toString(),
-        type: 'interchange',
-        _from: 'interchange_headers/' + headerId,
-        _to: 'parts/' + id
-    });
-    return headerId;
-};
 
-const leaveGroup = async (itemId) => {
-    const response = {success: true};
-    const [oldHeaders, newHeaderId] = await Promise.all([interchangeModel.findHeaderByItemId(itemId), _leaveGroup(itemId)]);
-    const oldHeaderId = oldHeaders[0].key;
-    response.oldHeaderId = parseInt(oldHeaderId);
-    response.newHeaderId = parseInt(newHeaderId);
-    const logData = (await interchangeLog.leave(itemId, oldHeaderId, newHeaderId));
-    response.description = logData.description;
-    response.transactionId = logData.transactionId;
-    return response;
-}
 
 const addToGroupHelper = async (inItemId, outItemId) => {
     const [inHeader, outHeader] = await Promise.all([interchangeModel.findHeaderByItemId(inItemId), interchangeModel.findHeaderByItemId(outItemId)]);
@@ -61,21 +38,21 @@ const addToGroupHelper = async (inItemId, outItemId) => {
     return [outOutput, inOutput];
 };
 
-const mergeItemGroupToAnotherItemGroup = async (id, pickedId) => {
+const mergeGroupToAnotherGroup = async (id, pickedId) => {
     const interchanges = (await interchangeModel.find(pickedId));
     const tuples = interchanges.map(it => addToGroupHelper(id, it.partId));
     tuples.push(addToGroupHelper(id, pickedId));
     return tuples;
 }
 
-const mergeToAnotherItemGroup = async (itemId, pickedId) => {
+const mergeToAnotherGroup = async (itemId, pickedId) => {
     const response = {success: true};
     const ids = [parseInt(itemId), parseInt(pickedId)];
     const oldHeaderId = (await interchangeModel.findHeaderByItemId(pickedId))[0].key;
     (await interchangeModel.find()).forEach(function (interchange) {
         ids.push(interchange.partId);
     });
-    await mergeItemGroupToAnotherItemGroup(itemId, pickedId);
+    await mergeGroupToAnotherGroup(itemId, pickedId);
     const newHeaderId = await interchangeModel.findHeaderByItemId(itemId);
 
     response.newHeaderId = parseInt(newHeaderId[0]);
@@ -102,6 +79,8 @@ exports.find = find;
 exports.findEcommerce = findEcommerce;
 exports.findByHeaderId = findByHeaderId;
 exports.findPage = findPage;
-exports.leaveGroup = leaveGroup;
-exports.mergeToAnotherItemGroup = mergeToAnotherItemGroup;
+exports.mergeToAnotherItemGroup = mergeToAnotherGroup;
 exports.addToGroup = addToGroup;
+
+//todo: add index fines, separate files for separate functions, result/error obj
+// todo: move leave group to separate file, leave group test

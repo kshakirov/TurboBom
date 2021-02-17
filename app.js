@@ -17,11 +17,10 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-const routers = require('./controllers/turbo_router')
-const routers2 = require('./controllers/turbo_router_v2')
+const controller = require('./controllers/index')
 
-app.use('/', routers)
-app.use('/v2', routers2)
+app.use('/', controller.router)
+app.use('/v2', controller.router2)
 
 
 const custom_port = process.argv[2] || 9009;
