@@ -15,7 +15,7 @@ router.use(function timeLog(req, res, next) {
 });
 // define the home page route
 router.get('/', function (req, res) {
-    res.send('Bill of materials, interchanges and where used service')
+    res.send('Bill of materials, interchange and where used service')
 });
 // define the about route
 router.get('/parts/:id/boms', function (req, res) {
@@ -68,7 +68,7 @@ router.post('/boms/:parent_id/descendant/:descendant_id', function (req, res) {
     }
 });
 
-router.delete('/interchanges/:header_id/item/:item_id', function (req, res) {
+router.delete('/interchange/:header_id/item/:item_id', function (req, res) {
     try {
         interchange.removeInterchange(req, res);
     } catch(e) {
@@ -76,14 +76,14 @@ router.delete('/interchanges/:header_id/item/:item_id', function (req, res) {
     }
 });
 
-router.post('/interchanges/:item_id', function (req, res) {
+router.post('/interchange/:item_id', function (req, res) {
     try {
         interchange.createInterchange(req, res);
     } catch(e) {
         console.log(e);
     }
 });
-router.put('/interchanges/:item_id/leave_group', function (req, res) {
+router.put('/interchange/:item_id/leave_group', function (req, res) {
     try {
         interchange.leaveIntechangeGroup(req, res);
     } catch(e) {
@@ -91,7 +91,7 @@ router.put('/interchanges/:item_id/leave_group', function (req, res) {
     }
 });
 
-router.put('/interchanges/:item_id/merge_group/:picked_id/all', function (req, res) {
+router.put('/interchange/:item_id/merge_group/:picked_id/all', function (req, res) {
     try {
         interchange.mergeIterchangeToAnotherItemGroup(req, res);
     } catch(e) {
@@ -100,7 +100,7 @@ router.put('/interchanges/:item_id/merge_group/:picked_id/all', function (req, r
 });
 
 
-router.put('/interchanges/:in_item_id/merge_group/:out_item_id', function (req, res) {
+router.put('/interchange/:in_item_id/merge_group/:out_item_id', function (req, res) {
     try {
         interchange.addInterchangeToGroup(req, res);
     } catch(e) {
@@ -109,7 +109,7 @@ router.put('/interchanges/:in_item_id/merge_group/:out_item_id', function (req, 
 });
 
 
-router.get('/interchanges/:header_id', function (req, res) {
+router.get('/interchange/:header_id', function (req, res) {
     try {
         interchange.findInterchangesByHeaderId(req, res);
     } catch(e) {
@@ -159,7 +159,7 @@ router.get('/parts/:id/ancestors', function (req, res) {
     }
 });
 
-router.get('/parts/:id/interchanges', function (req, res) {
+router.get('/parts/:id/interchange', function (req, res) {
     try {
         interchange.findInterchange(req, res);
     } catch(e) {

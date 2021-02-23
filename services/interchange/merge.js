@@ -1,29 +1,5 @@
-const interchangeModel = require('../../models/interchanges/interchanges_v2');
-const interchangeLog = require('../../models/interchange-log');
-
-const convertPartForEcommerce = (part) => ({
-    'id': part.sku,
-    'manufacturer': part.manufacturer,
-    'partType': part.partType,
-    'description': part.description,
-    'part_number': part.partNumber,
-    'inactive': false
-});
-
-const find = async (id) => findPage(id, 0, Number.MAX_SAFE_INTEGER);
-
-const findEcommerce = async (id) => (await interchangeModel.find(id)).map(it => convertPartForEcommerce(it));
-
-const findPage = async (id, offset, limit) => {
-    const [headers, parts] = await Promise.all([interchangeModel.findHeaderByItemId(id), interchangeModel.findPage(id, offset, limit)]);
-    return {
-        headerId: headers[0].key,
-        parts: parts
-    };
-}
-
-const findByHeaderId = async (headerId) => await interchangeModel.findByHeaderId(headerId);
-
+const interchangeModel = require('../../models/interchange/interchanges_v2');
+const interchangeLog = require('../interchange-log');
 
 
 const addToGroupHelper = async (inItemId, outItemId) => {
@@ -49,7 +25,7 @@ const mergeToAnotherGroup = async (itemId, pickedId) => {
     const response = {success: true};
     const ids = [parseInt(itemId), parseInt(pickedId)];
     const oldHeaderId = (await interchangeModel.findHeaderByItemId(pickedId))[0].key;
-    (await interchangeModel.find()).forEach(function (interchange) {
+    (await interchangeModel.find(pickedId)).forEach(function (interchange) {
         ids.push(interchange.partId);
     });
     await mergeGroupToAnotherGroup(itemId, pickedId);
@@ -74,13 +50,5 @@ const addToGroup = async (outItemId, inItemId) => {
     response.transactionId = logData.transactionId;
     return response;
 }
-
-exports.find = find;
-exports.findEcommerce = findEcommerce;
-exports.findByHeaderId = findByHeaderId;
-exports.findPage = findPage;
 exports.mergeToAnotherItemGroup = mergeToAnotherGroup;
 exports.addToGroup = addToGroup;
-
-//todo: add index fines, separate files for separate functions, result/error obj
-// todo: move leave group to separate file, leave group test

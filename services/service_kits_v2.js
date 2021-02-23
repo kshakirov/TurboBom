@@ -1,4 +1,4 @@
-let interchangeModel = require('../models/interchanges/interchanges_v2'),
+let interchangeModel = require('../models/interchange/interchanges_v2'),
     kitMatrix = require('../models/kit_matrix_v2');
 let tokenTools = require('../tools/token_tools');
 
@@ -103,11 +103,11 @@ let findServiceKitsBase = async (kits) => {
         }
     }
     addPrice(res);
-    // let interchanges = await Promise.all(kits.map(k => interchangeModel.find(k.tiSku)));
+    // let interchange = await Promise.all(kits.map(k => interchangeModel.find(k.tiSku)));
     // let tiInterchanges = {};
     // let usedTiInterchanges = {};
     // kits.forEach((kit, kitCnt) => {
-    //     if(interchanges[kitCnt].length == 0) {
+    //     if(interchange[kitCnt].length == 0) {
     //         res.push({
     //             tiSku: kit.tiSku,
     //             sku: null,
@@ -119,10 +119,10 @@ let findServiceKitsBase = async (kits) => {
     //         });
     //         addPrice(res);
     //     } else {
-    //          interchanges[kitCnt].filter((interchange => interchange.manufacturer == 'Turbo International')).forEach(it => {
+    //          interchange[kitCnt].filter((interchange => interchange.manufacturer == 'Turbo International')).forEach(it => {
     //              tiInterchanges[it.sku] = it;
     //          });
-    //         let interchange = interchanges[kitCnt]
+    //         let interchange = interchange[kitCnt]
     //             .sort((a,b) => (a.partNumber > b.partNumber) ? 1 : ((b.partNumber > a.partNumber) ? -1 : 0))
     //             .find((interchange => interchange.manufacturer == 'Turbo International'));
     //         if(interchange) {
@@ -139,7 +139,7 @@ let findServiceKitsBase = async (kits) => {
     //         }
     //         addPrice(res);
     //     }
-    //     // if(interchanges[kitCnt].length == 0) {
+    //     // if(interchange[kitCnt].length == 0) {
     //     //     res.push({
     //     //         tiSku: kit.tiSku,
     //     //         sku: null,
@@ -151,7 +151,7 @@ let findServiceKitsBase = async (kits) => {
     //     //     });
     //     //     addPrice(res);
     //     // } else {
-    //     //     interchanges[kitCnt].forEach((interchange) => {
+    //     //     interchange[kitCnt].forEach((interchange) => {
     //     //         res.push({
     //     //             part_number: interchange.manufacturer == 'Turbo International' ? null : interchange.partNumber,
     //     //             ti_part_number: interchange.manufacturer == 'Turbo International' ? interchange.partNumber : kit.ti_part_number,

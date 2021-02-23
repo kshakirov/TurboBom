@@ -1,4 +1,4 @@
-var InterchangesModel = require('../../models/interchanges/interchanges_v2');
+var InterchangesModel = require('../../models/interchange/interchanges_v2');
 var DbTools = require('../../api/db_tools');
 
 var assert = require('assert');

@@ -1,5 +1,5 @@
-let interchangeModel = require('../../models/interchanges/interchanges_v2');
-let interchangeLog = require('../../models/interchange-log');
+let interchangeModel = require('../../models/interchange/interchanges_v2');
+let interchangeLog = require('../interchange-log');
 
 const wireDependencies = (iModel, iLog) => {
     interchangeModel = iModel;
