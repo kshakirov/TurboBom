@@ -6,7 +6,7 @@ const redisKeys = require('./redis-keys');
 const params = require('./request-params-functions');
 
 const interchange = require('../controllers/partials/interchange');
-const bom = require('../services/bom_v2');
+const bom = require('../controllers/partials/bom');
 const altBom = require('../services/alternative_bom_v2');
 const whereUsed = require('../services/where_used_v2');
 const kitMatrix = require('../services/kit_matrix_v2');
@@ -31,27 +31,11 @@ router.put('/interchange/:item_id/merge_group/:picked_id/all', (req, res) => int
 router.put('/interchange/:in_item_id/merge_group/:out_item_id', (req, res) => interchange.addToGroup(req, res));
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-router.get('/product/:id/bom', (req, res) => W.execute(req, res)(bom.findBomEcommerce, params.pIdAuthorizationDistance, redisKeys.bomEcommerceId));
-router.get('/parts/:id/boms', (req, res) => W.execute(req, res)(bom.findBom, params.pIdDistanceDepth, redisKeys.bomId));
-router.get('/parts/:id/boms/:offset/:limit', (req, res) => W.execute(req, res)(bom.findBomPage, params.pOffsetLimitIdDistanceDepth, null));
-router.get('/parts/:id/boms/only', (req, res) => W.execute(req, res)(bom.findOnlyBom, params.pId, redisKeys.bomOnlyId));
-router.get('/parts/:id/boms/parents', (req, res) => W.execute(req, res)(bom.findBomAsChild, params.pId, redisKeys.bomChildId));
+router.get('/product/:id/bom', (req, res) => bom.findBomEcommerce(req, res));
+router.get('/parts/:id/boms', (req, res) => bom.find(req, res));
+router.get('/parts/:id/boms/:offset/:limit', (req, res) => bom.findBomPage(req, res));
+router.get('/parts/:id/boms/only', (req, res) => bom.findOnlyBom(req, res));
+router.get('/parts/:id/boms/parents', (req, res) => bom.findBomAsChild(req, res));
 
 router.delete('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.removeBom(req, res));
 router.put('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.updateBom(req, res));

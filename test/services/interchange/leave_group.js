@@ -1,4 +1,4 @@
-const leaveGroupService = require('../../../services/interchange/interchange_v2_leave_group');
+const leaveGroupService = require('../../../services/interchange/leave_group');
 const assert = require('assert');
 
 let newHeaderId = -1;
@@ -24,11 +24,12 @@ const interchangeLog = {
     }
 };
 
+//todo: wiring over carrying?
 leaveGroupService.wireDependencies(interchangeModel, interchangeLog);
 
 
 describe('Interchange', function () {
-    describe('#find()', function () {
+    describe('#leave_group', function () {
         it('', function (done) {
             const itemId = 1;
             leaveGroupService.leaveGroup(itemId).then(response => {
@@ -49,8 +50,6 @@ describe('Interchange', function () {
                 assert.equal(
                     JSON.stringify({ itemId: 1, oldHeaderId: 0, newHeaderId: -1 }),
                     JSON.stringify(logs[0]));
-
-                console.log(response);
 
                 assert.equal(
                     JSON.stringify({ success: true,

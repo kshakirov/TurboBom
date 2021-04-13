@@ -1,7 +1,7 @@
-let bomModel = require('../models/bom_v2');
-let tokenTools = require('../tools/token_tools');
+let bomModel = require('../../models/bom_v2');
+let tokenTools = require('../../tools/token_tools');
 
-const partModel = require('../models/part');
+const partModel = require('../../models/part');
 
 let filterDirectBoms = (boms) => boms.filter(bom => bom.nodeType === 'direct');
 
@@ -42,9 +42,9 @@ let filterBomsCassandra = (boms) => {
     let filteredBoms =
         boms.filter(bom => bom.type != 'header')
             .map(b => {
-        b.sku = parseInt(b.sku);
-        return b;
-    });
+                b.sku = parseInt(b.sku);
+                return b;
+            });
     let directDesc = getDirectDesc(filteredBoms);
     filteredBoms = getInterchangesCassandra(directDesc, filteredBoms);
     return filteredBoms;
@@ -54,14 +54,6 @@ let hidePrices = (data) => data.map(b => {
     b.prices = 'login';
     return b;
 });
-
-let flattenPrice = (data, user_data) =>
-    data.map(b => {
-        if (b.prices != null) {
-            b.prices = b.prices[user_data.customer.group];
-        }
-        return b;
-    })
 
 let addPrice = (data, authorization) => {
     let token = tokenTools.getToken(authorization);
@@ -130,52 +122,10 @@ let convertToVertice = (response) => response.map((r) => {
 
 let findBomAsChild = async (id) => (convertToVertice((await bomModel.findBomAsChild(id))));
 
-let removeBom = async (req, res) => {
-    try {
-        await bomModel.removeBom(req.params.parent_id, req.params.descendant_id);
-        res.json({
-            success: true
-        });
-    } catch(e) {
-        res.json({
-            success: false
-        });
-    }
-}
-
-let updateBom = async (req, res) => {
-    try {
-        await bomModel.updateBom(req.params.parent_id, req.params.descendant_id, req.body.qty);
-        res.json({
-            success: true
-        });
-    } catch(e) {
-        res.json({
-            success: false
-        });
-    }
-}
-
-let addBom = async (req, res) => {
-    let response = {
-        success: true
-    };
-    try {
-        await bomModel.addBom(req.params.parent_id, req.params.descendant_id, req.body.qty);
-    } catch(e) {
-        response.success = false;
-        response.msg = e.message;
-    }
-    res.json(response);
-}
-
 exports.findBom = findBom;
 exports.findBomEcommerce = findBomEcommerce;
 exports._findBomEcommerce = _findBomEcommerce;
 exports.findBomPage = findBomPage;
 exports.findOnlyBom = findOnlyBom;
 exports.findBomAsChild = findBomAsChild;
-exports.removeBom = removeBom;
-exports.updateBom = updateBom;
-exports.addBom = addBom;
 exports.filterBoms = filterBoms;

@@ -8,5 +8,7 @@ module.exports = {
     pIdAuthorizationDistance : (req) => ([req.params.id, req.headers.authorization, req.query.distance]),
     pIdDistanceDepth : (req) => ([req.params.id, req.query.distance, req.query.depth]),
     pOffsetLimitIdDistanceDepth : (req) => ([req.params.offset, req.params.limit, req.params.id, req.query.distance , req.query.depth]),
-    pOutItemIdInItemId : (req) => ([req.params.out_item_id, req.params.in_item_id])
+    pOutItemIdInItemId : (req) => ([req.params.out_item_id, req.params.in_item_id]),
+    pParentDescendantQty : (req) => ([req.params.parent_id, req.params.descendant_id, req.body.qty]),
+    pParentDescendant : (req) => ([req.params.parent_id, req.params.descendant_id])
 }
