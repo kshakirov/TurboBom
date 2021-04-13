@@ -10,5 +10,11 @@ module.exports = {
     pOffsetLimitIdDistanceDepth : (req) => ([req.params.offset, req.params.limit, req.params.id, req.query.distance , req.query.depth]),
     pOutItemIdInItemId : (req) => ([req.params.out_item_id, req.params.in_item_id]),
     pParentDescendantQty : (req) => ([req.params.parent_id, req.params.descendant_id, req.body.qty]),
-    pParentDescendant : (req) => ([req.params.parent_id, req.params.descendant_id])
+    pParentDescendant : (req) => ([req.params.parent_id, req.params.descendant_id]),
+    pParentIdChildId: (req) => ([req.params.parent_part_id, req.params.child_part_id]),
+    pOffsetLimitParentIdChildId: (req) => ([req.params.offset, req.params.limit, req.params.parent_part_id, req.params.child_part_id]),
+    pPartIdHeaderId: (req) => ([req.params.part_id, req.params.alt_header_id]),
+    pParentChildPartAltHeader: (req) => ([req.params.parent_part_id, req.params.child_part_id, req.params.part_id, req.body.altHeaderId]),
+    pParentChildAltHeader: (req) => ([req.params.parent_part_id, req.params.child_part_id, req.params.altHeaderId]),
+    pAltHeader: (req) => ([req.params.alt_header_id])
 }

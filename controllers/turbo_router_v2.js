@@ -1,13 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const W = require('./controller-wrapper');
-const redisKeys = require('./redis-keys');
-const params = require('./request-params-functions');
-
 const interchange = require('../controllers/partials/interchange');
 const bom = require('../controllers/partials/bom');
-const altBom = require('../services/alternative_bom_v2');
+const altBom = require('../controllers/partials/alternative-bom');
 const whereUsed = require('../services/where_used_v2');
 const kitMatrix = require('../services/kit_matrix_v2');
 const serviceKits = require('../services/service_kits_v2');
@@ -42,53 +38,13 @@ router.put('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.updat
 router.post('/boms/:parent_id/descendant/:descendant_id', (req, res) => bom.addBom(req, res));
 
 
-router.get('/boms/:parent_part_id/children/:child_part_id/alternatives', function (req, res) {
-    try {
-        altBom.findAltBom(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.get('/boms/:parent_part_id/children/:child_part_id/alternatives', (req, res) => altBom.findAltBom(req, res));
+router.get('/boms/:parent_part_id/children/:child_part_id/alternatives/:offset/:limit', (req, res) => altBom.findAltBomPage(req, res));
 
-router.get('/boms/:parent_part_id/children/:child_part_id/alternatives/:offset/:limit', function (req, res) {
-    try {
-        altBom.findAltBomPage(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.delete('/boms/alternatives/:alt_header_id/parts/:part_id', function (req, res) {
-    try {
-        altBom.removeAltBom(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.post('/boms/:parent_part_id/children/:child_part_id/alternatives/parts/:part_id', function (req, res) {
-    try {
-        altBom.addAltBom(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.post('/boms/:parent_part_id/children/:child_part_id/alternatives', function (req, res) {
-    try {
-        altBom.addAltGroup(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.delete('/boms/:parent_part_id/children/:child_part_id/alternatives/:alt_header_id', function (req, res) {
-    try {
-        altBom.removeAltGroup(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.delete('/boms/alternatives/:alt_header_id/parts/:part_id', (req, res) => altBom.removeAltBom(req, res));
+router.post('/boms/:parent_part_id/children/:child_part_id/alternatives/parts/:part_id', (req, res) => altBom.addAltBom(req, res));
+router.post('/boms/:parent_part_id/children/:child_part_id/alternatives', (req, res) => altBom.addAltGroup(req, res));
+router.delete('/boms/:parent_part_id/children/:child_part_id/alternatives/:alt_header_id', (req, res) => altBom.removeAltGroup(req, res));
 
 router.get('/parts/:id/ancestors', function (req, res) {
     try {

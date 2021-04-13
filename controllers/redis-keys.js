@@ -7,4 +7,6 @@ module.exports = {
     bomId: (id) => 'bom_' + id,
     bomOnlyId: (id) => 'bom_only_' + id,
     bomChildId: (id) => 'bom_child_' + id,
+
+    altBomParentChild: (parentPartId, childPartId) => 'alt_bom_' + parentPartId + '_' + childPartId
 }
