@@ -16,5 +16,6 @@ module.exports = {
     pPartIdHeaderId: (req) => ([req.params.part_id, req.params.alt_header_id]),
     pParentChildPartAltHeader: (req) => ([req.params.parent_part_id, req.params.child_part_id, req.params.part_id, req.body.altHeaderId]),
     pParentChildAltHeader: (req) => ([req.params.parent_part_id, req.params.child_part_id, req.params.altHeaderId]),
-    pAltHeader: (req) => ([req.params.alt_header_id])
+    pAltHeader: (req) => ([req.params.alt_header_id]),
+    pIdAuthorizationOffsetLimit: (req) => ([req.params.id, req.headers.authorization, req.params.offset, req.params.limit])
 }

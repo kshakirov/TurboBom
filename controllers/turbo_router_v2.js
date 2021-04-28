@@ -4,6 +4,7 @@ const router = express.Router();
 const interchange = require('../controllers/partials/interchange');
 const bom = require('../controllers/partials/bom');
 const altBom = require('../controllers/partials/alternative-bom');
+const whereUsedNew = require('../controllers/partials/where-used');
 const whereUsed = require('../services/where_used_v2');
 const kitMatrix = require('../services/kit_matrix_v2');
 const serviceKits = require('../services/service_kits_v2');
@@ -46,37 +47,10 @@ router.post('/boms/:parent_part_id/children/:child_part_id/alternatives/parts/:p
 router.post('/boms/:parent_part_id/children/:child_part_id/alternatives', (req, res) => altBom.addAltGroup(req, res));
 router.delete('/boms/:parent_part_id/children/:child_part_id/alternatives/:alt_header_id', (req, res) => altBom.removeAltGroup(req, res));
 
-router.get('/parts/:id/ancestors', function (req, res) {
-    try {
-        whereUsed.findWhereUsed(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.post('/product/:id/where_used', function (req, res) {
-    try {
-        whereUsed.findWhereUsedEcommerce(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.post('/product/:id/where_used/:offset/:limit', function (req, res) {
-    try {
-        whereUsed.findWhereUsedEcommerce(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
-
-router.get('/parts/:id/ancestors/:offset/:limit', function (req, res) {
-    try {
-        whereUsed.findWhereUsedPage(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.get('/parts/:id/ancestors', (req, res) => whereUsedNew.findWhereUsed(req, res));
+router.post('/product/:id/where_used', (req, res) => whereUsedNew.findWhereUsedEcommerce(req, res));
+router.post('/product/:id/where_used/:offset/:limit', (req, res) => whereUsedNew.findWhereUsedEcommerce(req, res));
+router.get('/parts/:id/ancestors/:offset/:limit', (req, res) => whereUsedNew.findWhereUsedPage(req, res));
 
 router.get('/product/:id/kit_matrix/', function (req, res) {
     try {
