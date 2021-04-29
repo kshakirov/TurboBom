@@ -103,7 +103,6 @@ let addTurbos = (response, turboInterchanges) => {
 let getTurboPartNumbers = (group) => group.map(g => g.partNumber);
 
 let getTiPartPrice = (p) => p.manufacturer == 'Turbo International' ? p.prices : false;
-
 let getTiPartforPart = (pairs, groups, partNumber) =>
     pairs.find(pair => {
         let group = Object.values(groups).find(it => it.has(pair.partNumber));
@@ -116,6 +115,7 @@ let prepResponse = (pairs, turboGroups, groups) => {
             if (g.bom_sku == p.sku || g.bom_sku == p.interchange_sku)
                 return true;
         });
+        group = [].concat.apply(group, group.map(group => turboGroups.filter(it => it.bomPartId == group.sku)));
         let tiPart = getTiPartforPart(pairs, groups, p.partNumber);
         return {
             description: '',
