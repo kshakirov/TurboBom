@@ -49,7 +49,7 @@ let groupByHeader = (turboInterchanges) => {
             result[ti.header] = new Set(ti.turbos);
         }
     });
-    return Object.values(result);
+    return result;
 }
 
 let filterTurboInterchanges = (recs) =>
@@ -88,7 +88,7 @@ let addTurbos = (response, turboInterchanges) => {
     return response.map(r => {
         let numbers = new Set(r.turboPartNumbers);
         if(Array.isArray(turboInterchanges)) {
-            turboInterchanges.forEach(ti => {
+            turboInterchanges[r.interchangeHeader].forEach(ti => {
                 let sti = new Set(ti);
                 sti.forEach(it => {
                     numbers.add(it);
@@ -106,7 +106,7 @@ let getTiPartPrice = (p) => p.manufacturer == 'Turbo International' ? p.prices :
 
 let getTiPartforPart = (pairs, groups, partNumber) =>
     pairs.find(pair => {
-        let group = groups.find(it => it.has(pair.partNumber));
+        let group = Object.values(groups).find(it => it.has(pair.partNumber));
         return group && pair.manufacturer == 'Turbo International' && group.has(partNumber)
     });
 
@@ -128,7 +128,8 @@ let prepResponse = (pairs, turboGroups, groups) => {
             turboPartNumbers: getTurboPartNumbers(group),
             prices: getTiPartPrice(p),
             turboType: p.turboType,
-            turboModel: p.turboModel
+            turboModel: p.turboModel,
+            interchangeHeader: p.interchange_header
         }
     })
 }
@@ -186,7 +187,7 @@ let findWhereUsedData = async(id, authorization, offset, limit) => {
         if(offset && limit) {
             whereUsed = await whereUsedModel.findWhereUsedEcommercePage(id, offset, limit);
         } else {
-            whereUsed = await whereUsedModel.findWhereUsedEcommerce(id);;
+            whereUsed = await whereUsedModel.findWhereUsedEcommerce(id);
         }
         whereUsed = whereUsed.filter(it => it.partType == 'Turbo' || it.partType == 'Cartridge');
         let whereUsedSet = [];
