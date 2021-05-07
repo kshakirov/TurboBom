@@ -18,8 +18,8 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.get('/interchange/:header_id', (req, res) => interchange.findByHeaderId(req, res));
-router.get('/parts/:id/interchange', (req, res) => interchange.find(req, res));
-router.get('/product/:id/interchange', (req, res) => interchange.findEcommerce(req, res));
+router.get('/parts/:id/interchanges', (req, res) => interchange.find(req, res));
+router.get('/product/:id/interchanges', (req, res) => interchange.findEcommerce(req, res));
 router.get('metadata/parts/:id/interchange', (req, res) => interchange.find(req, res));
 router.get('/parts/:id/interchange/:offset/:limit', (req, res) => interchange.findPage(req, res));
 
