@@ -28,7 +28,7 @@ var findWhereUsedPageQuery = ` for  p,e,v
 var     findWhereUsedCassandraQuery = ` for  p,e,v 
         in 1..6 inbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && !p.inactive 
-        && to_number(v.vertices[-3]._key) != _id
+        && (p.partType == 'Turbo' || p.partType == 'Cartridge')
        return distinct {
         prices: p.group_prices,
         sku: p._key,
@@ -52,7 +52,7 @@ var     findWhereUsedCassandraQuery = ` for  p,e,v
 var     findWhereUsedCassandraPageQuery = ` for  p,e,v 
         in 1..6 inbound '${dbConfig.partCollection}/_id' ${dbConfig.bomEdgesCollection}, any ${dbConfig.interchangeEdgesCollection}
         filter   count(remove_value(v.edges[*].type,'interchange')) > 0 && !p.inactive 
-        && to_number(v.vertices[-3]._key) != _id
+        && (p.partType == 'Turbo' || p.partType == 'Cartridge')
         LIMIT _offset, _limit
        return distinct {
         prices: p.group_prices,

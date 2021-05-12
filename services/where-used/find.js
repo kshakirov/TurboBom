@@ -144,7 +144,6 @@ let findWhereUsedData = async(id, authorization, offset, limit) => {
     } else {
         whereUsed = await whereUsedModel.findWhereUsedEcommerce(id);
     }
-    whereUsed = whereUsed.filter(it => it.partType == 'Turbo' || it.partType == 'Cartridge');
     let whereUsedSet = [];
     whereUsed.forEach(whereUsed => {
         if(!whereUsedSet.find(it => it.sku == whereUsed.sku)) {
