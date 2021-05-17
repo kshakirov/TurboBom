@@ -14,7 +14,8 @@ let getTurboTypeQuery = `FOR part IN parts
 let getKitsByTurboTypeQuery = `FOR part IN parts
   FILTER part.attributes.part_type == 'Kit' and 
          CONTAINS_ARRAY(part.kitAttributes.turboType, '_turboType') and
-         part.inactive == false
+         part.inactive == false and
+         part.attributes.manufacturer == 'Turbo International'
   return {tiSku: to_number(part._key), ti_part_number: part.attributes.part_number, description: part.description, manufacturer: part.manufacturer}`;
 
 let getTiKitsByTurboTypeQuery = `FOR part IN parts
