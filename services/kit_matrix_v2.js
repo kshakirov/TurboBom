@@ -223,6 +223,7 @@ let getKitMatrix = async (req, res) => {
                     filteredValue[key] = value[0][key];
             });
             value[0] = filteredValue;
+            value[1] = value[1].slice(0, 3).concat(value[1].filter(partNumber => Object.keys(filteredValue).filter(it => filteredValue[it][partNumber.title]).length > 0));
             await redisService.setItem(KIT_MATRIX_PREFIX + req.params.id, JSON.stringify(value));
         } else {
             value = JSON.parse(value);
