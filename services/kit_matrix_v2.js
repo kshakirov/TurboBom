@@ -217,6 +217,12 @@ let getKitMatrix = async (req, res) => {
                 ));
             let preparedMatrix = prepKitMatrix(kitBomPairs);
             value = createKitMatrixTable(preparedMatrix);
+            let filteredValue = {};
+            Object.keys(value[0]).forEach(key => {
+                if(Object.keys(value[0][key]).length > 5)
+                    filteredValue[key] = value[0][key];
+            });
+            value[0] = filteredValue;
             await redisService.setItem(KIT_MATRIX_PREFIX + req.params.id, JSON.stringify(value));
         } else {
             value = JSON.parse(value);
