@@ -46,7 +46,7 @@ let baseHeaderArray =
 
 
 function create_row(id, v, kit_matrix_rows) {
-    if (!kit_matrix_rows.hasOwnProperty(v.part_number)) {
+    if (kit_matrix_rows.hasOwnProperty(v.part_number)) {
         kit_matrix_rows[v.part_number][id] = v.qty
     }
     else {
