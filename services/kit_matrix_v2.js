@@ -219,7 +219,7 @@ let getKitMatrix = async (req, res) => {
             value = createKitMatrixTable(preparedMatrix);
             let filteredValue = {};
             Object.keys(value[0]).forEach(key => {
-                if(Object.keys(value[0][key]).length > 5)
+                if(Object.keys(value[0][key]).length > 4)
                     filteredValue[key] = value[0][key];
             });
             value[0] = filteredValue;
