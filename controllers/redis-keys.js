@@ -11,5 +11,7 @@ module.exports = {
     altBomParentChild: (parentPartId, childPartId) => 'alt_bom_' + parentPartId + '_' + childPartId,
 
     whereUsedId: (id) => 'where_used_' + id,
-    whereUsedEcommerceId: (id) => 'where_used_ecommerce_' + id
+    whereUsedEcommerceId: (id) => 'where_used_ecommerce_' + id,
+
+    serviceKitsId: (id) => 'service_kits_' + id
 }

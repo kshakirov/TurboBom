@@ -8,6 +8,7 @@ const whereUsedNew = require('../controllers/partials/where-used');
 const whereUsed = require('../services/where_used_v2');
 const kitMatrix = require('../services/kit_matrix_v2');
 const serviceKits = require('../services/service_kits_v2');
+const serviceKitsNew = require('../controllers/partials/service-kits');
 const gasketKits = require('../services/gasket_kit_v2');
 const majorComponents = require('../services/major_component_v2');
 const salesNotes = require('../services/sales_notes_v2');
@@ -60,13 +61,7 @@ router.get('/product/:id/kit_matrix/', function (req, res) {
     }
 });
 
-router.get('/product/:id/service_kits/', function (req, res) {
-    try {
-        serviceKits.findServiceKits(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.get('/product/:id/service_kits/', (req, res) => serviceKitsNew.findServiceKits(req, res));
 
 
 router.get('/product/:id/gasket_kit/', function (req, res) {

@@ -5,6 +5,7 @@ module.exports = {
     pIdPage : (req) => ([req.params.id, req.params.offset, req.params.limit]),
     pHeaderId : (req) => [req.params.header_id],
     pIdHeaderId : (req) => ([req.params.header_id, req.params.id]),
+    pIdAuthorization : (req) => ([req.params.id, req.headers.authorization]),
     pIdAuthorizationDistance : (req) => ([req.params.id, req.headers.authorization, req.query.distance]),
     pIdDistanceDepth : (req) => ([req.params.id, req.query.distance, req.query.depth]),
     pOffsetLimitIdDistanceDepth : (req) => ([req.params.offset, req.params.limit, req.params.id, req.query.distance , req.query.depth]),
