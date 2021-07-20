@@ -5,9 +5,8 @@ const interchange = require('../controllers/partials/interchange');
 const bom = require('../controllers/partials/bom');
 const altBom = require('../controllers/partials/alternative-bom');
 const whereUsedNew = require('../controllers/partials/where-used');
-const whereUsed = require('../services/where_used_v2');
 const kitMatrix = require('../services/kit_matrix_v2');
-const serviceKits = require('../services/service_kits_v2');
+const kitMatrixNew = require('../controllers/partials/kit-matrix');
 const serviceKitsNew = require('../controllers/partials/service-kits');
 const gasketKits = require('../services/gasket_kit_v2');
 const majorComponents = require('../services/major_component_v2');
@@ -53,13 +52,7 @@ router.post('/product/:id/where_used', (req, res) => whereUsedNew.findWhereUsedE
 router.post('/product/:id/where_used/:offset/:limit', (req, res) => whereUsedNew.findWhereUsedEcommerce(req, res));
 router.get('/parts/:id/ancestors/:offset/:limit', (req, res) => whereUsedNew.findWhereUsedPage(req, res));
 
-router.get('/product/:id/kit_matrix/', function (req, res) {
-    try {
-        kitMatrix.getKitMatrix(req, res);
-    } catch(e) {
-        console.log(e);
-    }
-});
+router.get('/product/:id/kit_matrix/', (req, res) => kitMatrixNew.getKitMatrix(req, res));
 
 router.get('/product/:id/service_kits/', (req, res) => serviceKitsNew.findServiceKits(req, res));
 

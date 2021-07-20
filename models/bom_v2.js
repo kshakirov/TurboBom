@@ -126,7 +126,7 @@ let docsExists = async (parent_id, child_id) => {
     return Promise.all(promises);
 }
 
-let findBom = async (id, distance, depth = 5) =>
+let findBom = async (id, distance = 1, depth = 5) =>
     (await db.query(findBomQuery.replace('_id', id).replace('_id', id).replace('_distance', distance + 1).replace('_depth', depth))).all();
 
 

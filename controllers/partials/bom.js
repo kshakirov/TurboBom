@@ -8,7 +8,7 @@ module.exports = {
     updateBom: W.execute(bIndex.writeService.updateBom, params.pParentDescendantQty, null),
     removeBom: W.execute(bIndex.writeService.removeBom, params.pParentDescendant, null),
 
-    find: W.execute(bIndex.findService.findBom, params.pIdDistanceDepth, null),
+    find: W.execute(bIndex.findService.findBom, params.pIdDistanceDepth, redisKeys.bomId),
     findBomEcommerce: W.execute(bIndex.findService.findBomEcommerce, params.pIdDistanceDepth, null),
     findBomPage: W.execute(bIndex.findService.findBomPage, params.pOffsetLimitIdDistanceDepth, null),
     findOnlyBom: W.execute(bIndex.findService.findOnlyBom, params.pId, null),

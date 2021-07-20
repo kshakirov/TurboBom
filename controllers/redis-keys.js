@@ -13,5 +13,7 @@ module.exports = {
     whereUsedId: (id) => 'where_used_' + id,
     whereUsedEcommerceId: (id) => 'where_used_ecommerce_' + id,
 
+    kitMatrixId: (id) => 'kit_matrix_' + id,
+
     serviceKitsId: (id) => 'service_kits_' + id
 }
